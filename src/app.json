@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Photo Restoration",
+    "slug": "photo-restoration",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.photorestoration.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs access to your camera to take photos for restoration.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to select and save restored photos.",
+        "NSPhotoLibraryAddUsageDescription": "This app needs permission to save restored photos to your photo library."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.photorestoration.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-image-picker",
+      "expo-media-library",
+      "expo-camera"
+    ]
+  }
+}
