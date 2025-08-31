@@ -15,7 +15,7 @@ AI-powered photo enhancement mobile app using Google's Nano Banana model.
 photorestoration/
 ├── backend/          # FastAPI backend
 │   └── Dockerfile    # Backend deployment file
-├── src/              # React Native Expo app
+├── mobile/           # React Native Expo app
 └── docs/             # Documentation
 ```
 
@@ -28,9 +28,9 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-### Frontend
+### Mobile App
 ```bash
-cd src
+cd mobile
 npm install
 npx expo start
 ```
@@ -45,7 +45,7 @@ npx expo start
 - `MINIO_BUCKET`: S3 bucket name
 - `GOOGLE_API_KEY`: Google Gemini API key for image enhancement
 
-### Frontend
+### Mobile App
 - `EXPO_PUBLIC_API_URL`: Backend API URL
 
 ## Deployment
