@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ScrollView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
@@ -13,6 +14,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
+import EnhancementHistory from '../components/EnhancementHistory';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -96,7 +98,7 @@ export default function HomeScreen({ navigation }: Props) {
   const credits = getTotalCredits();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <Text style={styles.title}>Restore Your Photos</Text>
         <Text style={styles.subtitle}>AI-powered enhancement</Text>
@@ -127,18 +129,22 @@ export default function HomeScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
+      <EnhancementHistory />
+
       {user && credits.standard === 0 && credits.hd === 0 && (
-        <TouchableOpacity 
-          style={styles.purchaseButton}
-          onPress={() => {
-            trackEvent('action', { type: 'purchase_button_tap' });
-            Alert.alert('Purchase Credits', 'Purchase functionality coming soon!');
-          }}
-        >
-          <Text style={styles.purchaseButtonText}>Get More Credits</Text>
-        </TouchableOpacity>
+        <View style={styles.purchaseButtonWrapper}>
+          <TouchableOpacity 
+            style={styles.purchaseButton}
+            onPress={() => {
+              trackEvent('action', { type: 'purchase_button_tap' });
+              Alert.alert('Purchase Credits', 'Purchase functionality coming soon!');
+            }}
+          >
+            <Text style={styles.purchaseButtonText}>Get More Credits</Text>
+          </TouchableOpacity>
+        </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 40,
-    marginBottom: 60,
+    marginBottom: 40,
   },
   creditBox: {
     backgroundColor: '#1a1a1a',
@@ -211,15 +217,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  purchaseButtonWrapper: {
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
   purchaseButton: {
     backgroundColor: '#007AFF',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 40,
-    left: 20,
-    right: 20,
   },
   purchaseButtonText: {
     color: '#fff',

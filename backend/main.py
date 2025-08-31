@@ -282,10 +282,24 @@ async def enhance_image(
     }
 
 @app.get("/api/image/{key:path}")
-async def get_image(key: str):
+async def get_image(key: str, thumbnail: bool = False):
     try:
         response = minio_client.get_object(MINIO_BUCKET, key)
-        return StreamingResponse(io.BytesIO(response.read()), media_type="image/jpeg")
+        image_data = response.read()
+        
+        if thumbnail:
+            # Generate thumbnail
+            img = Image.open(io.BytesIO(image_data))
+            img.thumbnail((200, 200), Image.Resampling.LANCZOS)
+            
+            # Save thumbnail to bytes
+            thumb_io = io.BytesIO()
+            img.save(thumb_io, format='JPEG', quality=85)
+            thumb_io.seek(0)
+            
+            return StreamingResponse(thumb_io, media_type="image/jpeg")
+        else:
+            return StreamingResponse(io.BytesIO(image_data), media_type="image/jpeg")
     except S3Error:
         raise HTTPException(status_code=404, detail="Image not found")
 
@@ -396,3 +410,38 @@ async def track_analytics(request: AnalyticsRequest, db: Session = Depends(get_d
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+
+@app.get("/api/enhancements/{user_id}")
+async def get_user_enhancements(
+    user_id: str,
+    limit: int = 20,
+    offset: int = 0,
+    db: Session = Depends(get_db)
+):
+    """Get enhancement history for a user"""
+    enhancements = db.query(Enhancement).filter(
+        Enhancement.user_id == user_id
+    ).order_by(
+        Enhancement.created_at.desc()
+    ).limit(limit).offset(offset).all()
+    
+    # Convert to response format
+    results = []
+    for e in enhancements:
+        results.append({
+            "id": e.id,
+            "original_url": f"/api/image/{e.original_url}",
+            "enhanced_url": f"/api/image/{e.enhanced_url}",
+            "thumbnail_url": f"/api/image/{e.enhanced_url}?thumbnail=true",
+            "resolution": e.resolution,
+            "created_at": e.created_at.isoformat(),
+            "processing_time": e.processing_time,
+            "watermark": e.watermark
+        })
+    
+    return {
+        "enhancements": results,
+        "total": db.query(Enhancement).filter(Enhancement.user_id == user_id).count(),
+        "limit": limit,
+        "offset": offset
+    }

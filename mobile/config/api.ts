@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
   restore: '/api/restore',
   analytics: '/api/analytics',
   image: '/api/image',
+  enhancements: '/api/enhancements',
 };
