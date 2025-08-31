@@ -48,7 +48,7 @@ class User(Base):
     daily_standard_used = Column(Integer, default=0)
     daily_hd_used = Column(Integer, default=0)
     daily_reset_at = Column(DateTime, default=datetime.utcnow)
-    metadata = Column(JSON, default={})
+    user_metadata = Column(JSON, default={})
 
 class Purchase(Base):
     __tablename__ = "purchases"
