@@ -105,8 +105,11 @@ async def lifespan(app: FastAPI):
     try:
         if not minio_client.bucket_exists(MINIO_BUCKET):
             minio_client.make_bucket(MINIO_BUCKET)
-    except S3Error as e:
-        print(f"MinIO initialization error: {e}")
+        print(f"MinIO connected successfully. Bucket '{MINIO_BUCKET}' ready.")
+    except Exception as e:
+        print(f"WARNING: MinIO connection failed: {e}")
+        print(f"MinIO endpoint: {MINIO_ENDPOINT}")
+        print("The app will start but image storage won't work until MinIO is available.")
     
     # Initialize Gemini
     if GOOGLE_API_KEY:
