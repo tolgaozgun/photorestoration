@@ -14,9 +14,9 @@ AI-powered photo enhancement mobile app using Google's Nano Banana model.
 ```
 photorestoration/
 ├── backend/          # FastAPI backend
-├── src/             # React Native Expo app
-├── docs/            # Documentation
-└── Dockerfile       # Single deployment file
+│   └── Dockerfile    # Backend deployment file
+├── src/              # React Native Expo app
+└── docs/             # Documentation
 ```
 
 ## Development Setup
@@ -49,11 +49,20 @@ npx expo start
 - `EXPO_PUBLIC_API_URL`: Backend API URL
 
 ## Deployment
-Single Dockerfile deployment via GitHub webhook to Coolify.
+
+### Backend Deployment
+Deploy the FastAPI backend via GitHub webhook to Coolify.
 
 ```bash
-docker build -t photo-restoration .
-docker run -p 8000:8000 photo-restoration
+cd backend
+docker build -t photo-restoration-backend .
+docker run -p 8000:8000 photo-restoration-backend
+```
+
+### Health Check
+The backend provides a health endpoint at `/health` for monitoring:
+```
+GET http://your-backend-url/health
 ```
 
 ## Pricing Tiers
