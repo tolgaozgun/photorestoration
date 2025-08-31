@@ -105,12 +105,12 @@ export default function HomeScreen({ navigation }: Props) {
       <View style={styles.creditsContainer}>
         <View style={styles.creditBox}>
           <Text style={styles.creditLabel}>Standard</Text>
-          <Text style={styles.creditValue}>{credits.standard}</ติ
+          <Text style={styles.creditValue}>{credits.standard}</Text>
           <Text style={styles.creditUnit}>images left</Text>
         </View>
         <View style={styles.creditBox}>
           <Text style={styles.creditLabel}>HD</Text>
-          <Text style={styles.creditValue}>{credits.hd}</티
+          <Text style={styles.creditValue}>{credits.hd}</Text>
           <Text style={styles.creditUnit}>images left</Text>
         </View>
       </View>
