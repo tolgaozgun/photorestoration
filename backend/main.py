@@ -21,6 +21,7 @@ from PIL import Image
 import base64
 from dotenv import load_dotenv
 from image_enhancement import ImageEnhancer
+from email_service import EmailService
 
 load_dotenv()
 
@@ -85,14 +86,38 @@ class AnalyticsEvent(Base):
     platform = Column(String)
     app_version = Column(String)
 
+class EmailVerification(Base):
+    __tablename__ = "email_verifications"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String, index=True)
+    device_id = Column(String, index=True)
+    device_name = Column(String)
+    verification_code = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+    verified = Column(Boolean, default=False)
+    
+class LinkedDevice(Base):
+    __tablename__ = "linked_devices"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String, index=True)
+    device_id = Column(String, unique=True, index=True)
+    device_name = Column(String)
+    device_type = Column(String)  # ios, android
+    linked_at = Column(DateTime, default=datetime.utcnow)
+    last_active = Column(DateTime, default=datetime.utcnow)
+
 Base.metadata.create_all(bind=engine)
 
 minio_client = None
 image_enhancer = None
+email_service = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global minio_client, image_enhancer
+    global minio_client, image_enhancer, email_service
     
     # Initialize MinIO
     minio_client = Minio(
@@ -118,6 +143,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"Warning: Failed to initialize image enhancer: {e}")
         image_enhancer = None
+    
+    # Initialize email service
+    try:
+        email_service = EmailService()
+        print("Email service initialized successfully")
+    except Exception as e:
+        print(f"Warning: Failed to initialize email service: {e}")
+        email_service = None
     
     yield
     
@@ -438,6 +471,241 @@ async def track_analytics(request: AnalyticsRequest, db: Session = Depends(get_d
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+
+class EmailVerificationRequest(BaseModel):
+    email: str
+    device_id: str
+    device_name: str
+    device_type: str = "unknown"
+
+@app.post("/api/email/send-verification")
+async def send_verification_code(
+    request: EmailVerificationRequest,
+    db: Session = Depends(get_db)
+):
+    """Send verification code to email for device linking"""
+    if not email_service:
+        raise HTTPException(status_code=503, detail="Email service not available")
+    
+    # Check if device is already linked
+    existing_device = db.query(LinkedDevice).filter(
+        LinkedDevice.device_id == request.device_id
+    ).first()
+    
+    if existing_device:
+        return {
+            "success": False,
+            "message": "Device already linked",
+            "linked_email": existing_device.email
+        }
+    
+    # Generate verification code
+    code = email_service.generate_verification_code()
+    
+    # Create verification record
+    verification = EmailVerification(
+        email=request.email,
+        device_id=request.device_id,
+        device_name=request.device_name,
+        verification_code=code,
+        expires_at=datetime.utcnow() + timedelta(minutes=10)
+    )
+    db.add(verification)
+    db.commit()
+    
+    # Send email
+    sent = await email_service.send_verification_email(
+        request.email, 
+        code, 
+        request.device_name
+    )
+    
+    if not sent:
+        raise HTTPException(status_code=500, detail="Failed to send verification email")
+    
+    return {
+        "success": True,
+        "message": "Verification code sent",
+        "expires_in_minutes": 10
+    }
+
+class VerifyCodeRequest(BaseModel):
+    email: str
+    device_id: str
+    code: str
+    device_type: str = "unknown"
+
+@app.post("/api/email/verify-code")
+async def verify_code(
+    request: VerifyCodeRequest,
+    db: Session = Depends(get_db)
+):
+    """Verify code and link device to email"""
+    
+    # Find valid verification
+    verification = db.query(EmailVerification).filter(
+        EmailVerification.email == request.email,
+        EmailVerification.device_id == request.device_id,
+        EmailVerification.verification_code == request.code,
+        EmailVerification.verified == False,
+        EmailVerification.expires_at > datetime.utcnow()
+    ).first()
+    
+    if not verification:
+        raise HTTPException(status_code=400, detail="Invalid or expired verification code")
+    
+    # Mark as verified
+    verification.verified = True
+    
+    # Link device
+    linked_device = LinkedDevice(
+        email=request.email,
+        device_id=request.device_id,
+        device_name=verification.device_name,
+        device_type=request.device_type
+    )
+    db.add(linked_device)
+    
+    # Migrate user data if exists
+    user = db.query(User).filter(User.id == request.device_id).first()
+    if user:
+        # Update user metadata with email
+        if not user.user_metadata:
+            user.user_metadata = {}
+        user.user_metadata["email"] = request.email
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "message": "Device linked successfully",
+        "device_id": request.device_id,
+        "email": request.email
+    }
+
+@app.get("/api/email/devices/{email}")
+async def get_linked_devices(
+    email: str,
+    db: Session = Depends(get_db)
+):
+    """Get all devices linked to an email"""
+    devices = db.query(LinkedDevice).filter(
+        LinkedDevice.email == email
+    ).order_by(LinkedDevice.linked_at.desc()).all()
+    
+    return {
+        "email": email,
+        "devices": [
+            {
+                "device_id": d.device_id,
+                "device_name": d.device_name,
+                "device_type": d.device_type,
+                "linked_at": d.linked_at.isoformat(),
+                "last_active": d.last_active.isoformat()
+            }
+            for d in devices
+        ]
+    }
+
+class RemoveDeviceRequest(BaseModel):
+    email: str
+    device_id_to_remove: str
+    requesting_device_id: str
+
+@app.post("/api/email/remove-device")
+async def remove_device(
+    request: RemoveDeviceRequest,
+    db: Session = Depends(get_db)
+):
+    """Remove a device from email linking"""
+    
+    # Verify requesting device is linked to this email
+    requesting_device = db.query(LinkedDevice).filter(
+        LinkedDevice.device_id == request.requesting_device_id,
+        LinkedDevice.email == request.email
+    ).first()
+    
+    if not requesting_device:
+        raise HTTPException(status_code=403, detail="Requesting device not authorized")
+    
+    # Find and remove the device
+    device_to_remove = db.query(LinkedDevice).filter(
+        LinkedDevice.device_id == request.device_id_to_remove,
+        LinkedDevice.email == request.email
+    ).first()
+    
+    if not device_to_remove:
+        raise HTTPException(status_code=404, detail="Device not found")
+    
+    device_name = device_to_remove.device_name
+    db.delete(device_to_remove)
+    db.commit()
+    
+    # Send notification email
+    if email_service:
+        await email_service.send_device_removed_email(request.email, device_name)
+    
+    return {
+        "success": True,
+        "message": "Device removed successfully",
+        "removed_device_id": request.device_id_to_remove
+    }
+
+@app.get("/api/sync/history/{email}")
+async def get_synced_history(
+    email: str,
+    limit: int = 50,
+    offset: int = 0,
+    db: Session = Depends(get_db)
+):
+    """Get enhancement history for all devices linked to an email"""
+    
+    # Get all device IDs linked to this email
+    linked_devices = db.query(LinkedDevice).filter(
+        LinkedDevice.email == email
+    ).all()
+    
+    device_ids = [d.device_id for d in linked_devices]
+    
+    if not device_ids:
+        return {
+            "email": email,
+            "enhancements": [],
+            "total": 0,
+            "synced_devices": 0
+        }
+    
+    # Get enhancements from all linked devices
+    enhancements = db.query(Enhancement).filter(
+        Enhancement.user_id.in_(device_ids)
+    ).order_by(
+        Enhancement.created_at.desc()
+    ).limit(limit).offset(offset).all()
+    
+    # Convert to response format
+    results = []
+    for e in enhancements:
+        results.append({
+            "id": e.id,
+            "device_id": e.user_id,
+            "original_url": f"/api/image/{e.original_url}",
+            "enhanced_url": f"/api/image/{e.enhanced_url}",
+            "thumbnail_url": f"/api/image/{e.enhanced_url}?thumbnail=true",
+            "resolution": e.resolution,
+            "mode": e.mode if hasattr(e, 'mode') else "enhance",
+            "created_at": e.created_at.isoformat(),
+            "processing_time": e.processing_time,
+            "watermark": e.watermark
+        })
+    
+    return {
+        "email": email,
+        "enhancements": results,
+        "total": db.query(Enhancement).filter(Enhancement.user_id.in_(device_ids)).count(),
+        "synced_devices": len(device_ids),
+        "limit": limit,
+        "offset": offset
+    }
 
 @app.get("/api/enhancements/{user_id}")
 async def get_user_enhancements(

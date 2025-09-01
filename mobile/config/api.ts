@@ -7,4 +7,11 @@ export const API_ENDPOINTS = {
   analytics: '/api/analytics',
   image: '/api/image',
   enhancements: '/api/enhancements',
+  
+  // Email sync endpoints
+  sendVerification: '/api/email/send-verification',
+  verifyCode: '/api/email/verify-code',
+  getDevices: '/api/email/devices',
+  removeDevice: '/api/email/remove-device',
+  syncedHistory: '/api/sync/history',
 };
