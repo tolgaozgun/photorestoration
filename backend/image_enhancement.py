@@ -1,21 +1,30 @@
 import io
 import base64
-from PIL import Image, ImageEnhance, ImageFilter
-import numpy as np
-from typing import Tuple
-import google.generativeai as genai
+from PIL import Image
+from typing import Optional
+import os
+from google import genai
+from google.genai import types
+
 
 class ImageEnhancer:
-    """Advanced image enhancement using Gemini AI guidance"""
+    """Image enhancement using Gemini's nano-banana model"""
     
-    def __init__(self, gemini_model):
-        self.gemini_model = gemini_model
+    def __init__(self):
+        self.client = None
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if api_key:
+            self.client = genai.Client(api_key=api_key)
+            self.model = "gemini-2.0-flash-image-preview"
     
     async def enhance(self, image_data: bytes, resolution: str, mode: str = "enhance") -> bytes:
         """
-        Enhance image using AI-guided adjustments
+        Enhance image using Gemini's image generation model
         """
-        # Open image
+        if not self.client:
+            raise Exception("Gemini client not initialized")
+        
+        # Open and prepare image
         img = Image.open(io.BytesIO(image_data))
         
         # Determine target size
@@ -28,218 +37,82 @@ class ImageEnhancer:
         if img.mode != 'RGB':
             img = img.convert('RGB')
         
-        # Get AI guidance if model is available
-        if self.gemini_model:
-            try:
-                enhancements = await self._get_ai_guidance(img, mode)
-                img = self._apply_enhancements(img, enhancements)
-            except Exception as e:
-                print(f"AI guidance failed, applying default enhancements: {e}")
-                img = self._apply_default_enhancements(img)
-        else:
-            img = self._apply_default_enhancements(img)
+        # Save to bytes for Gemini
+        img_buffer = io.BytesIO()
+        img.save(img_buffer, format='JPEG', quality=95)
+        img_buffer.seek(0)
+        img_bytes = img_buffer.getvalue()
         
-        # Save enhanced image
-        output = io.BytesIO()
-        img.save(output, format='JPEG', quality=95, optimize=True)
-        output.seek(0)
+        # Get the appropriate prompt for the mode
+        prompt = self._get_prompt_for_mode(mode)
         
-        return output.getvalue()
-    
-    async def _get_ai_guidance(self, img: Image.Image, mode: str) -> dict:
-        """Get enhancement recommendations from Gemini based on mode"""
+        # Convert image to base64 for Gemini
+        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
         
-        mode_prompts = {
-            "enhance": """
-            Analyze this photo and provide specific enhancement parameters to remove blur, sharpen, and add details.
-            Focus on improving clarity, sharpness, and overall detail enhancement.
-            
-            Return ONLY a JSON object with these numeric values:
-            {
-                "brightness": 1.0,      // 0.5-2.0, adjust if needed for clarity
-                "contrast": 1.2,        // 0.5-2.0, increase for better detail
-                "color_saturation": 1.0,// 0.5-2.0, maintain natural colors
-                "sharpness": 1.5,       // 0.5-2.0, higher for detail enhancement
-                "denoise": true,        // true to reduce blur/noise
-                "auto_color": false     // only if colors are severely distorted
-            }
-            """,
-            
-            "colorize": """
-            Analyze this black and white or faded color photo for colorization.
-            Provide parameters to add vibrant, realistic colors to memories.
-            
-            Return ONLY a JSON object with these numeric values:
-            {
-                "brightness": 1.1,      // 0.5-2.0, slight boost for vibrancy
-                "contrast": 1.1,        // 0.5-2.0, enhance depth
-                "color_saturation": 1.8,// 0.5-2.0, high to add color
-                "sharpness": 1.1,       // 0.5-2.0, mild sharpening
-                "denoise": false,       // avoid over-processing
-                "auto_color": true      // true to add/correct colors
-            }
-            """,
-            
-            "de-scratch": """
-            Analyze this photo for scratches, dirt, and physical damage.
-            Provide parameters to remove scratches and dirt while preserving detail.
-            
-            Return ONLY a JSON object with these numeric values:
-            {
-                "brightness": 1.0,      // 0.5-2.0, maintain original
-                "contrast": 1.0,        // 0.5-2.0, maintain original
-                "color_saturation": 1.0,// 0.5-2.0, maintain original
-                "sharpness": 1.3,       // 0.5-2.0, compensate for smoothing
-                "denoise": true,        // true to remove artifacts
-                "auto_color": false     // only if damage affected colors
-            }
-            """,
-            
-            "enlighten": """
-            Analyze this photo for lighting issues, shadows, and exposure problems.
-            Provide parameters to correct lighting and bring out hidden details.
-            
-            Return ONLY a JSON object with these numeric values:
-            {
-                "brightness": 1.3,      // 0.5-2.0, increase for dark areas
-                "contrast": 0.9,        // 0.5-2.0, reduce to reveal shadows
-                "color_saturation": 1.1,// 0.5-2.0, slight boost
-                "sharpness": 1.1,       // 0.5-2.0, mild enhancement
-                "denoise": false,       // preserve detail in shadows
-                "auto_color": true      // correct color cast from lighting
-            }
-            """,
-            
-            "recreate": """
-            Analyze this severely damaged portrait for recreation.
-            Provide conservative parameters to recreate while staying true to original.
-            
-            Return ONLY a JSON object with these numeric values:
-            {
-                "brightness": 1.1,      // 0.5-2.0, gentle adjustment
-                "contrast": 1.1,        // 0.5-2.0, mild enhancement
-                "color_saturation": 1.0,// 0.5-2.0, preserve original tones
-                "sharpness": 1.4,       // 0.5-2.0, reconstruct details
-                "denoise": true,        // true to clean damage
-                "auto_color": true      // restore original colors
-            }
-            """,
-            
-            "combine": """
-            Analyze this photo for combining with other photos.
-            Provide balanced parameters for consistent appearance across merged photos.
-            
-            Return ONLY a JSON object with these numeric values:
-            {
-                "brightness": 1.0,      // 0.5-2.0, neutral for matching
-                "contrast": 1.0,        // 0.5-2.0, neutral for matching
-                "color_saturation": 1.0,// 0.5-2.0, neutral for matching
-                "sharpness": 1.2,       // 0.5-2.0, ensure clarity
-                "denoise": false,       // preserve original quality
-                "auto_color": false     // maintain original colors
-            }
-            """
-        }
+        # Create content for Gemini
+        contents = [
+            types.Content(
+                role="user",
+                parts=[
+                    types.Part.from_text(text=prompt),
+                    types.Part.from_data(
+                        data=img_bytes,
+                        mime_type="image/jpeg"
+                    ),
+                ],
+            ),
+        ]
         
-        prompt = mode_prompts.get(mode, mode_prompts["enhance"])
+        generate_content_config = types.GenerateContentConfig(
+            response_modalities=["IMAGE"],
+        )
+        
+        # Generate enhanced image
+        enhanced_data = None
         
         try:
-            import asyncio
-            response = await asyncio.to_thread(
-                self.gemini_model.generate_content,
-                [prompt, img]
-            )
+            for chunk in self.client.models.generate_content_stream(
+                model=self.model,
+                contents=contents,
+                config=generate_content_config,
+            ):
+                if (
+                    chunk.candidates is None
+                    or chunk.candidates[0].content is None
+                    or chunk.candidates[0].content.parts is None
+                ):
+                    continue
+                    
+                if (chunk.candidates[0].content.parts[0].inline_data and 
+                    chunk.candidates[0].content.parts[0].inline_data.data):
+                    inline_data = chunk.candidates[0].content.parts[0].inline_data
+                    enhanced_data = inline_data.data
+                    break
             
-            # Parse JSON from response
-            import json
-            response_text = response.text.strip()
-            # Extract JSON if wrapped in markdown
-            if "```json" in response_text:
-                response_text = response_text.split("```json")[1].split("```")[0]
-            elif "```" in response_text:
-                response_text = response_text.split("```")[1].split("```")[0]
+            if enhanced_data is None:
+                raise Exception("No image data received from Gemini")
             
-            return json.loads(response_text)
+            return enhanced_data
+            
         except Exception as e:
-            print(f"Failed to parse AI guidance: {e}")
-            # Return default values
-            return {
-                "brightness": 1.1,
-                "contrast": 1.1,
-                "color_saturation": 1.1,
-                "sharpness": 1.2,
-                "denoise": True,
-                "auto_color": True
-            }
+            # Re-raise the exception to be handled by the API endpoint
+            raise Exception(f"Gemini enhancement failed: {str(e)}")
     
-    def _apply_enhancements(self, img: Image.Image, params: dict) -> Image.Image:
-        """Apply AI-recommended enhancements"""
+    def _get_prompt_for_mode(self, mode: str) -> str:
+        """Get the appropriate prompt based on the enhancement mode"""
         
-        # Brightness adjustment
-        if params.get("brightness", 1.0) != 1.0:
-            enhancer = ImageEnhance.Brightness(img)
-            img = enhancer.enhance(params["brightness"])
+        mode_prompts = {
+            "enhance": "Take this old photograph and enhance it while preserving authenticity. Remove blur, sharpen the details of faces, clothing, and background objects. Increase clarity in textures like skin, hair, and fabric. Do not invent unrealistic elements—stay faithful to the original content. The result should look like a naturally sharp, high-quality version of the same photo, not artificial or overly smoothed.",
+            
+            "colorize": "Convert this black-and-white or faded photograph into a natural color version. Apply realistic skin tones, fabric colors, and environmental hues that match the time period and context. Enhance contrast while keeping a soft, authentic look. The goal is to bring memories to life with believable, emotionally resonant colors, while preserving all original details and atmosphere.",
+            
+            "de-scratch": "Restore this aged photograph by removing scratches, dust, stains, and visible damage. Reconstruct missing areas in a way that blends seamlessly with the original textures. Preserve fine details such as facial features, clothing folds, and background objects. The result should look clean and intact, as if the photo was never scratched, but without altering the composition or style.",
+            
+            "enlighten": "Correct the lighting of this photo to achieve a balanced, well-lit result. Adjust brightness, contrast, and exposure so that subjects are clearly visible. Fix underexposed or overexposed areas without losing detail. Maintain natural shadows and highlights. Do not oversaturate or alter colors significantly—focus on achieving even, realistic lighting that enhances the photo's clarity.",
+            
+            "recreate": "Recreate this heavily damaged photograph by reconstructing missing or unclear areas, while preserving the original subjects, poses, and point of view. Do not change the composition, clothing, or facial expressions. The goal is to restore the portrait to what it originally looked like—same people, same positioning, same perspective—without inventing new elements or altering the style. The output should feel like a faithful restoration of the exact same image, only repaired.",
+            
+            "combine": "Take the provided photos of different people (ancestors, relatives, or acquaintances) and merge them into a single, unified group photograph. Ensure the faces, clothing, and body proportions remain faithful to the original input images. Arrange the people naturally as if they were photographed together in the same scene, with consistent lighting, shadows, and perspective. Blend styles so the final photo looks authentic and seamless, as though it was taken at one time and place. Do not alter facial features or invent new people—only harmonize the given ones."
+        }
         
-        # Contrast adjustment
-        if params.get("contrast", 1.0) != 1.0:
-            enhancer = ImageEnhance.Contrast(img)
-            img = enhancer.enhance(params["contrast"])
-        
-        # Color saturation
-        if params.get("color_saturation", 1.0) != 1.0:
-            enhancer = ImageEnhance.Color(img)
-            img = enhancer.enhance(params["color_saturation"])
-        
-        # Sharpness
-        if params.get("sharpness", 1.0) != 1.0:
-            enhancer = ImageEnhance.Sharpness(img)
-            img = enhancer.enhance(params["sharpness"])
-        
-        # Denoise
-        if params.get("denoise", False):
-            img = img.filter(ImageFilter.MedianFilter(size=3))
-        
-        # Auto color correction
-        if params.get("auto_color", False):
-            img = self._auto_color_correct(img)
-        
-        return img
-    
-    def _apply_default_enhancements(self, img: Image.Image) -> Image.Image:
-        """Apply default enhancement pipeline"""
-        
-        # Slight brightness boost
-        enhancer = ImageEnhance.Brightness(img)
-        img = enhancer.enhance(1.1)
-        
-        # Increase contrast
-        enhancer = ImageEnhance.Contrast(img)
-        img = enhancer.enhance(1.1)
-        
-        # Boost colors slightly
-        enhancer = ImageEnhance.Color(img)
-        img = enhancer.enhance(1.1)
-        
-        # Sharpen
-        enhancer = ImageEnhance.Sharpness(img)
-        img = enhancer.enhance(1.2)
-        
-        # Reduce noise
-        img = img.filter(ImageFilter.MedianFilter(size=3))
-        
-        return img
-    
-    def _auto_color_correct(self, img: Image.Image) -> Image.Image:
-        """Simple auto color correction"""
-        # Convert to numpy array
-        img_array = np.array(img)
-        
-        # Apply histogram equalization per channel
-        for i in range(3):  # RGB channels
-            channel = img_array[:, :, i]
-            # Simple contrast stretching
-            p2, p98 = np.percentile(channel, (2, 98))
-            channel_scaled = np.clip((channel - p2) * 255.0 / (p98 - p2), 0, 255)
-            img_array[:, :, i] = channel_scaled.astype(np.uint8)
-        
-        return Image.fromarray(img_array)
+        return mode_prompts.get(mode, mode_prompts["enhance"])

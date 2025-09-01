@@ -16,7 +16,7 @@ from minio.error import S3Error
 import hashlib
 import json
 from contextlib import asynccontextmanager
-import google.generativeai as genai
+from google import genai
 from PIL import Image
 import base64
 from dotenv import load_dotenv
@@ -88,12 +88,11 @@ class AnalyticsEvent(Base):
 Base.metadata.create_all(bind=engine)
 
 minio_client = None
-gemini_model = None
 image_enhancer = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global minio_client, gemini_model, image_enhancer
+    global minio_client, image_enhancer
     
     # Initialize MinIO
     minio_client = Minio(
@@ -112,16 +111,13 @@ async def lifespan(app: FastAPI):
         print(f"MinIO endpoint: {MINIO_ENDPOINT}")
         print("The app will start but image storage won't work until MinIO is available.")
     
-    # Initialize Gemini
-    if GOOGLE_API_KEY:
-        genai.configure(api_key=GOOGLE_API_KEY)
-        gemini_model = genai.GenerativeModel('gemini-1.5-flash')
-        print("Gemini AI model initialized successfully")
-    else:
-        print("Warning: GOOGLE_API_KEY not set, using basic enhancement")
-    
     # Initialize image enhancer
-    image_enhancer = ImageEnhancer(gemini_model)
+    try:
+        image_enhancer = ImageEnhancer()
+        print("Image enhancer initialized successfully")
+    except Exception as e:
+        print(f"Warning: Failed to initialize image enhancer: {e}")
+        image_enhancer = None
     
     yield
     
@@ -183,19 +179,11 @@ async def enhance_image_with_gemini(image_data: bytes, resolution: str, mode: st
     """Enhance image using the Nano Banana AI enhancement pipeline"""
     
     if not image_enhancer:
-        # Fallback if enhancer not initialized
-        await asyncio.sleep(0.5)
-        return image_data
+        raise HTTPException(status_code=503, detail="Image enhancement service not available")
     
-    try:
-        # Use the advanced image enhancer
-        enhanced_data = await image_enhancer.enhance(image_data, resolution, mode)
-        return enhanced_data
-        
-    except Exception as e:
-        print(f"Image enhancement error: {e}")
-        # Return original image on error
-        return image_data
+    # Use the advanced image enhancer - let exceptions bubble up
+    enhanced_data = await image_enhancer.enhance(image_data, resolution, mode)
+    return enhanced_data
 
 class EnhanceRequest(BaseModel):
     user_id: str
@@ -210,79 +198,116 @@ async def enhance_image(
 ):
     user = get_or_create_user(db, request.user_id)
     
+    # Check if user has credits before processing
     daily_limits = check_daily_limits(user)
     
+    has_credits = False
     if request.resolution == "hd":
-        if user.hd_credits > 0:
-            user.hd_credits -= 1
-        elif daily_limits["remaining_today_hd"] > 0:
-            user.daily_hd_used += 1
-        else:
+        has_credits = user.hd_credits > 0 or daily_limits["remaining_today_hd"] > 0
+        if not has_credits:
             raise HTTPException(status_code=403, detail="No HD credits available")
     else:
-        if user.standard_credits > 0:
-            user.standard_credits -= 1
-        elif daily_limits["remaining_today_standard"] > 0:
-            user.daily_standard_used += 1
-        else:
+        has_credits = user.standard_credits > 0 or daily_limits["remaining_today_standard"] > 0
+        if not has_credits:
             raise HTTPException(status_code=403, detail="No standard credits available")
     
     start_time = datetime.utcnow()
     
+    # Read the uploaded image
     image_data = await file.read()
     
-    enhanced_data = await enhance_image_with_gemini(image_data, request.resolution, request.mode)
-    
-    file_id = str(uuid.uuid4())
-    original_key = f"original/{file_id}.jpg"
-    enhanced_key = f"enhanced/{file_id}.jpg"
-    
     try:
-        minio_client.put_object(
-            MINIO_BUCKET,
-            original_key,
-            io.BytesIO(image_data),
-            len(image_data)
-        )
+        # Try to enhance the image
+        enhanced_data = await enhance_image_with_gemini(image_data, request.resolution, request.mode)
         
-        minio_client.put_object(
-            MINIO_BUCKET,
-            enhanced_key,
-            io.BytesIO(enhanced_data),
-            len(enhanced_data)
+        # Only deduct credits if enhancement was successful
+        if request.resolution == "hd":
+            if user.hd_credits > 0:
+                user.hd_credits -= 1
+            elif daily_limits["remaining_today_hd"] > 0:
+                user.daily_hd_used += 1
+        else:
+            if user.standard_credits > 0:
+                user.standard_credits -= 1
+            elif daily_limits["remaining_today_standard"] > 0:
+                user.daily_standard_used += 1
+        
+        # Save to storage
+        file_id = str(uuid.uuid4())
+        original_key = f"original/{file_id}.jpg"
+        enhanced_key = f"enhanced/{file_id}.jpg"
+        
+        try:
+            minio_client.put_object(
+                MINIO_BUCKET,
+                original_key,
+                io.BytesIO(image_data),
+                len(image_data)
+            )
+            
+            minio_client.put_object(
+                MINIO_BUCKET,
+                enhanced_key,
+                io.BytesIO(enhanced_data),
+                len(enhanced_data)
+            )
+        except Exception as e:
+            # Refund credits if storage fails
+            if request.resolution == "hd":
+                if user.daily_hd_used > 0:
+                    user.daily_hd_used -= 1
+                else:
+                    user.hd_credits += 1
+            else:
+                if user.daily_standard_used > 0:
+                    user.daily_standard_used -= 1
+                else:
+                    user.standard_credits += 1
+            db.commit()
+            raise HTTPException(status_code=500, detail=f"Storage error: {str(e)}")
+        
+        processing_time = (datetime.utcnow() - start_time).total_seconds()
+        
+        watermark = user.standard_credits == 0 and user.hd_credits == 0 and \
+                   (not user.subscription_type or user.subscription_expires <= datetime.utcnow())
+        
+        enhancement = Enhancement(
+            user_id=request.user_id,
+            original_url=original_key,
+            enhanced_url=enhanced_key,
+            resolution=request.resolution,
+            mode=request.mode,
+            processing_time=processing_time,
+            watermark=watermark
         )
+        db.add(enhancement)
+        db.commit()
+        
+        daily_limits = check_daily_limits(user)
+        
+        return {
+            "enhancement_id": enhancement.id,
+            "enhanced_url": f"/api/image/{enhanced_key}",
+            "watermark": watermark,
+            "processing_time": processing_time,
+            "remaining_standard_credits": user.standard_credits,
+            "remaining_hd_credits": user.hd_credits,
+            "remaining_today_standard": daily_limits["remaining_today_standard"],
+            "remaining_today_hd": daily_limits["remaining_today_hd"]
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Storage error: {str(e)}")
-    
-    processing_time = (datetime.utcnow() - start_time).total_seconds()
-    
-    watermark = user.standard_credits == 0 and user.hd_credits == 0 and \
-               (not user.subscription_type or user.subscription_expires <= datetime.utcnow())
-    
-    enhancement = Enhancement(
-        user_id=request.user_id,
-        original_url=original_key,
-        enhanced_url=enhanced_key,
-        resolution=request.resolution,
-        mode=request.mode,
-        processing_time=processing_time,
-        watermark=watermark
-    )
-    db.add(enhancement)
-    db.commit()
-    
-    daily_limits = check_daily_limits(user)
-    
-    return {
-        "enhancement_id": enhancement.id,
-        "enhanced_url": f"/api/image/{enhanced_key}",
-        "watermark": watermark,
-        "processing_time": processing_time,
-        "remaining_standard_credits": user.standard_credits,
-        "remaining_hd_credits": user.hd_credits,
-        "remaining_today_standard": daily_limits["remaining_today_standard"],
-        "remaining_today_hd": daily_limits["remaining_today_hd"]
-    }
+        # Don't deduct credits if enhancement fails
+        db.rollback()
+        # Return a user-friendly error message
+        error_message = str(e)
+        if "Gemini enhancement failed" in error_message:
+            raise HTTPException(status_code=500, detail=error_message)
+        else:
+            raise HTTPException(status_code=500, detail=f"Enhancement failed: {error_message}")
 
 @app.get("/api/image/{key:path}")
 async def get_image(key: str, thumbnail: bool = False):
