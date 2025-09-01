@@ -40,6 +40,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [enhancedImage, setEnhancedImage] = useState<string | null>(null);
   const [selectedResolution, setSelectedResolution] = useState<'standard' | 'hd'>('standard');
+  const [selectedMode, setSelectedMode] = useState<'enhance' | 'colorize' | 'de-scratch' | 'enlighten' | 'recreate' | 'combine'>('enhance');
   const [sliderValue, setSliderValue] = useState(0.5);
   const [watermark, setWatermark] = useState(false);
 
@@ -66,7 +67,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
     }
 
     setIsProcessing(true);
-    trackEvent(`restore_${selectedResolution}`, { started: true });
+    trackEvent(`restore_${selectedResolution}`, { started: true, mode: selectedMode });
 
     try {
       const userId = await SecureStore.getItemAsync('userId');
@@ -74,6 +75,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       const formData = new FormData();
       formData.append('user_id', userId!);
       formData.append('resolution', selectedResolution);
+      formData.append('mode', selectedMode);
       
       const response = await fetch(imageUri);
       const blob = await response.blob();
@@ -104,7 +106,8 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
 
       trackEvent(`restore_${selectedResolution}`, { 
         completed: true, 
-        processing_time: enhanceResponse.data.processing_time 
+        processing_time: enhanceResponse.data.processing_time,
+        mode: selectedMode 
       });
 
     } catch (error) {
@@ -165,9 +168,117 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       </View>
 
       {!enhancedImage && !isProcessing && (
-        <View style={styles.resolutionContainer}>
-          <Text style={styles.resolutionTitle}>Select Resolution</Text>
-          <View style={styles.resolutionButtons}>
+        <>
+          <View style={styles.modeContainer}>
+            <Text style={styles.sectionTitle}>Select Enhancement Mode</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.modeScroll}>
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  selectedMode === 'enhance' && styles.modeButtonActive,
+                ]}
+                onPress={() => setSelectedMode('enhance')}
+              >
+                <Text style={styles.modeIcon}>✨</Text>
+                <Text style={[
+                  styles.modeButtonText,
+                  selectedMode === 'enhance' && styles.modeButtonTextActive,
+                ]}>
+                  Enhance
+                </Text>
+                <Text style={styles.modeDescription}>Remove blur & sharpen</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  selectedMode === 'colorize' && styles.modeButtonActive,
+                ]}
+                onPress={() => setSelectedMode('colorize')}
+              >
+                <Text style={styles.modeIcon}>🎨</Text>
+                <Text style={[
+                  styles.modeButtonText,
+                  selectedMode === 'colorize' && styles.modeButtonTextActive,
+                ]}>
+                  Colorize
+                </Text>
+                <Text style={styles.modeDescription}>Add color to memories</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  selectedMode === 'de-scratch' && styles.modeButtonActive,
+                ]}
+                onPress={() => setSelectedMode('de-scratch')}
+              >
+                <Text style={styles.modeIcon}>🧹</Text>
+                <Text style={[
+                  styles.modeButtonText,
+                  selectedMode === 'de-scratch' && styles.modeButtonTextActive,
+                ]}>
+                  De-scratch
+                </Text>
+                <Text style={styles.modeDescription}>Remove scratches & dirt</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  selectedMode === 'enlighten' && styles.modeButtonActive,
+                ]}
+                onPress={() => setSelectedMode('enlighten')}
+              >
+                <Text style={styles.modeIcon}>💡</Text>
+                <Text style={[
+                  styles.modeButtonText,
+                  selectedMode === 'enlighten' && styles.modeButtonTextActive,
+                ]}>
+                  Enlighten
+                </Text>
+                <Text style={styles.modeDescription}>Correct lighting</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  selectedMode === 'recreate' && styles.modeButtonActive,
+                ]}
+                onPress={() => setSelectedMode('recreate')}
+              >
+                <Text style={styles.modeIcon}>🖼️</Text>
+                <Text style={[
+                  styles.modeButtonText,
+                  selectedMode === 'recreate' && styles.modeButtonTextActive,
+                ]}>
+                  Recreate
+                </Text>
+                <Text style={styles.modeDescription}>Restore damaged portraits</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modeButton,
+                  selectedMode === 'combine' && styles.modeButtonActive,
+                ]}
+                onPress={() => setSelectedMode('combine')}
+              >
+                <Text style={styles.modeIcon}>👥</Text>
+                <Text style={[
+                  styles.modeButtonText,
+                  selectedMode === 'combine' && styles.modeButtonTextActive,
+                ]}>
+                  Combine
+                </Text>
+                <Text style={styles.modeDescription}>Merge with ancestors</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+
+          <View style={styles.resolutionContainer}>
+            <Text style={styles.sectionTitle}>Select Resolution</Text>
+            <View style={styles.resolutionButtons}>
             <TouchableOpacity
               style={[
                 styles.resolutionButton,
@@ -199,7 +310,8 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
               <Text style={styles.resolutionInfo}>~2048×2048</Text>
             </TouchableOpacity>
           </View>
-        </View>
+          </View>
+        </>
       )}
 
       {isProcessing && (
@@ -266,14 +378,53 @@ const styles = StyleSheet.create({
     color: '#888',
     fontSize: 14,
   },
+  modeContainer: {
+    marginTop: 20,
+    paddingLeft: 20,
+  },
+  modeScroll: {
+    marginTop: 15,
+  },
+  modeButton: {
+    backgroundColor: '#1a1a1a',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginRight: 12,
+    width: 120,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  modeButtonActive: {
+    borderColor: '#007AFF',
+    backgroundColor: '#003366',
+  },
+  modeIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  modeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  modeButtonTextActive: {
+    color: '#007AFF',
+  },
+  modeDescription: {
+    color: '#666',
+    fontSize: 11,
+    textAlign: 'center',
+  },
   resolutionContainer: {
     padding: 20,
-    marginTop: 20,
+    marginTop: 10,
   },
-  resolutionTitle: {
+  sectionTitle: {
     color: '#fff',
     fontSize: 18,
-    marginBottom: 15,
+    marginBottom: 5,
     fontWeight: '600',
   },
   resolutionButtons: {

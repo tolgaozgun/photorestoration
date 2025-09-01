@@ -69,6 +69,7 @@ class Enhancement(Base):
     original_url = Column(String)
     enhanced_url = Column(String)
     resolution = Column(String)
+    mode = Column(String, default="enhance")
     created_at = Column(DateTime, default=datetime.utcnow)
     processing_time = Column(Float)
     watermark = Column(Boolean, default=True)
@@ -178,7 +179,7 @@ def check_daily_limits(user: User) -> Dict[str, int]:
         "remaining_today_hd": 0
     }
 
-async def enhance_image_with_gemini(image_data: bytes, resolution: str) -> bytes:
+async def enhance_image_with_gemini(image_data: bytes, resolution: str, mode: str = "enhance") -> bytes:
     """Enhance image using the Nano Banana AI enhancement pipeline"""
     
     if not image_enhancer:
@@ -188,7 +189,7 @@ async def enhance_image_with_gemini(image_data: bytes, resolution: str) -> bytes
     
     try:
         # Use the advanced image enhancer
-        enhanced_data = await image_enhancer.enhance(image_data, resolution)
+        enhanced_data = await image_enhancer.enhance(image_data, resolution, mode)
         return enhanced_data
         
     except Exception as e:
@@ -199,6 +200,7 @@ async def enhance_image_with_gemini(image_data: bytes, resolution: str) -> bytes
 class EnhanceRequest(BaseModel):
     user_id: str
     resolution: str = "standard"
+    mode: str = "enhance"
 
 @app.post("/api/enhance")
 async def enhance_image(
@@ -229,7 +231,7 @@ async def enhance_image(
     
     image_data = await file.read()
     
-    enhanced_data = await enhance_image_with_gemini(image_data, request.resolution)
+    enhanced_data = await enhance_image_with_gemini(image_data, request.resolution, request.mode)
     
     file_id = str(uuid.uuid4())
     original_key = f"original/{file_id}.jpg"
@@ -262,6 +264,7 @@ async def enhance_image(
         original_url=original_key,
         enhanced_url=enhanced_key,
         resolution=request.resolution,
+        mode=request.mode,
         processing_time=processing_time,
         watermark=watermark
     )
@@ -434,6 +437,7 @@ async def get_user_enhancements(
             "enhanced_url": f"/api/image/{e.enhanced_url}",
             "thumbnail_url": f"/api/image/{e.enhanced_url}?thumbnail=true",
             "resolution": e.resolution,
+            "mode": e.mode if hasattr(e, 'mode') else "enhance",
             "created_at": e.created_at.isoformat(),
             "processing_time": e.processing_time,
             "watermark": e.watermark

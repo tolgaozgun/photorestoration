@@ -14,6 +14,10 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import { useAnalytics } from '../contexts/AnalyticsContext';
+import { useUser } from '../contexts/UserContext';
+import axios from 'axios';
+import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
+import * as SecureStore from 'expo-secure-store';
 
 type RecentsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;
 
@@ -23,7 +27,16 @@ const GRID_ITEM_SIZE = (screenWidth - 36) / 3; // 3 columns with minimal padding
 export default function RecentsScreen() {
   const navigation = useNavigation<RecentsScreenNavigationProp>();
   const { trackEvent } = useAnalytics();
-  const [recentImages, setRecentImages] = useState<Array<{ id: string; uri: string; date: Date }>>([]);
+  const [recentImages, setRecentImages] = useState<Array<{ 
+    id: string; 
+    originalUrl: string;
+    enhancedUrl: string;
+    thumbnailUrl: string;
+    resolution: string;
+    mode: string;
+    createdAt: string;
+    watermark: boolean;
+  }>>([]);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -40,13 +53,34 @@ export default function RecentsScreen() {
     }).start();
   }, []);
 
-  const loadRecentImages = () => {
-    // TODO: Load actual recent images from storage/API
-    // This will be populated with real restoration history
-    setRecentImages([]);
+  const loadRecentImages = async () => {
+    try {
+      const userId = await SecureStore.getItemAsync('userId');
+      if (!userId) return;
+      
+      const response = await axios.get(
+        `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}?limit=50`
+      );
+      
+      setRecentImages(response.data.enhancements);
+    } catch (error) {
+      console.error('Failed to load recent images:', error);
+    }
   };
 
-  const renderRecentItem = ({ item }: { item: { id: string; uri: string; date: Date } }) => (
+  const getModeIcon = (mode: string) => {
+    const modeIcons: { [key: string]: string } = {
+      'enhance': '✨',
+      'colorize': '🎨',
+      'de-scratch': '🧹',
+      'enlighten': '💡',
+      'recreate': '🖼️',
+      'combine': '👥',
+    };
+    return modeIcons[mode] || '✨';
+  };
+
+  const renderRecentItem = ({ item }: { item: any }) => (
     <TouchableOpacity 
       style={styles.gridItem}
       onPress={() => {
@@ -56,10 +90,13 @@ export default function RecentsScreen() {
       }}
       activeOpacity={0.85}
     >
-      <Image source={{ uri: item.uri }} style={styles.gridImage} />
+      <Image source={{ uri: `${API_BASE_URL}${item.thumbnailUrl}` }} style={styles.gridImage} />
+      <View style={styles.modeOverlay}>
+        <Text style={styles.modeIcon}>{getModeIcon(item.mode)}</Text>
+      </View>
       <View style={styles.dateOverlay}>
         <Text style={styles.dateText}>
-          {item.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </Text>
       </View>
     </TouchableOpacity>
@@ -149,6 +186,17 @@ const styles = StyleSheet.create({
   gridImage: {
     width: '100%',
     height: '100%',
+  },
+  modeOverlay: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 12,
+    padding: 4,
+  },
+  modeIcon: {
+    fontSize: 14,
   },
   dateOverlay: {
     position: 'absolute',

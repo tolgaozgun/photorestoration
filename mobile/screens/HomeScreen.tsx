@@ -131,7 +131,7 @@ export default function HomeScreen() {
             
             <Text style={styles.mainTitle}>Restore Your Photos</Text>
             <Text style={styles.subtitle}>
-              Bring old memories back to life with AI
+              Choose from 6 restoration modes to bring memories back to life
             </Text>
 
             <TouchableOpacity

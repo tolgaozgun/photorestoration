@@ -11,7 +11,7 @@ class ImageEnhancer:
     def __init__(self, gemini_model):
         self.gemini_model = gemini_model
     
-    async def enhance(self, image_data: bytes, resolution: str) -> bytes:
+    async def enhance(self, image_data: bytes, resolution: str, mode: str = "enhance") -> bytes:
         """
         Enhance image using AI-guided adjustments
         """
@@ -31,7 +31,7 @@ class ImageEnhancer:
         # Get AI guidance if model is available
         if self.gemini_model:
             try:
-                enhancements = await self._get_ai_guidance(img)
+                enhancements = await self._get_ai_guidance(img, mode)
                 img = self._apply_enhancements(img, enhancements)
             except Exception as e:
                 print(f"AI guidance failed, applying default enhancements: {e}")
@@ -46,23 +46,102 @@ class ImageEnhancer:
         
         return output.getvalue()
     
-    async def _get_ai_guidance(self, img: Image.Image) -> dict:
-        """Get enhancement recommendations from Gemini"""
+    async def _get_ai_guidance(self, img: Image.Image, mode: str) -> dict:
+        """Get enhancement recommendations from Gemini based on mode"""
         
-        prompt = """
-        Analyze this photo and provide specific enhancement parameters in JSON format.
-        Consider the image quality, lighting, colors, and any visible defects.
-        
-        Return ONLY a JSON object with these numeric values (0.5-2.0 range unless specified):
-        {
-            "brightness": 1.0,      // 0.5-2.0, where 1.0 is no change
-            "contrast": 1.0,        // 0.5-2.0, where 1.0 is no change
-            "color_saturation": 1.0,// 0.5-2.0, where 1.0 is no change
-            "sharpness": 1.0,       // 0.5-2.0, where 1.0 is no change
-            "denoise": false,       // true if image is noisy
-            "auto_color": false     // true if colors need correction
+        mode_prompts = {
+            "enhance": """
+            Analyze this photo and provide specific enhancement parameters to remove blur, sharpen, and add details.
+            Focus on improving clarity, sharpness, and overall detail enhancement.
+            
+            Return ONLY a JSON object with these numeric values:
+            {
+                "brightness": 1.0,      // 0.5-2.0, adjust if needed for clarity
+                "contrast": 1.2,        // 0.5-2.0, increase for better detail
+                "color_saturation": 1.0,// 0.5-2.0, maintain natural colors
+                "sharpness": 1.5,       // 0.5-2.0, higher for detail enhancement
+                "denoise": true,        // true to reduce blur/noise
+                "auto_color": false     // only if colors are severely distorted
+            }
+            """,
+            
+            "colorize": """
+            Analyze this black and white or faded color photo for colorization.
+            Provide parameters to add vibrant, realistic colors to memories.
+            
+            Return ONLY a JSON object with these numeric values:
+            {
+                "brightness": 1.1,      // 0.5-2.0, slight boost for vibrancy
+                "contrast": 1.1,        // 0.5-2.0, enhance depth
+                "color_saturation": 1.8,// 0.5-2.0, high to add color
+                "sharpness": 1.1,       // 0.5-2.0, mild sharpening
+                "denoise": false,       // avoid over-processing
+                "auto_color": true      // true to add/correct colors
+            }
+            """,
+            
+            "de-scratch": """
+            Analyze this photo for scratches, dirt, and physical damage.
+            Provide parameters to remove scratches and dirt while preserving detail.
+            
+            Return ONLY a JSON object with these numeric values:
+            {
+                "brightness": 1.0,      // 0.5-2.0, maintain original
+                "contrast": 1.0,        // 0.5-2.0, maintain original
+                "color_saturation": 1.0,// 0.5-2.0, maintain original
+                "sharpness": 1.3,       // 0.5-2.0, compensate for smoothing
+                "denoise": true,        // true to remove artifacts
+                "auto_color": false     // only if damage affected colors
+            }
+            """,
+            
+            "enlighten": """
+            Analyze this photo for lighting issues, shadows, and exposure problems.
+            Provide parameters to correct lighting and bring out hidden details.
+            
+            Return ONLY a JSON object with these numeric values:
+            {
+                "brightness": 1.3,      // 0.5-2.0, increase for dark areas
+                "contrast": 0.9,        // 0.5-2.0, reduce to reveal shadows
+                "color_saturation": 1.1,// 0.5-2.0, slight boost
+                "sharpness": 1.1,       // 0.5-2.0, mild enhancement
+                "denoise": false,       // preserve detail in shadows
+                "auto_color": true      // correct color cast from lighting
+            }
+            """,
+            
+            "recreate": """
+            Analyze this severely damaged portrait for recreation.
+            Provide conservative parameters to recreate while staying true to original.
+            
+            Return ONLY a JSON object with these numeric values:
+            {
+                "brightness": 1.1,      // 0.5-2.0, gentle adjustment
+                "contrast": 1.1,        // 0.5-2.0, mild enhancement
+                "color_saturation": 1.0,// 0.5-2.0, preserve original tones
+                "sharpness": 1.4,       // 0.5-2.0, reconstruct details
+                "denoise": true,        // true to clean damage
+                "auto_color": true      // restore original colors
+            }
+            """,
+            
+            "combine": """
+            Analyze this photo for combining with other photos.
+            Provide balanced parameters for consistent appearance across merged photos.
+            
+            Return ONLY a JSON object with these numeric values:
+            {
+                "brightness": 1.0,      // 0.5-2.0, neutral for matching
+                "contrast": 1.0,        // 0.5-2.0, neutral for matching
+                "color_saturation": 1.0,// 0.5-2.0, neutral for matching
+                "sharpness": 1.2,       // 0.5-2.0, ensure clarity
+                "denoise": false,       // preserve original quality
+                "auto_color": false     // maintain original colors
+            }
+            """
         }
-        """
+        
+        prompt = mode_prompts.get(mode, mode_prompts["enhance"])
         
         try:
             import asyncio
