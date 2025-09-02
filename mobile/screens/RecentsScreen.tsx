@@ -58,9 +58,21 @@ export default function RecentsScreen() {
       const userId = await SecureStore.getItemAsync('userId');
       if (!userId) return;
       
-      const response = await axios.get(
-        `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}?limit=50`
-      );
+      // Check if email is linked for synced history
+      const linkedEmail = await SecureStore.getItemAsync('linkedEmail');
+      
+      let response;
+      if (linkedEmail) {
+        // Load synced history from all devices
+        response = await axios.get(
+          `${API_BASE_URL}${API_ENDPOINTS.syncedHistory}/${linkedEmail}?limit=50`
+        );
+      } else {
+        // Load only this device's history
+        response = await axios.get(
+          `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}?limit=50`
+        );
+      }
       
       setRecentImages(response.data.enhancements);
     } catch (error) {

@@ -12,6 +12,8 @@ import RecentsScreen from './screens/RecentsScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import RestorationPreviewScreen from './screens/RestorationPreviewScreen';
 import ExportScreen from './screens/ExportScreen';
+import EmailSyncScreen from './screens/EmailSyncScreen';
+import VerificationCodeScreen from './screens/VerificationCodeScreen';
 import { UserProvider } from './contexts/UserContext';
 import { AnalyticsProvider } from './contexts/AnalyticsContext';
 import { generateUUID } from './utils/uuid';
@@ -24,6 +26,13 @@ export type RootStackParamList = {
     enhancedUri: string;
     enhancementId: string;
     watermark: boolean;
+  };
+  EmailSync: undefined;
+  VerificationCode: {
+    email: string;
+    deviceId: string;
+    deviceName: string;
+    deviceType: string;
   };
 };
 
@@ -146,6 +155,16 @@ export default function App() {
                   name="Export" 
                   component={ExportScreen}
                   options={{ title: 'Export' }}
+                />
+                <Stack.Screen 
+                  name="EmailSync" 
+                  component={EmailSyncScreen}
+                  options={{ title: 'History Sync' }}
+                />
+                <Stack.Screen 
+                  name="VerificationCode" 
+                  component={VerificationCodeScreen}
+                  options={{ title: 'Verify Email' }}
                 />
               </Stack.Navigator>
             </NavigationContainer>

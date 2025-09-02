@@ -16,12 +16,19 @@ import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../App';
+
+type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 export default function SettingsScreen() {
+  const navigation = useNavigation<SettingsScreenNavigationProp>();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [userId, setUserId] = useState<string>('');
   const [syncEnabled, setSyncEnabled] = useState(false);
+  const [linkedEmail, setLinkedEmail] = useState<string | null>(null);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -58,8 +65,12 @@ export default function SettingsScreen() {
 
   const loadSyncSettings = async () => {
     try {
-      const syncStatus = await SecureStore.getItemAsync('syncEnabled');
-      setSyncEnabled(syncStatus === 'true');
+      // Check if email is linked
+      const email = await SecureStore.getItemAsync('linkedEmail');
+      if (email) {
+        setLinkedEmail(email);
+        setSyncEnabled(true);
+      }
     } catch (error) {
       console.error('Error loading sync settings:', error);
     }
@@ -84,14 +95,28 @@ export default function SettingsScreen() {
   };
 
   const handleSyncToggle = async (value: boolean) => {
-    setSyncEnabled(value);
-    await SecureStore.setItemAsync('syncEnabled', value.toString());
     trackEvent('settings_action', { type: 'sync_toggle', value });
     
-    if (value) {
+    if (value && !linkedEmail) {
+      // Navigate to email sync screen
+      navigation.navigate('EmailSync');
+    } else if (!value && linkedEmail) {
+      // Show confirmation to unlink
       Alert.alert(
-        'Sync Enabled',
-        'Your restoration history will be synced across devices using your unique ID.',
+        'Disable Sync?',
+        'This will stop syncing your restoration history across devices. Your restorations will remain on this device.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Disable',
+            style: 'destructive',
+            onPress: async () => {
+              await SecureStore.deleteItemAsync('linkedEmail');
+              setLinkedEmail(null);
+              setSyncEnabled(false);
+            },
+          },
+        ]
       );
     }
   };
@@ -197,7 +222,7 @@ export default function SettingsScreen() {
             <SettingItem
               icon="☁️"
               title="Sync Across Devices"
-              subtitle="Sync history and preferences"
+              subtitle={linkedEmail ? `Synced to ${linkedEmail}` : "Sync your restoration history"}
               rightElement={
                 <Switch
                   value={syncEnabled}
@@ -207,6 +232,14 @@ export default function SettingsScreen() {
                 />
               }
             />
+            {linkedEmail && (
+              <SettingItem
+                icon="📧"
+                title="Manage Synced Devices"
+                subtitle="View and manage linked devices"
+                onPress={() => navigation.navigate('EmailSync')}
+              />
+            )}
           </View>
         </Animated.View>
 
