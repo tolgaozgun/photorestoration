@@ -192,6 +192,7 @@ export default function App() {
           </FlowProvider>
         </AnalyticsProvider>
       </UserProvider>
+    </I18nextProvider>
     </GestureHandlerRootView>
   );
 }
