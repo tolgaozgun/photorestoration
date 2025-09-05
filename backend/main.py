@@ -160,14 +160,24 @@ from sqladmin import Admin, ModelView
 
 app = FastAPI(title="Photo Restoration API", lifespan=lifespan)
 
-# Configure SQLAdmin with base_url to ensure proper static file serving
-admin = Admin(
-    app, 
-    engine,
-    base_url="/admin",
-    title="Photo Restoration Admin",
-    logo_url=None,
-)
+# Configure SQLAdmin with detailed debug info
+print("\n🔧 CONFIGURING SQLADMIN ADMIN INSTANCE...")
+try:
+    admin = Admin(
+        app, 
+        engine,
+        base_url="/admin",
+        title="Photo Restoration Admin",
+        logo_url=None,
+    )
+    print("✅ SQLAdmin instance created successfully")
+    print(f"   Base URL: /admin")
+    print(f"   Title: Photo Restoration Admin")
+except Exception as e:
+    print(f"❌ Failed to create SQLAdmin instance: {e}")
+    import traceback
+    traceback.print_exc()
+    raise
 
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.created_at, User.standard_credits, User.hd_credits, User.subscription_type, User.subscription_expires, User.daily_standard_used, User.daily_hd_used, User.daily_reset_at, User.user_metadata]
@@ -194,40 +204,124 @@ admin.add_view(AnalyticsEventAdmin)
 admin.add_view(EmailVerificationAdmin)
 admin.add_view(LinkedDeviceAdmin)
 
-# Mount static files for SQLAdmin styling
+# ========== COMPREHENSIVE SQLADMIN DEBUG SETUP ==========
+print("\n" + "="*60)
+print("DEBUGGING SQLADMIN STATIC FILE CONFIGURATION")
+print("="*60)
+
 try:
     import sqladmin
+    import sys
     import os
+    from pathlib import Path
     
-    # Try multiple potential static file locations
-    static_paths = [
-        os.path.join(os.path.dirname(sqladmin.__file__), 'statics'),
-        os.path.join(os.path.dirname(sqladmin.__file__), 'static'),
+    # Debug 1: Module information
+    print(f"\n1. SQLADMIN MODULE INFO:")
+    print(f"   SQLAdmin version: {getattr(sqladmin, '__version__', 'Unknown')}")
+    print(f"   SQLAdmin file location: {sqladmin.__file__}")
+    print(f"   SQLAdmin directory: {os.path.dirname(sqladmin.__file__)}")
+    
+    # Debug 2: Directory contents
+    sqladmin_dir = os.path.dirname(sqladmin.__file__)
+    print(f"\n2. SQLADMIN DIRECTORY CONTENTS:")
+    if os.path.exists(sqladmin_dir):
+        for item in sorted(os.listdir(sqladmin_dir)):
+            item_path = os.path.join(sqladmin_dir, item)
+            item_type = "DIR" if os.path.isdir(item_path) else "FILE"
+            print(f"   {item_type}: {item}")
+            
+            # If it's a directory that might contain static files
+            if os.path.isdir(item_path) and any(x in item.lower() for x in ['static', 'asset', 'css', 'js']):
+                print(f"      Contents of {item}:")
+                try:
+                    for subitem in os.listdir(item_path):
+                        print(f"        - {subitem}")
+                except Exception as e:
+                    print(f"        Error reading: {e}")
+    
+    # Debug 3: Try multiple potential static file locations
+    print(f"\n3. SEARCHING FOR STATIC FILES:")
+    potential_paths = [
+        os.path.join(sqladmin_dir, 'statics'),
+        os.path.join(sqladmin_dir, 'static'),
+        os.path.join(sqladmin_dir, 'assets'),
+        os.path.join(sqladmin_dir, 'templates', 'statics'),
+        os.path.join(sqladmin_dir, 'templates', 'static'),
         '/usr/local/lib/python3.11/site-packages/sqladmin/statics',
-        '/app/lib/python3.11/site-packages/sqladmin/statics'
+        '/usr/local/lib/python3.11/site-packages/sqladmin/static',
+        '/app/lib/python3.11/site-packages/sqladmin/statics',
+        '/app/lib/python3.11/site-packages/sqladmin/static',
     ]
     
+    for i, static_path in enumerate(potential_paths, 1):
+        exists = os.path.exists(static_path)
+        print(f"   {i:2d}. {static_path} -> {'EXISTS' if exists else 'NOT FOUND'}")
+        
+        if exists:
+            try:
+                contents = os.listdir(static_path)
+                print(f"       Contents: {contents}")
+                # Look for CSS files specifically
+                css_files = [f for f in contents if f.endswith('.css')]
+                if css_files:
+                    print(f"       CSS files found: {css_files}")
+            except Exception as e:
+                print(f"       Error reading directory: {e}")
+    
+    # Debug 4: Current working directory and Python path
+    print(f"\n4. ENVIRONMENT INFO:")
+    print(f"   Current working directory: {os.getcwd()}")
+    print(f"   Python executable: {sys.executable}")
+    print(f"   Python path contains:")
+    for path in sys.path[:5]:  # Show first 5 paths
+        print(f"     - {path}")
+    
+    # Debug 5: Try to mount static files
+    print(f"\n5. ATTEMPTING TO MOUNT STATIC FILES:")
     static_mounted = False
-    for static_path in static_paths:
+    
+    for i, static_path in enumerate(potential_paths, 1):
         if os.path.exists(static_path):
             try:
-                app.mount("/admin/static", StaticFiles(directory=static_path), name="admin_static")
-                print(f"Successfully mounted SQLAdmin static files from: {static_path}")
-                static_mounted = True
-                break
-            except Exception as mount_error:
-                print(f"Failed to mount from {static_path}: {mount_error}")
-                continue
+                # Try different mount points
+                mount_points = [
+                    "/static",
+                    "/admin/static", 
+                    "/sqladmin/static"
+                ]
+                
+                for mount_point in mount_points:
+                    try:
+                        app.mount(mount_point, StaticFiles(directory=static_path), name=f"static_{i}")
+                        print(f"   ✓ SUCCESS: Mounted {static_path} at {mount_point}")
+                        static_mounted = True
+                        break
+                    except Exception as mount_error:
+                        print(f"   ✗ FAILED: {mount_point} -> {mount_error}")
+                
+                if static_mounted:
+                    break
+                    
+            except Exception as e:
+                print(f"   ✗ ERROR: Could not process {static_path}: {e}")
     
     if not static_mounted:
-        print("Warning: Could not find SQLAdmin static files directory")
-        print("Available SQLAdmin module contents:")
-        sqladmin_dir = os.path.dirname(sqladmin.__file__)
-        if os.path.exists(sqladmin_dir):
-            print(os.listdir(sqladmin_dir))
+        print(f"   ⚠️  WARNING: No static files could be mounted!")
+    
+    # Debug 6: FastAPI routes after mounting
+    print(f"\n6. CURRENT FASTAPI ROUTES:")
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            print(f"   {route.methods if hasattr(route, 'methods') else 'MOUNT'}: {route.path}")
             
 except Exception as e:
-    print(f"Warning: Error setting up SQLAdmin static files: {e}")
+    print(f"\n❌ CRITICAL ERROR in SQLAdmin debug setup: {e}")
+    import traceback
+    traceback.print_exc()
+
+print("\n" + "="*60)
+print("END SQLADMIN DEBUG")
+print("="*60 + "\n")
 
 app.add_middleware(
     CORSMiddleware,
@@ -793,3 +887,59 @@ async def get_user_enhancements(
         "limit": limit,
         "offset": offset
     }
+
+@app.get("/debug/admin-static")
+def debug_admin_static():
+    """Debug endpoint to check SQLAdmin static file configuration"""
+    import sqladmin
+    import os
+    
+    debug_info = {
+        "sqladmin_version": getattr(sqladmin, '__version__', 'Unknown'),
+        "sqladmin_location": sqladmin.__file__,
+        "sqladmin_directory": os.path.dirname(sqladmin.__file__),
+        "current_working_directory": os.getcwd(),
+        "routes": [],
+        "static_paths_checked": []
+    }
+    
+    # Check routes
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            route_info = {
+                "path": route.path,
+                "methods": list(route.methods) if hasattr(route, 'methods') else ["MOUNT"],
+                "name": getattr(route, 'name', 'unnamed')
+            }
+            debug_info["routes"].append(route_info)
+    
+    # Check potential static file locations
+    sqladmin_dir = os.path.dirname(sqladmin.__file__)
+    potential_paths = [
+        os.path.join(sqladmin_dir, 'statics'),
+        os.path.join(sqladmin_dir, 'static'),
+        os.path.join(sqladmin_dir, 'assets'),
+        '/usr/local/lib/python3.11/site-packages/sqladmin/statics',
+        '/usr/local/lib/python3.11/site-packages/sqladmin/static',
+    ]
+    
+    for path in potential_paths:
+        path_info = {
+            "path": path,
+            "exists": os.path.exists(path),
+            "contents": []
+        }
+        
+        if os.path.exists(path):
+            try:
+                path_info["contents"] = os.listdir(path)
+                # Look for CSS files specifically
+                css_files = [f for f in path_info["contents"] if f.endswith('.css')]
+                if css_files:
+                    path_info["css_files"] = css_files
+            except Exception as e:
+                path_info["error"] = str(e)
+        
+        debug_info["static_paths_checked"].append(path_info)
+    
+    return debug_info
