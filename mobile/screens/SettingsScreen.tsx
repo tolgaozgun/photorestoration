@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
-type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;
+type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Settings'>;
 
 export default function SettingsScreen() {
   const navigation = useNavigation<SettingsScreenNavigationProp>();

@@ -1,32 +1,50 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import HomeScreen from './screens/HomeScreen';
-import RecentsScreen from './screens/RecentsScreen';
+// Onboarding screens
+import OnboardingFlow from './screens/onboarding/OnboardingFlow';
+
+// Flow screens
+import PhotoInputScreen from './screens/flow/PhotoInputScreen';
+import ModeSelectionScreen from './screens/flow/ModeSelectionScreen';
+import PreviewScreen from './screens/flow/PreviewScreen';
+import ResultScreen from './screens/flow/ResultScreen';
+import HistoryScreen from './screens/flow/HistoryScreen';
+
+// Legacy screens (for backward compatibility)
 import SettingsScreen from './screens/SettingsScreen';
-import RestorationPreviewScreen from './screens/RestorationPreviewScreen';
-import ExportScreen from './screens/ExportScreen';
 import EmailSyncScreen from './screens/EmailSyncScreen';
 import VerificationCodeScreen from './screens/VerificationCodeScreen';
+
+// Contexts
 import { UserProvider } from './contexts/UserContext';
 import { AnalyticsProvider } from './contexts/AnalyticsContext';
+import { FlowProvider } from './contexts/FlowContext';
 import { generateUUID } from './utils/uuid';
 
 export type RootStackParamList = {
-  MainTabs: undefined;
-  RestorationPreview: { imageUri: string };
-  Export: { 
+  Onboarding: undefined;
+  PhotoInput: undefined;
+  ModeSelection: { imageUri: string };
+  Preview: { 
+    imageUri: string;
+    selectedMode: 'enhance' | 'colorize' | 'de-scratch' | 'enlighten' | 'recreate' | 'combine';
+  };
+  Result: { 
     originalUri: string;
     enhancedUri: string;
     enhancementId: string;
     watermark: boolean;
+    mode: string;
+    processingTime: number;
   };
+  History: undefined;
+  Settings: undefined;
   EmailSync: undefined;
   VerificationCode: {
     email: string;
@@ -36,140 +54,135 @@ export type RootStackParamList = {
   };
 };
 
-export type TabParamList = {
-  Home: undefined;
-  Recents: undefined;
-  Settings: undefined;
-};
-
 const Stack = createStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<TabParamList>();
-
-function TabNavigator() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#1a1a1a',
-          borderTopColor: '#2a2a2a',
-          borderTopWidth: 1,
-          position: 'absolute',
-          elevation: 0,
-        },
-        tabBarActiveTintColor: '#FF6B6B',
-        tabBarInactiveTintColor: '#888',
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-          marginBottom: 2,
-        },
-        tabBarIconStyle: {
-          marginTop: 4,
-        },
-      }}
-    >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen}
-        options={{
-          tabBarLabel: 'Restore',
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 22, color }}>
-              {focused ? '✨' : '💫'}
-            </Text>
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Recents" 
-        component={RecentsScreen}
-        options={{
-          tabBarLabel: 'Recent',
-          tabBarIcon: ({ color, focused }) => (
-            <Text style={{ fontSize: 22, color }}>
-              {focused ? '🕐' : '⏰'}
-            </Text>
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Settings" 
-        component={SettingsScreen}
-        options={{
-          tabBarLabel: 'Settings',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22, color }}>⚙️</Text>
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
 
 export default function App() {
+  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
+
   useEffect(() => {
-    initializeUser();
+    initializeApp();
   }, []);
 
-  const initializeUser = async () => {
+  const initializeApp = async () => {
     try {
+      // Initialize user
       let userId = await SecureStore.getItemAsync('userId');
       if (!userId) {
         userId = generateUUID();
         await SecureStore.setItemAsync('userId', userId);
       }
+
+      // Check if this is the first launch
+      const hasSeenOnboarding = await SecureStore.getItemAsync('hasSeenOnboarding');
+      setIsFirstLaunch(hasSeenOnboarding !== 'true');
     } catch (error) {
-      console.error('Error initializing user:', error);
+      console.error('Error initializing app:', error);
+      setIsFirstLaunch(false);
     }
   };
+
+  const handleOnboardingComplete = async () => {
+    try {
+      await SecureStore.setItemAsync('hasSeenOnboarding', 'true');
+      setIsFirstLaunch(false);
+    } catch (error) {
+      console.error('Error saving onboarding state:', error);
+      setIsFirstLaunch(false);
+    }
+  };
+
+  const handlePhotoSelected = (imageUri: string) => {
+    // This will be handled by the navigation after onboarding
+    handleOnboardingComplete();
+  };
+
+  if (isFirstLaunch === null) {
+    return null; // Loading state
+  }
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <UserProvider>
         <AnalyticsProvider>
-          <View style={styles.container}>
-            <NavigationContainer>
-              <Stack.Navigator
-                screenOptions={{
-                  headerStyle: {
-                    backgroundColor: '#1a1a1a',
-                  },
-                  headerTintColor: '#fff',
-                  headerTitleStyle: {
-                    fontWeight: '600',
-                  },
-                }}
-              >
-                <Stack.Screen 
-                  name="MainTabs" 
-                  component={TabNavigator}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen 
-                  name="RestorationPreview" 
-                  component={RestorationPreviewScreen}
-                  options={{ title: 'Preview' }}
-                />
-                <Stack.Screen 
-                  name="Export" 
-                  component={ExportScreen}
-                  options={{ title: 'Export' }}
-                />
-                <Stack.Screen 
-                  name="EmailSync" 
-                  component={EmailSyncScreen}
-                  options={{ title: 'History Sync' }}
-                />
-                <Stack.Screen 
-                  name="VerificationCode" 
-                  component={VerificationCodeScreen}
-                  options={{ title: 'Verify Email' }}
-                />
-              </Stack.Navigator>
-            </NavigationContainer>
-            <StatusBar style="light" />
-          </View>
+          <FlowProvider>
+            <View style={styles.container}>
+              <NavigationContainer>
+                <Stack.Navigator
+                  initialRouteName={isFirstLaunch ? 'Onboarding' : 'PhotoInput'}
+                  screenOptions={{
+                    headerShown: false,
+                    cardStyle: { backgroundColor: '#0a0a0a' },
+                  }}
+                >
+                  {/* Onboarding Flow */}
+                  <Stack.Screen name="Onboarding">
+                    {(props) => (
+                      <OnboardingFlow
+                        {...props}
+                        onComplete={handleOnboardingComplete}
+                        onPhotoSelected={handlePhotoSelected}
+                      />
+                    )}
+                  </Stack.Screen>
+
+                  {/* Main Flow */}
+                  <Stack.Screen 
+                    name="PhotoInput" 
+                    component={PhotoInputScreen}
+                  />
+                  <Stack.Screen 
+                    name="ModeSelection" 
+                    component={ModeSelectionScreen}
+                  />
+                  <Stack.Screen 
+                    name="Preview" 
+                    component={PreviewScreen}
+                  />
+                  <Stack.Screen 
+                    name="Result" 
+                    component={ResultScreen}
+                  />
+                  <Stack.Screen 
+                    name="History" 
+                    component={HistoryScreen}
+                  />
+
+                  {/* Settings & Other Screens */}
+                  <Stack.Screen 
+                    name="Settings" 
+                    component={SettingsScreen}
+                    options={{ 
+                      headerShown: true,
+                      title: 'Settings',
+                      headerStyle: { backgroundColor: '#1a1a1a' },
+                      headerTintColor: '#fff',
+                    }}
+                  />
+                  <Stack.Screen 
+                    name="EmailSync" 
+                    component={EmailSyncScreen}
+                    options={{ 
+                      headerShown: true,
+                      title: 'History Sync',
+                      headerStyle: { backgroundColor: '#1a1a1a' },
+                      headerTintColor: '#fff',
+                    }}
+                  />
+                  <Stack.Screen 
+                    name="VerificationCode" 
+                    component={VerificationCodeScreen}
+                    options={{ 
+                      headerShown: true,
+                      title: 'Verify Email',
+                      headerStyle: { backgroundColor: '#1a1a1a' },
+                      headerTintColor: '#fff',
+                    }}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+              <StatusBar style="light" />
+            </View>
+          </FlowProvider>
         </AnalyticsProvider>
       </UserProvider>
     </GestureHandlerRootView>
