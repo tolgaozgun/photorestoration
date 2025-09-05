@@ -339,18 +339,24 @@ try:
     for i, static_path in enumerate(potential_paths, 1):
         if os.path.exists(static_path):
             try:
-                # Since SQLAdmin uses base_url="/admin", it expects static files at "/admin/static"
-                # Mount directly at the correct path that SQLAdmin expects
-                app.mount("/admin/static", StaticFiles(directory=static_path), name=f"sqladmin_static_{i}")
-                print(f"   ✓ SUCCESS: Mounted {static_path} at /admin/static for SQLAdmin")
+                # SQLAdmin uses "/admin/statics" (with 's') for static files
+                # Mount at the correct path that SQLAdmin expects
+                app.mount("/admin/statics", StaticFiles(directory=static_path), name=f"sqladmin_statics_{i}")
+                print(f"   ✓ SUCCESS: Mounted {static_path} at /admin/statics for SQLAdmin")
                 static_mounted = True
                 
-                # Also mount at /static as fallback for any other static file requests
+                # Also mount at legacy paths as fallback
+                try:
+                    app.mount("/admin/static", StaticFiles(directory=static_path), name=f"sqladmin_static_{i}")
+                    print(f"   ✓ FALLBACK: Also mounted {static_path} at /admin/static")
+                except Exception as fallback_error:
+                    print(f"   ⚠ Fallback mount failed (not critical): {fallback_error}")
+                
                 try:
                     app.mount("/static", StaticFiles(directory=static_path), name=f"static_fallback_{i}")
                     print(f"   ✓ FALLBACK: Also mounted {static_path} at /static")
                 except Exception as fallback_error:
-                    print(f"   ⚠ Fallback mount failed (not critical): {fallback_error}")
+                    print(f"   ⚠ Static fallback mount failed (not critical): {fallback_error}")
                 
                 break  # Successfully mounted, exit loop
                     
@@ -382,6 +388,33 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add middleware to handle HTTPS proxy headers for SQLAdmin
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+
+class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Check if we're behind a proxy serving HTTPS
+        forwarded_proto = request.headers.get("x-forwarded-proto")
+        forwarded_host = request.headers.get("x-forwarded-host") 
+        host = request.headers.get("host")
+        
+        # Force HTTPS scheme for SQLAdmin static files if behind HTTPS proxy
+        if forwarded_proto == "https" or (host and "pointtwostudios.com" in host):
+            # Modify the request URL scheme for SQLAdmin
+            if request.url.path.startswith("/admin"):
+                # Set the URL scheme to https for proper static file URL generation
+                request.scope["scheme"] = "https"
+                if forwarded_host:
+                    request.scope["server"] = (forwarded_host, 443)
+        
+        response = await call_next(request)
+        return response
+
+app.add_middleware(HTTPSRedirectMiddleware)
 
 # Debug endpoint to test static file accessibility
 @app.get("/debug/static-test")
