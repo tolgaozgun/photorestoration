@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 import uuid
@@ -159,7 +160,14 @@ from sqladmin import Admin, ModelView
 
 app = FastAPI(title="Photo Restoration API", lifespan=lifespan)
 
-admin = Admin(app, engine)
+# Configure SQLAdmin with base_url to ensure proper static file serving
+admin = Admin(
+    app, 
+    engine,
+    base_url="/admin",
+    title="Photo Restoration Admin",
+    logo_url=None,
+)
 
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.created_at, User.standard_credits, User.hd_credits, User.subscription_type, User.subscription_expires, User.daily_standard_used, User.daily_hd_used, User.daily_reset_at, User.user_metadata]
@@ -185,6 +193,41 @@ admin.add_view(EnhancementAdmin)
 admin.add_view(AnalyticsEventAdmin)
 admin.add_view(EmailVerificationAdmin)
 admin.add_view(LinkedDeviceAdmin)
+
+# Mount static files for SQLAdmin styling
+try:
+    import sqladmin
+    import os
+    
+    # Try multiple potential static file locations
+    static_paths = [
+        os.path.join(os.path.dirname(sqladmin.__file__), 'statics'),
+        os.path.join(os.path.dirname(sqladmin.__file__), 'static'),
+        '/usr/local/lib/python3.11/site-packages/sqladmin/statics',
+        '/app/lib/python3.11/site-packages/sqladmin/statics'
+    ]
+    
+    static_mounted = False
+    for static_path in static_paths:
+        if os.path.exists(static_path):
+            try:
+                app.mount("/admin/static", StaticFiles(directory=static_path), name="admin_static")
+                print(f"Successfully mounted SQLAdmin static files from: {static_path}")
+                static_mounted = True
+                break
+            except Exception as mount_error:
+                print(f"Failed to mount from {static_path}: {mount_error}")
+                continue
+    
+    if not static_mounted:
+        print("Warning: Could not find SQLAdmin static files directory")
+        print("Available SQLAdmin module contents:")
+        sqladmin_dir = os.path.dirname(sqladmin.__file__)
+        if os.path.exists(sqladmin_dir):
+            print(os.listdir(sqladmin_dir))
+            
+except Exception as e:
+    print(f"Warning: Error setting up SQLAdmin static files: {e}")
 
 app.add_middleware(
     CORSMiddleware,
