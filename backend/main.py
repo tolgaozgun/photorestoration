@@ -8,7 +8,7 @@ import uuid
 import os
 import io
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine, Column, String, Integer, DateTime, Boolean, Float, JSON
+from sqlalchemy import create_engine, Column, String, Integer, DateTime, Boolean, Float, JSON, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import asyncio
@@ -83,6 +83,25 @@ engine = create_engine(
     pool_recycle=300,
     future=True,
 )
+
+# Log database connection status at startup
+def _log_db_connection_status() -> bool:
+    try:
+        safe_url = engine.url.render_as_string(hide_password=True)
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        print(f"✅ Database connection successful: {safe_url}")
+        return True
+    except Exception as e:
+        try:
+            safe_url = engine.url.render_as_string(hide_password=True)
+        except Exception:
+            safe_url = str(engine.url)
+        print(f"❌ Database connection failed for {safe_url}: {e}")
+        return False
+
+# Attempt connection test and log outcome
+_log_db_connection_status()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
