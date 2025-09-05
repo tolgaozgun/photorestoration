@@ -44,7 +44,14 @@ export default function HistoryScreen({ navigation }: Props) {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate('PhotoInput');
+            }
+          }}
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
