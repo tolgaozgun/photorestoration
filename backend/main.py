@@ -167,8 +167,6 @@ try:
         app, 
         engine,
         base_url="/admin",
-        # Docker-specific static configuration
-        static_url_path="/admin/static",
         title="Photo Restoration Admin",
         logo_url=None,
     )
