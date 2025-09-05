@@ -26,7 +26,50 @@ from email_service import EmailService
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./photo_restoration.db")
+def _build_database_url() -> str:
+    # Highest priority: full SQLAlchemy URL
+    url = os.getenv("DATABASE_URL")
+    if url:
+        print(f"Using DATABASE_URL from environment: {url.split('@')[0]}@...")
+        return url
+
+    # Compose from discrete env vars
+    db_type = os.getenv("DB_TYPE", "postgres").lower()
+    host = os.getenv("DB_HOST")
+    name = os.getenv("DB_NAME")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    port = os.getenv("DB_PORT")
+    sslmode = os.getenv("DB_SSLMODE")  # e.g., require, disable
+    params = os.getenv("DB_PARAMS")  # extra query string parameters, e.g. "connect_timeout=10"
+
+    if all([host, name, user]):
+        if db_type in ("postgres", "postgresql", "psql"):
+            driver = "postgresql+psycopg"
+            port = port or "5432"
+            auth = f"{user}:{password}" if password else user
+            query = []
+            if sslmode:
+                query.append(f"sslmode={sslmode}")
+            if params:
+                query.append(params)
+            qs = ("?" + "&".join(query)) if query else ""
+            return f"{driver}://{auth}@{host}:{port}/{name}{qs}"
+        elif db_type in ("mysql", "mariadb"):
+            driver = "mysql+pymysql"
+            port = port or "3306"
+            auth = f"{user}:{password}" if password else user
+            query = []
+            if params:
+                query.append(params)
+            qs = ("?" + "&".join(query)) if query else ""
+            return f"{driver}://{auth}@{host}:{port}/{name}{qs}"
+
+    # Fallback: local SQLite (not recommended for production)
+    print("DATABASE_URL/DB_* not provided. Falling back to SQLite (data will be ephemeral).")
+    return "sqlite:///./photo_restoration.db"
+
+DATABASE_URL = _build_database_url()
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "localhost:9000")
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
@@ -34,7 +77,12 @@ MINIO_SECURE = os.getenv("MINIO_SECURE", "false").lower() == "true"
 MINIO_BUCKET = os.getenv("MINIO_BUCKET", "photo-restoration")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    future=True,
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
