@@ -7,14 +7,14 @@ import {
   Animated,
   SafeAreaView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
   onContinue: () => void;
   onSkip: () => void;
 }
 
-export default function OnboardingScreen2({ onContinue, onSkip }: Props) {
+export default function OnboardingScreen2({ onContinue }: Props) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const iconAnims = [
@@ -52,11 +52,6 @@ export default function OnboardingScreen2({ onContinue, onSkip }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton} onPress={onSkip}>
-        <Text style={styles.skipText}>Skip</Text>
-      </TouchableOpacity>
-
       <View style={styles.content}>
         {/* Process Flow */}
         <Animated.View 
@@ -162,14 +157,9 @@ export default function OnboardingScreen2({ onContinue, onSkip }: Props) {
             onPress={onContinue}
             activeOpacity={0.9}
           >
-            <LinearGradient
-              colors={['#FF6B6B', '#FF8E53']}
-              style={styles.continueGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
+            <View style={styles.continueGradient}>
               <Text style={styles.continueText}>Get Started</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -181,17 +171,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0a0a0a',
-  },
-  skipButton: {
-    alignSelf: 'flex-end',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginTop: 8,
-  },
-  skipText: {
-    color: '#888',
-    fontSize: 16,
-    fontWeight: '500',
   },
   content: {
     flex: 1,
@@ -285,6 +264,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FF6B6B',
+    borderRadius: 24,
   },
   continueText: {
     fontSize: 18,

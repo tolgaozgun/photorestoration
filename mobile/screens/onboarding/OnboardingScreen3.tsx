@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
   onPhotoSelected: (imageUri: string) => void;
@@ -161,15 +161,10 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
               onPress={requestPermissionAndPickImage}
               activeOpacity={0.9}
             >
-              <LinearGradient
-                colors={['#FF6B6B', '#FF8E53']}
-                style={styles.primaryGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              >
+              <View style={styles.primaryGradient}>
                 <Text style={styles.primaryIcon}>🖼️</Text>
                 <Text style={styles.primaryText}>Choose from Photos</Text>
-              </LinearGradient>
+              </View>
             </TouchableOpacity>
           </Animated.View>
 
@@ -277,6 +272,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 20,
     paddingHorizontal: 32,
+    backgroundColor: '#FF6B6B',
+    borderRadius: 24,
   },
   primaryIcon: {
     fontSize: 24,

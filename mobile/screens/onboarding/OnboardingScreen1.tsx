@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+// import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -17,7 +17,7 @@ interface Props {
   onSkip: () => void;
 }
 
-export default function OnboardingScreen1({ onContinue, onSkip }: Props) {
+export default function OnboardingScreen1({ onContinue }: Props) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -45,11 +45,6 @@ export default function OnboardingScreen1({ onContinue, onSkip }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton} onPress={onSkip}>
-        <Text style={styles.skipText}>Skip</Text>
-      </TouchableOpacity>
-
       <View style={styles.content}>
         {/* Visual Demo */}
         <Animated.View 
@@ -84,10 +79,7 @@ export default function OnboardingScreen1({ onContinue, onSkip }: Props) {
             <View style={styles.afterSection}>
               <View style={styles.restoredImage}>
                 <Text style={styles.imageIcon}>✨</Text>
-                <LinearGradient
-                  colors={['rgba(255, 107, 107, 0.3)', 'rgba(255, 142, 83, 0.3)']}
-                  style={styles.enhancedGlow}
-                />
+                <View style={styles.enhancedGlow} />
               </View>
               <Text style={styles.imageLabel}>Restored</Text>
             </View>
@@ -125,14 +117,9 @@ export default function OnboardingScreen1({ onContinue, onSkip }: Props) {
             onPress={onContinue}
             activeOpacity={0.9}
           >
-            <LinearGradient
-              colors={['#FF6B6B', '#FF8E53']}
-              style={styles.continueGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
+            <View style={styles.continueGradient}>
               <Text style={styles.continueText}>Continue</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -144,17 +131,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0a0a0a',
-  },
-  skipButton: {
-    alignSelf: 'flex-end',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginTop: 8,
-  },
-  skipText: {
-    color: '#888',
-    fontSize: 16,
-    fontWeight: '500',
   },
   content: {
     flex: 1,
@@ -244,6 +220,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 16,
+    backgroundColor: 'rgba(255, 107, 107, 0.3)',
   },
   imageLabel: {
     marginTop: 12,
@@ -287,6 +264,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FF6B6B',
+    borderRadius: 24,
   },
   continueText: {
     fontSize: 18,
