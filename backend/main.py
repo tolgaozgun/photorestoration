@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -533,7 +533,7 @@ def check_daily_limits(user: User) -> Dict[str, int]:
         "remaining_today_hd": 0
     }
 
-async def enhance_image_with_gemini(image_data: bytes, mode: str = "enhance") -> bytes:
+async def enhance_image_with_gemini(image_data: bytes, resolution: str = "standard", mode: str = "enhance") -> bytes:
     """Enhance image using the Nano Banana AI enhancement pipeline"""
     
     if not image_enhancer:
@@ -556,9 +556,10 @@ async def enhance_image(
     user_id: str = Form(...),
     mode: str = Form("enhance"),
     file: UploadFile = File(...),
+    resolution: str = Form("standard"),
     db: Session = Depends(get_db)
 ):
-    logger.info(f"Received enhance request: user_id={user_id}, mode={mode}, filename={file.filename}, content_type={file.content_type}")
+    logger.info(f"Received enhance request: user_id={user_id}, mode={mode}, resolution={resolution}, filename={file.filename}, content_type={file.content_type}")
 
     try:
         user = get_or_create_user(db, user_id)
@@ -566,9 +567,14 @@ async def enhance_image(
         # Check if user has credits before processing
         daily_limits = check_daily_limits(user)
         
-        has_credits = user.standard_credits > 0 or daily_limits["remaining_today_standard"] > 0
+        # Determine credit bucket based on resolution
+        is_hd = (resolution or "standard").lower() == "hd"
+        has_credits = (
+            (user.hd_credits > 0 or daily_limits["remaining_today_hd"] > 0) if is_hd
+            else (user.standard_credits > 0 or daily_limits["remaining_today_standard"] > 0)
+        )
         if not has_credits:
-            logger.warning(f"User {user_id} has no credits available for standard enhancement.")
+            logger.warning(f"User {user_id} has no credits available for { 'HD' if is_hd else 'standard' } enhancement.")
             raise HTTPException(status_code=403, detail="No credits available")
         
         start_time = datetime.utcnow()
@@ -578,13 +584,19 @@ async def enhance_image(
         
         try:
             # Try to enhance the image
-            enhanced_data = await enhance_image_with_gemini(image_data, mode)
+            enhanced_data = await enhance_image_with_gemini(image_data, resolution, mode)
             
             # Only deduct credits if enhancement was successful
-            if user.standard_credits > 0:
-                user.standard_credits -= 1
-            elif daily_limits["remaining_today_standard"] > 0:
-                user.daily_standard_used += 1
+            if is_hd:
+                if user.hd_credits > 0:
+                    user.hd_credits -= 1
+                elif daily_limits["remaining_today_hd"] > 0:
+                    user.daily_hd_used += 1
+            else:
+                if user.standard_credits > 0:
+                    user.standard_credits -= 1
+                elif daily_limits["remaining_today_standard"] > 0:
+                    user.daily_standard_used += 1
             
             # Save to storage
             file_id = str(uuid.uuid4())
@@ -618,14 +630,16 @@ async def enhance_image(
             
             processing_time = (datetime.utcnow() - start_time).total_seconds()
             
-            watermark = user.standard_credits == 0 and user.hd_credits == 0 and \
-                       (not user.subscription_type or user.subscription_expires <= datetime.utcnow())
+            watermark = (
+                user.standard_credits == 0 and user.hd_credits == 0 and 
+                (not user.subscription_type or user.subscription_expires <= datetime.utcnow())
+            )
             
             enhancement = Enhancement(
                 user_id=user_id,
                 original_url=original_key,
                 enhanced_url=enhanced_key,
-                resolution="standard",
+                resolution=("hd" if is_hd else "standard"),
                 mode=mode,
                 processing_time=processing_time,
                 watermark=watermark
@@ -641,8 +655,8 @@ async def enhance_image(
                 "enhanced_url": f"/api/image/{enhanced_key}",
                 "watermark": watermark,
                 "processing_time": processing_time,
-                "remaining_credits": user.standard_credits,
-                "remaining_today": daily_limits["remaining_today_standard"]
+                "remaining_credits": (user.hd_credits if is_hd else user.standard_credits),
+                "remaining_today": (daily_limits["remaining_today_hd"] if is_hd else daily_limits["remaining_today_standard"]) 
             }
             
         except HTTPException:

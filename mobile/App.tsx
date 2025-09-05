@@ -60,13 +60,20 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
-  const [i18nReady, setI18nReady] = useState(false);
+  // Make i18n readiness resilient to initialization timing.
+  const [i18nReady, setI18nReady] = useState<boolean>(i18n.isInitialized ?? false);
 
   useEffect(() => {
     initializeApp();
-    i18n.on('initialized', () => {
+    if (i18n.isInitialized) {
       setI18nReady(true);
-    });
+      return;
+    }
+    const handleInitialized = () => setI18nReady(true);
+    i18n.on('initialized', handleInitialized);
+    return () => {
+      i18n.off('initialized', handleInitialized);
+    };
   }, []);
 
   const initializeApp = async () => {

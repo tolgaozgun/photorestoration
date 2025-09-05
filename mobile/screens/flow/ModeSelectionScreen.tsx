@@ -30,51 +30,8 @@ interface ModeData {
   isAdvanced?: boolean;
 }
 
-const ALL_MODES: ModeData[] = [
-  {
-    id: 'enhance',
-    icon: '✨',
-    title: t('modes.auto.title'),
-    description: t('modes.auto.description'),
-    subtitle: t('modes.auto.subtitle'),
-    isRecommended: true,
-  },
-  {
-    id: 'de-scratch',
-    icon: '🧹',
-    title: t('modes.scratch.title'),
-    description: t('modes.scratch.description'),
-    subtitle: t('modes.scratch.subtitle'),
-  },
-  {
-    id: 'colorize',
-    icon: '🎨',
-    title: t('modes.colorize.title'),
-    description: t('modes.colorize.description'),
-    subtitle: t('modes.colorize.subtitle'),
-  },
-  {
-    id: 'enlighten',
-    icon: '💡',
-    title: t('modes.enlighten.title'),
-    description: t('modes.enlighten.description'),
-    subtitle: t('modes.enlighten.subtitle'),
-  },
-  {
-    id: 'recreate',
-    icon: '🖼️',
-    title: t('modes.recreate.title'),
-    description: t('modes.recreate.description'),
-    subtitle: t('modes.recreate.subtitle'),
-  },
-  {
-    id: 'combine',
-    icon: '👥',
-    title: t('modes.combine.title'),
-    description: t('modes.combine.description'),
-    subtitle: t('modes.combine.subtitle'),
-  },
-];
+// Note: Mode labels depend on i18n translations. Build the list inside the component
+// with access to `t` so it’s available and reactive to language changes.
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -90,6 +47,52 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+
+  const ALL_MODES: ModeData[] = React.useMemo(() => ([
+    {
+      id: 'enhance',
+      icon: '✨',
+      title: t('modes.auto.title'),
+      description: t('modes.auto.description'),
+      subtitle: t('modes.auto.subtitle'),
+      isRecommended: true,
+    },
+    {
+      id: 'de-scratch',
+      icon: '🧹',
+      title: t('modes.scratch.title'),
+      description: t('modes.scratch.description'),
+      subtitle: t('modes.scratch.subtitle'),
+    },
+    {
+      id: 'colorize',
+      icon: '🎨',
+      title: t('modes.colorize.title'),
+      description: t('modes.colorize.description'),
+      subtitle: t('modes.colorize.subtitle'),
+    },
+    {
+      id: 'enlighten',
+      icon: '💡',
+      title: t('modes.enlighten.title'),
+      description: t('modes.enlighten.description'),
+      subtitle: t('modes.enlighten.subtitle'),
+    },
+    {
+      id: 'recreate',
+      icon: '🖼️',
+      title: t('modes.recreate.title'),
+      description: t('modes.recreate.description'),
+      subtitle: t('modes.recreate.subtitle'),
+    },
+    {
+      id: 'combine',
+      icon: '👥',
+      title: t('modes.combine.title'),
+      description: t('modes.combine.description'),
+      subtitle: t('modes.combine.subtitle'),
+    },
+  ]), [t]);
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'mode_selection' });

@@ -14,15 +14,30 @@ const resources = {
   zh: { translation: zh },
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: Localization.locale,
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+// Determine language tag robustly across SDK versions
+const getInitialLanguage = () => {
+  try {
+    // SDK 49+: use getLocales()
+    const locales: any = (Localization as any).getLocales?.();
+    if (Array.isArray(locales) && locales.length > 0) {
+      return locales[0].languageTag || locales[0].languageCode || 'en';
+    }
+    // Fallback older API
+    const legacy = (Localization as any).locale;
+    if (typeof legacy === 'string' && legacy.length > 0) return legacy;
+  } catch {
+    // ignore
+  }
+  return 'en';
+};
+
+i18n.use(initReactI18next).init({
+  resources,
+  lng: getInitialLanguage(),
+  fallbackLng: 'en',
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;
