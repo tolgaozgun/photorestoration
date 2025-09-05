@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
@@ -58,9 +60,13 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
+  const [i18nReady, setI18nReady] = useState(false);
 
   useEffect(() => {
     initializeApp();
+    i18n.on('initialized', () => {
+      setI18nReady(true);
+    });
   }, []);
 
   const initializeApp = async () => {
@@ -96,17 +102,18 @@ export default function App() {
     handleOnboardingComplete();
   };
 
-  if (isFirstLaunch === null) {
+  if (isFirstLaunch === null || !i18nReady) {
     return null; // Loading state
   }
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <UserProvider>
-        <AnalyticsProvider>
-          <FlowProvider>
-            <View style={styles.container}>
-              <NavigationContainer>
+      <I18nextProvider i18n={i18n}>
+        <UserProvider>
+          <AnalyticsProvider>
+            <FlowProvider>
+              <View style={styles.container}>
+                <NavigationContainer>
                 <Stack.Navigator
                   initialRouteName={isFirstLaunch ? 'Onboarding' : 'PhotoInput'}
                   screenOptions={{
