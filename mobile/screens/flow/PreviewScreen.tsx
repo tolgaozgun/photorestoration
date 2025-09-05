@@ -35,7 +35,6 @@ export default function PreviewScreen({ navigation, route }: Props) {
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [enhancedImage, setEnhancedImage] = useState<string | null>(null);
-  const [qualityLevel, setQualityLevel] = useState(0.7); // 0 = Fast, 1 = Best
   const [comparisonSlider, setComparisonSlider] = useState(0.5);
   const [watermark, setWatermark] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
@@ -61,14 +60,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
     ]).start();
   }, []);
 
-  const getQualityDescription = (value: number) => {
-    if (value < 0.3) return { text: 'Fast', time: '30-60s', quality: 'standard' };
-    if (value < 0.7) return { text: 'Balanced', time: '60-90s', quality: 'standard' };
-    return { text: 'Best', time: '90-120s', quality: 'hd' };
-  };
-
-  const qualityInfo = getQualityDescription(qualityLevel);
-  const selectedResolution = qualityInfo.quality as 'standard' | 'hd';
+  const selectedResolution = 'standard'; // Default to standard quality
 
   const canProcess = () => {
     if (!user) return false;
@@ -138,10 +130,11 @@ export default function PreviewScreen({ navigation, route }: Props) {
       setEnhancedImage(enhancedUrl);
       setWatermark(enhanceResponse.data.watermark);
 
-      updateCredits(
-        enhanceResponse.data.remaining_standard_credits,
-        enhanceResponse.data.remaining_hd_credits
-      );
+      // Update credits using the new simplified response
+      if (user) {
+        user.standardCredits = enhanceResponse.data.remaining_credits;
+        user.remainingTodayStandard = enhanceResponse.data.remaining_today;
+      }
 
       trackEvent(`restore_${selectedResolution}`, { 
         completed: true, 
@@ -431,52 +424,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  controlsContainer: {
-    paddingHorizontal: 20,
-    minHeight: 120,
-  },
-  qualityControls: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 16,
-    padding: 20,
-  },
-  controlTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  qualitySliderContainer: {
-    alignItems: 'center',
-  },
-  qualityLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 12,
-  },
-  qualityLabel: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 14,
-  },
-  qualitySelected: {
-    color: '#FF6B6B',
-  },
-  qualitySlider: {
-    width: '100%',
-    height: 40,
-  },
-  timeEstimate: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 12,
-    marginTop: 8,
-    textAlign: 'center',
-  },
   processingContainer: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   processingText: {
     color: '#fff',

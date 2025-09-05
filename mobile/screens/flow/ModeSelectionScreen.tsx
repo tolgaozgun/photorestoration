@@ -29,7 +29,7 @@ interface ModeData {
   isAdvanced?: boolean;
 }
 
-const PRIMARY_MODES: ModeData[] = [
+const ALL_MODES: ModeData[] = [
   {
     id: 'enhance',
     icon: '✨',
@@ -52,16 +52,12 @@ const PRIMARY_MODES: ModeData[] = [
     description: 'Bring life to black & white photos',
     subtitle: 'Colorize old memories',
   },
-];
-
-const ADVANCED_MODES: ModeData[] = [
   {
     id: 'enlighten',
     icon: '💡',
     title: 'Fix Lighting',
     description: 'Correct dark or overexposed photos',
     subtitle: 'Balance exposure & contrast',
-    isAdvanced: true,
   },
   {
     id: 'recreate',
@@ -69,7 +65,6 @@ const ADVANCED_MODES: ModeData[] = [
     title: 'Restore Portraits',
     description: 'Rebuild severely damaged faces',
     subtitle: 'Advanced face restoration',
-    isAdvanced: true,
   },
   {
     id: 'combine',
@@ -77,7 +72,6 @@ const ADVANCED_MODES: ModeData[] = [
     title: 'Merge Ancestors',
     description: 'Combine features with family photos',
     subtitle: 'Experimental feature',
-    isAdvanced: true,
   },
 ];
 
@@ -90,12 +84,10 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
   const { imageUri } = route.params as { imageUri: string };
   const { trackEvent } = useAnalytics();
   const [selectedMode, setSelectedMode] = useState<ModeType>('enhance');
-  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
-  const advancedAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'mode_selection' });
@@ -127,16 +119,6 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
     });
   };
 
-  const toggleAdvanced = () => {
-    const newShowAdvanced = !showAdvanced;
-    setShowAdvanced(newShowAdvanced);
-    
-    Animated.timing(advancedAnim, {
-      toValue: newShowAdvanced ? 1 : 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  };
 
   const renderModeCard = (mode: ModeData, index: number) => {
     const isSelected = selectedMode === mode.id;
@@ -183,9 +165,6 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
                 ]}>
                   {mode.title}
                 </Text>
-                {mode.isAdvanced && (
-                  <Text style={styles.advancedLabel}>Advanced</Text>
-                )}
               </View>
               <Text style={styles.modeDescription}>{mode.description}</Text>
               <Text style={styles.modeSubtitle}>{mode.subtitle}</Text>
@@ -198,16 +177,6 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
             )}
           </View>
 
-          {/* Sample images would go here in a real implementation */}
-          <View style={styles.sampleContainer}>
-            <View style={styles.beforeSample}>
-              <Text style={styles.sampleLabel}>Before</Text>
-            </View>
-            <Text style={styles.sampleArrow}>→</Text>
-            <View style={styles.afterSample}>
-              <Text style={styles.sampleLabel}>After</Text>
-            </View>
-          </View>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -253,40 +222,7 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
             <Text style={styles.sectionTitle}>Select the best option for your photo:</Text>
           </Animated.View>
 
-          {PRIMARY_MODES.map((mode, index) => renderModeCard(mode, index))}
-
-          {/* Advanced Options Toggle */}
-          <Animated.View style={{ opacity: fadeAnim }}>
-            <TouchableOpacity
-              style={styles.advancedToggle}
-              onPress={toggleAdvanced}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.advancedToggleText}>
-                {showAdvanced ? 'Hide' : 'Show'} Advanced Options
-              </Text>
-              <Text style={[
-                styles.advancedArrow,
-                showAdvanced && styles.advancedArrowRotated
-              ]}>
-                ▼
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-
-          {/* Advanced Modes */}
-          {showAdvanced && (
-            <Animated.View style={{
-              opacity: advancedAnim,
-              maxHeight: advancedAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 1000],
-              }),
-              overflow: 'hidden',
-            }}>
-              {ADVANCED_MODES.map((mode, index) => renderModeCard(mode, index + PRIMARY_MODES.length))}
-            </Animated.View>
-          )}
+          {ALL_MODES.map((mode, index) => renderModeCard(mode, index))}
         </ScrollView>
       </View>
 
@@ -308,7 +244,7 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <Text style={styles.continueText}>Continue with {selectedMode === 'enhance' ? 'Auto Enhance' : PRIMARY_MODES.find(m => m.id === selectedMode)?.title || ADVANCED_MODES.find(m => m.id === selectedMode)?.title}</Text>
+            <Text style={styles.continueText}>Continue with {selectedMode === 'enhance' ? 'Auto Enhance' : ALL_MODES.find(m => m.id === selectedMode)?.title}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
@@ -431,16 +367,6 @@ const styles = StyleSheet.create({
   modeTitleSelected: {
     color: '#FF6B6B',
   },
-  advancedLabel: {
-    marginLeft: 8,
-    fontSize: 10,
-    color: '#888',
-    backgroundColor: 'rgba(136, 136, 136, 0.2)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
   modeDescription: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.8)',
@@ -464,57 +390,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  sampleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  beforeSample: {
-    width: 80,
-    height: 50,
-    backgroundColor: '#333',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  afterSample: {
-    width: 80,
-    height: 50,
-    backgroundColor: '#444',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sampleLabel: {
-    fontSize: 10,
-    color: '#888',
-  },
-  sampleArrow: {
-    color: '#666',
-    fontSize: 16,
-    marginHorizontal: 12,
-  },
-  advancedToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    marginVertical: 8,
-  },
-  advancedToggleText: {
-    color: '#FF6B6B',
-    fontSize: 16,
-    fontWeight: '500',
-    marginRight: 8,
-  },
-  advancedArrow: {
-    color: '#FF6B6B',
-    fontSize: 12,
-    transform: [{ rotate: '0deg' }],
-  },
-  advancedArrowRotated: {
-    transform: [{ rotate: '180deg' }],
   },
   footer: {
     paddingHorizontal: 20,

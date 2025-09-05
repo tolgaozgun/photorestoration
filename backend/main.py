@@ -237,7 +237,7 @@ def check_daily_limits(user: User) -> Dict[str, int]:
         "remaining_today_hd": 0
     }
 
-async def enhance_image_with_gemini(image_data: bytes, resolution: str, mode: str = "enhance") -> bytes:
+async def enhance_image_with_gemini(image_data: bytes, mode: str = "enhance") -> bytes:
     """Enhance image using the Nano Banana AI enhancement pipeline"""
     
     if not image_enhancer:
@@ -249,7 +249,6 @@ async def enhance_image_with_gemini(image_data: bytes, resolution: str, mode: st
 
 class EnhanceRequest(BaseModel):
     user_id: str
-    resolution: str = "standard"
     mode: str = "enhance"
 
 @app.post("/api/enhance")
@@ -263,15 +262,9 @@ async def enhance_image(
     # Check if user has credits before processing
     daily_limits = check_daily_limits(user)
     
-    has_credits = False
-    if request.resolution == "hd":
-        has_credits = user.hd_credits > 0 or daily_limits["remaining_today_hd"] > 0
-        if not has_credits:
-            raise HTTPException(status_code=403, detail="No HD credits available")
-    else:
-        has_credits = user.standard_credits > 0 or daily_limits["remaining_today_standard"] > 0
-        if not has_credits:
-            raise HTTPException(status_code=403, detail="No standard credits available")
+    has_credits = user.standard_credits > 0 or daily_limits["remaining_today_standard"] > 0
+    if not has_credits:
+        raise HTTPException(status_code=403, detail="No credits available")
     
     start_time = datetime.utcnow()
     
@@ -280,19 +273,13 @@ async def enhance_image(
     
     try:
         # Try to enhance the image
-        enhanced_data = await enhance_image_with_gemini(image_data, request.resolution, request.mode)
+        enhanced_data = await enhance_image_with_gemini(image_data, request.mode)
         
         # Only deduct credits if enhancement was successful
-        if request.resolution == "hd":
-            if user.hd_credits > 0:
-                user.hd_credits -= 1
-            elif daily_limits["remaining_today_hd"] > 0:
-                user.daily_hd_used += 1
-        else:
-            if user.standard_credits > 0:
-                user.standard_credits -= 1
-            elif daily_limits["remaining_today_standard"] > 0:
-                user.daily_standard_used += 1
+        if user.standard_credits > 0:
+            user.standard_credits -= 1
+        elif daily_limits["remaining_today_standard"] > 0:
+            user.daily_standard_used += 1
         
         # Save to storage
         file_id = str(uuid.uuid4())
@@ -315,16 +302,10 @@ async def enhance_image(
             )
         except Exception as e:
             # Refund credits if storage fails
-            if request.resolution == "hd":
-                if user.daily_hd_used > 0:
-                    user.daily_hd_used -= 1
-                else:
-                    user.hd_credits += 1
+            if user.daily_standard_used > 0:
+                user.daily_standard_used -= 1
             else:
-                if user.daily_standard_used > 0:
-                    user.daily_standard_used -= 1
-                else:
-                    user.standard_credits += 1
+                user.standard_credits += 1
             db.commit()
             raise HTTPException(status_code=500, detail=f"Storage error: {str(e)}")
         
@@ -337,7 +318,7 @@ async def enhance_image(
             user_id=request.user_id,
             original_url=original_key,
             enhanced_url=enhanced_key,
-            resolution=request.resolution,
+            resolution="standard",
             mode=request.mode,
             processing_time=processing_time,
             watermark=watermark
@@ -352,10 +333,8 @@ async def enhance_image(
             "enhanced_url": f"/api/image/{enhanced_key}",
             "watermark": watermark,
             "processing_time": processing_time,
-            "remaining_standard_credits": user.standard_credits,
-            "remaining_hd_credits": user.hd_credits,
-            "remaining_today_standard": daily_limits["remaining_today_standard"],
-            "remaining_today_hd": daily_limits["remaining_today_hd"]
+            "remaining_credits": user.standard_credits,
+            "remaining_today": daily_limits["remaining_today_standard"]
         }
         
     except HTTPException:

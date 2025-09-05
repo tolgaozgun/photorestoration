@@ -97,39 +97,6 @@ export default function PhotoInputScreen({ navigation }: Props) {
     }
   };
 
-  const takePicture = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    
-    if (permissionResult.status !== 'granted') {
-      Alert.alert(
-        'Camera Permission Required',
-        'Please allow camera access to take photos.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Settings', onPress: () => {} },
-        ]
-      );
-      return;
-    }
-
-    trackEvent('action', { type: 'camera_open' });
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: false,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      trackEvent('action', { type: 'image_selected_camera' });
-      navigation.navigate('ModeSelection', { imageUri: result.assets[0].uri });
-    }
-  };
-
-  const scanDocument = async () => {
-    // For now, same as picking from gallery but with different tracking
-    trackEvent('action', { type: 'scan_document' });
-    pickImageFromGallery();
-  };
 
   const getTotalCredits = () => {
     if (!user) return 0;
@@ -196,27 +163,6 @@ export default function PhotoInputScreen({ navigation }: Props) {
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Secondary Actions */}
-          <View style={styles.secondaryActions}>
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={takePicture}
-              activeOpacity={0.8}
-            >
-              <View style={styles.secondaryContent}>
-                <Text style={styles.secondaryIcon}>📷</Text>
-                <Text style={styles.secondaryText}>Take New Photo</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tertiaryButton}
-              onPress={scanDocument}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.tertiaryText}>📄 Scan Document</Text>
-            </TouchableOpacity>
-          </View>
         </Animated.View>
 
         {/* Helper Text */}
@@ -254,19 +200,28 @@ export default function PhotoInputScreen({ navigation }: Props) {
           </Animated.View>
         )}
 
-        {/* Recent History Quick Access */}
+        {/* Recent Restorations */}
         <Animated.View 
           style={[
-            styles.quickAccess,
+            styles.recentSection,
             { opacity: fadeAnim }
           ]}
         >
-          <TouchableOpacity 
-            style={styles.historyButton}
-            onPress={() => navigation.navigate('History')}
-          >
-            <Text style={styles.historyText}>🕐 View Recent Restorations</Text>
-          </TouchableOpacity>
+          <View style={styles.recentHeader}>
+            <Text style={styles.recentTitle}>Recent Restorations</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('History')}>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.recentList}>
+            <View style={styles.recentItem}>
+              <View style={styles.recentPlaceholder}>
+                <Text style={styles.recentPlaceholderText}>📷</Text>
+              </View>
+              <Text style={styles.recentItemText}>No recent restorations yet</Text>
+            </View>
+          </View>
         </Animated.View>
       </View>
     </SafeAreaView>
@@ -366,43 +321,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.8)',
   },
-  secondaryActions: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    marginBottom: 16,
-    width: '80%',
-  },
-  secondaryContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-  },
-  secondaryIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  secondaryText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#fff',
-  },
-  tertiaryButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-  },
-  tertiaryText: {
-    fontSize: 16,
-    color: '#FF6B6B',
-    fontWeight: '500',
-  },
   helpSection: {
     alignItems: 'center',
     paddingVertical: 20,
@@ -441,17 +359,50 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
-  quickAccess: {
-    alignItems: 'center',
+  recentSection: {
+    paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  historyButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+  recentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  historyText: {
-    color: 'rgba(255, 255, 255, 0.7)',
+  recentTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  viewAllText: {
     fontSize: 14,
+    color: '#FF6B6B',
     fontWeight: '500',
+  },
+  recentList: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 16,
+  },
+  recentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  recentPlaceholder: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  recentPlaceholderText: {
+    fontSize: 24,
+    opacity: 0.5,
+  },
+  recentItemText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 14,
   },
 });
