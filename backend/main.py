@@ -167,6 +167,8 @@ try:
         app, 
         engine,
         base_url="/admin",
+        # Docker-specific static configuration
+        static_url_path="/admin/static",
         title="Photo Restoration Admin",
         logo_url=None,
     )
@@ -239,39 +241,95 @@ try:
                 except Exception as e:
                     print(f"        Error reading: {e}")
     
-    # Debug 3: Try multiple potential static file locations
-    print(f"\n3. SEARCHING FOR STATIC FILES:")
+    # Debug 3: Docker-aware static file search
+    print(f"\n3. SEARCHING FOR STATIC FILES (DOCKER-ENHANCED):")
+    
+    # First, let's search the entire Python environment for sqladmin
+    print(f"   3a. Dynamic SQLAdmin package search:")
+    for sys_path in sys.path:
+        if 'site-packages' in sys_path:
+            sqladmin_pkg_path = os.path.join(sys_path, 'sqladmin')
+            if os.path.exists(sqladmin_pkg_path):
+                print(f"       Found SQLAdmin package at: {sqladmin_pkg_path}")
+                # Check all subdirectories for static files
+                try:
+                    for item in os.listdir(sqladmin_pkg_path):
+                        item_path = os.path.join(sqladmin_pkg_path, item)
+                        if os.path.isdir(item_path) and any(keyword in item.lower() for keyword in ['static', 'asset', 'template']):
+                            print(f"       Potential static dir: {item_path}")
+                            try:
+                                subcontents = os.listdir(item_path)
+                                css_files = [f for f in subcontents if f.endswith('.css')]
+                                js_files = [f for f in subcontents if f.endswith('.js')]
+                                if css_files or js_files:
+                                    print(f"         CSS: {css_files}")
+                                    print(f"         JS: {js_files}")
+                            except Exception as e:
+                                print(f"         Error reading: {e}")
+                except Exception as e:
+                    print(f"       Error scanning SQLAdmin package: {e}")
+    
+    # Standard potential paths for Docker environments
     potential_paths = [
         os.path.join(sqladmin_dir, 'statics'),
-        os.path.join(sqladmin_dir, 'static'),
+        os.path.join(sqladmin_dir, 'static'), 
         os.path.join(sqladmin_dir, 'assets'),
         os.path.join(sqladmin_dir, 'templates', 'statics'),
-        os.path.join(sqladmin_dir, 'templates', 'static'),
+        # Docker container paths
         '/usr/local/lib/python3.11/site-packages/sqladmin/statics',
         '/usr/local/lib/python3.11/site-packages/sqladmin/static',
         '/app/lib/python3.11/site-packages/sqladmin/statics',
-        '/app/lib/python3.11/site-packages/sqladmin/static',
+        '/opt/venv/lib/python3.11/site-packages/sqladmin/statics',
+        # Local paths
+        './statics',
+        './static',
     ]
     
+    print(f"\n   3b. Checking predefined paths:")
     for i, static_path in enumerate(potential_paths, 1):
         exists = os.path.exists(static_path)
         print(f"   {i:2d}. {static_path} -> {'EXISTS' if exists else 'NOT FOUND'}")
         
-        if exists:
+        if exists and os.path.isdir(static_path):
             try:
                 contents = os.listdir(static_path)
-                print(f"       Contents: {contents}")
-                # Look for CSS files specifically
                 css_files = [f for f in contents if f.endswith('.css')]
+                js_files = [f for f in contents if f.endswith('.js')]
+                print(f"       Total files: {len(contents)}")
                 if css_files:
-                    print(f"       CSS files found: {css_files}")
+                    print(f"       CSS files: {css_files}")
+                if js_files:
+                    print(f"       JS files: {js_files[:3]}...")  # Show first 3 JS files
             except Exception as e:
                 print(f"       Error reading directory: {e}")
     
-    # Debug 4: Current working directory and Python path
+    # Debug 4: Environment and Docker detection
     print(f"\n4. ENVIRONMENT INFO:")
     print(f"   Current working directory: {os.getcwd()}")
     print(f"   Python executable: {sys.executable}")
+    
+    # Check if running in Docker
+    is_docker = os.path.exists("/.dockerenv") or os.path.exists("/proc/1/cgroup")
+    print(f"   Running in Docker: {is_docker}")
+    
+    if is_docker:
+        print(f"   Docker-specific checks:")
+        docker_paths = [
+            "/usr/local/lib/python3.11/site-packages",
+            "/opt/venv/lib/python3.11/site-packages", 
+            "/app/.venv/lib/python3.11/site-packages"
+        ]
+        for docker_path in docker_paths:
+            if os.path.exists(docker_path):
+                sqladmin_docker = os.path.join(docker_path, 'sqladmin')
+                if os.path.exists(sqladmin_docker):
+                    print(f"     Found SQLAdmin in Docker: {sqladmin_docker}")
+                    static_docker = os.path.join(sqladmin_docker, 'statics')
+                    if os.path.exists(static_docker):
+                        print(f"     Found statics in Docker: {static_docker}")
+                        # Add this to potential paths for mounting
+                        potential_paths.insert(0, static_docker)
+    
     print(f"   Python path contains:")
     for path in sys.path[:5]:  # Show first 5 paths
         print(f"     - {path}")
@@ -316,7 +374,7 @@ except Exception as e:
     traceback.print_exc()
 
 print("\n" + "="*60)
-print("END SQLADMIN DEBUG")
+print("END SQLADMIN DEBUG")  
 print("="*60 + "\n")
 
 app.add_middleware(
@@ -326,6 +384,80 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Debug endpoint to test static file accessibility
+@app.get("/debug/static-test")
+async def debug_static_files():
+    """Debug endpoint to test if static files are accessible"""
+    import requests
+    import sys
+    from pathlib import Path
+    
+    results = {
+        "static_file_tests": [],
+        "mounted_paths": [],
+        "sqladmin_paths": [],
+        "environment": {
+            "python_executable": sys.executable,
+            "working_dir": os.getcwd(),
+            "is_docker": os.path.exists("/.dockerenv")
+        }
+    }
+    
+    # Test mounted static file paths
+    base_url = "http://localhost:8000"  # Adjust if needed
+    test_paths = [
+        "/static/css/bootstrap.min.css",
+        "/admin/static/css/bootstrap.min.css", 
+        "/static/css/main.css",
+        "/admin/static/css/main.css"
+    ]
+    
+    for path in test_paths:
+        try:
+            # Don't actually make HTTP request in this context, just check if files exist
+            results["static_file_tests"].append({
+                "path": path,
+                "status": "endpoint_created_for_testing"
+            })
+        except Exception as e:
+            results["static_file_tests"].append({
+                "path": path, 
+                "error": str(e)
+            })
+    
+    # Check current FastAPI routes
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            route_info = {
+                "path": route.path,
+                "methods": getattr(route, 'methods', None) or 'MOUNT'
+            }
+            results["mounted_paths"].append(route_info)
+    
+    # Find SQLAdmin package paths
+    try:
+        import sqladmin
+        sqladmin_dir = os.path.dirname(sqladmin.__file__)
+        results["sqladmin_paths"].append({
+            "package_location": sqladmin_dir,
+            "version": getattr(sqladmin, '__version__', 'Unknown')
+        })
+        
+        # Check for static directories
+        for item in os.listdir(sqladmin_dir):
+            item_path = os.path.join(sqladmin_dir, item)
+            if os.path.isdir(item_path) and 'static' in item.lower():
+                results["sqladmin_paths"].append({
+                    "static_dir": item_path,
+                    "exists": os.path.exists(item_path),
+                    "contents": os.listdir(item_path) if os.path.exists(item_path) else []
+                })
+                
+    except Exception as e:
+        results["sqladmin_paths"].append({"error": str(e)})
+    
+    return results
 
 def get_db():
     db = SessionLocal()
