@@ -283,27 +283,23 @@ try:
     for i, static_path in enumerate(potential_paths, 1):
         if os.path.exists(static_path):
             try:
-                # Try different mount points
-                mount_points = [
-                    "/static",
-                    "/admin/static", 
-                    "/sqladmin/static"
-                ]
+                # Since SQLAdmin uses base_url="/admin", it expects static files at "/admin/static"
+                # Mount directly at the correct path that SQLAdmin expects
+                app.mount("/admin/static", StaticFiles(directory=static_path), name=f"sqladmin_static_{i}")
+                print(f"   ✓ SUCCESS: Mounted {static_path} at /admin/static for SQLAdmin")
+                static_mounted = True
                 
-                for mount_point in mount_points:
-                    try:
-                        app.mount(mount_point, StaticFiles(directory=static_path), name=f"static_{i}")
-                        print(f"   ✓ SUCCESS: Mounted {static_path} at {mount_point}")
-                        static_mounted = True
-                        break
-                    except Exception as mount_error:
-                        print(f"   ✗ FAILED: {mount_point} -> {mount_error}")
+                # Also mount at /static as fallback for any other static file requests
+                try:
+                    app.mount("/static", StaticFiles(directory=static_path), name=f"static_fallback_{i}")
+                    print(f"   ✓ FALLBACK: Also mounted {static_path} at /static")
+                except Exception as fallback_error:
+                    print(f"   ⚠ Fallback mount failed (not critical): {fallback_error}")
                 
-                if static_mounted:
-                    break
+                break  # Successfully mounted, exit loop
                     
             except Exception as e:
-                print(f"   ✗ ERROR: Could not process {static_path}: {e}")
+                print(f"   ✗ ERROR: Could not mount {static_path}: {e}")
     
     if not static_mounted:
         print(f"   ⚠️  WARNING: No static files could be mounted!")
