@@ -64,6 +64,7 @@ export default function App() {
 
   useEffect(() => {
     initializeApp();
+    console.log('i18n object:', i18n);
     i18n.on('initialized', () => {
       setI18nReady(true);
     });
