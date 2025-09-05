@@ -110,90 +110,18 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <I18nextProvider i18n={i18n}>
-        <UserProvider>
-          <AnalyticsProvider>
-            <FlowProvider>
-              <View style={styles.container}>
-                <NavigationContainer>
-                <Stack.Navigator
-                  initialRouteName={isFirstLaunch ? 'Onboarding' : 'PhotoInput'}
-                  screenOptions={{
-                    headerShown: false,
-                    cardStyle: { backgroundColor: '#0a0a0a' },
-                  }}
-                >
-                  {/* Onboarding Flow */}
-                  <Stack.Screen name="Onboarding">
-                    {(props) => (
-                      <OnboardingFlow
-                        {...props}
-                        onComplete={handleOnboardingComplete}
-                        onPhotoSelected={handlePhotoSelected}
-                      />
-                    )}
-                  </Stack.Screen>
-
-                  {/* Main Flow */}
-                  <Stack.Screen 
-                    name="PhotoInput" 
-                    component={PhotoInputScreen}
-                  />
-                  <Stack.Screen 
-                    name="ModeSelection" 
-                    component={ModeSelectionScreen}
-                  />
-                  <Stack.Screen 
-                    name="Preview" 
-                    component={PreviewScreen}
-                  />
-                  <Stack.Screen 
-                    name="Result" 
-                    component={ResultScreen}
-                  />
-                  <Stack.Screen 
-                    name="History" 
-                    component={HistoryScreen}
-                  />
-
-                  {/* Settings & Other Screens */}
-                  <Stack.Screen 
-                    name="Settings" 
-                    component={SettingsScreen}
-                    options={{ 
-                      headerShown: true,
-                      title: 'Settings',
-                      headerStyle: { backgroundColor: '#1a1a1a' },
-                      headerTintColor: '#fff',
-                    }}
-                  />
-                  <Stack.Screen 
-                    name="EmailSync" 
-                    component={EmailSyncScreen}
-                    options={{ 
-                      headerShown: true,
-                      title: 'History Sync',
-                      headerStyle: { backgroundColor: '#1a1a1a' },
-                      headerTintColor: '#fff',
-                    }}
-                  />
-                  <Stack.Screen 
-                    name="VerificationCode" 
-                    component={VerificationCodeScreen}
-                    options={{ 
-                      headerShown: true,
-                      title: 'Verify Email',
-                      headerStyle: { backgroundColor: '#1a1a1a' },
-                      headerTintColor: '#fff',
-                    }}
-                  />
-                </Stack.Navigator>
-              </NavigationContainer>
-              <StatusBar style="light" />
-            </View>
-          </FlowProvider>
-        </AnalyticsProvider>
-      </UserProvider>
-    </I18nextProvider>
+        <View style={styles.container}>
+          {i18nReady ? (
+            <Text style={{ color: 'white', fontSize: 24, textAlign: 'center', marginTop: 100 }}>
+              i18n is ready! Translation: {i18n.t('common.ok')}
+            </Text>
+          ) : (
+            <Text style={{ color: 'white', fontSize: 24, textAlign: 'center', marginTop: 100 }}>
+              Loading i18n...
+            </Text>
+          )}
+        </View>
+      </I18nextProvider>
     </GestureHandlerRootView>
   );
 }
