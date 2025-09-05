@@ -10,6 +10,7 @@ import {
   Share,
   Platform,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import * as MediaLibrary from 'expo-media-library';
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export default function ExportScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { originalUri, enhancedUri, enhancementId, watermark } = route.params;
   const { trackEvent } = useAnalytics();
   const [isSaving, setIsSaving] = useState(false);
@@ -39,7 +41,7 @@ export default function ExportScreen({ navigation, route }: Props) {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Please enable photo library access in settings.');
+        Alert.alert(t('home.permissionDenied'), t('home.galleryPermission'));
         return;
       }
 
@@ -49,11 +51,11 @@ export default function ExportScreen({ navigation, route }: Props) {
       const asset = await MediaLibrary.createAssetAsync(fileUri);
       await MediaLibrary.createAlbumAsync('Photo Restoration', asset, false);
 
-      Alert.alert('Success', 'Photo saved to your gallery!');
+      Alert.alert(t('settings.success'), t('export.photoSaved'));
       trackEvent('export_success', { type: 'save_to_device' });
     } catch (error) {
       console.error('Save error:', error);
-      Alert.alert('Error', 'Failed to save photo. Please try again.');
+      Alert.alert(t('restoration.error'), t('export.saveFailed'));
       trackEvent('export_error', { type: 'save_to_device', error: error.message });
     } finally {
       setIsSaving(false);
@@ -79,7 +81,7 @@ export default function ExportScreen({ navigation, route }: Props) {
       trackEvent('export_success', { type: 'share' });
     } catch (error) {
       console.error('Share error:', error);
-      Alert.alert('Error', 'Failed to share photo. Please try again.');
+      Alert.alert(t('restoration.error'), t('export.shareFailed'));
       trackEvent('export_error', { type: 'share', error: error.message });
     } finally {
       setIsSharing(false);
@@ -89,7 +91,7 @@ export default function ExportScreen({ navigation, route }: Props) {
   const handlePurchase = () => {
     trackEvent('export_action', { type: 'purchase_from_watermark' });
     navigation.navigate('Home');
-    Alert.alert('Purchase Credits', 'Purchase functionality coming soon!');
+    Alert.alert(t('purchase.title'), t('purchase.comingSoonMessage'));
   };
 
   return (
@@ -98,7 +100,7 @@ export default function ExportScreen({ navigation, route }: Props) {
         <Image source={{ uri: enhancedUri }} style={styles.image} resizeMode="contain" />
         {watermark && (
           <View style={styles.watermarkOverlay}>
-            <Text style={styles.watermarkText}>Photo Restoration AI</Text>
+            <Text style={styles.watermarkText}>{t('export.watermarkText')}</Text>
           </View>
         )}
       </View>
@@ -106,10 +108,10 @@ export default function ExportScreen({ navigation, route }: Props) {
       {watermark && (
         <View style={styles.watermarkNotice}>
           <Text style={styles.watermarkNoticeText}>
-            ⚠️ This image contains a watermark
+            {t('export.watermarkNotice')}
           </Text>
           <Text style={styles.watermarkSubtext}>
-            Purchase credits to remove watermark
+            {t('export.watermarkSubtext')}
           </Text>
         </View>
       )}
@@ -125,7 +127,7 @@ export default function ExportScreen({ navigation, route }: Props) {
           ) : (
             <>
               <Text style={styles.buttonIcon}>💾</Text>
-              <Text style={styles.buttonText}>Save to Device</Text>
+              <Text style={styles.buttonText}>{t('export.saveToDevice')}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -140,7 +142,7 @@ export default function ExportScreen({ navigation, route }: Props) {
           ) : (
             <>
               <Text style={styles.buttonIcon}>📤</Text>
-              <Text style={styles.buttonText}>Share Photo</Text>
+              <Text style={styles.buttonText}>{t('export.sharePhoto')}</Text>
             </>
           )}
         </TouchableOpacity>
@@ -151,7 +153,7 @@ export default function ExportScreen({ navigation, route }: Props) {
             onPress={handlePurchase}
           >
             <Text style={styles.buttonIcon}>✨</Text>
-            <Text style={styles.buttonText}>Remove Watermark</Text>
+            <Text style={styles.buttonText}>{t('export.removeWatermark')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -160,7 +162,7 @@ export default function ExportScreen({ navigation, route }: Props) {
         style={styles.doneButton}
         onPress={() => navigation.navigate('Home')}
       >
-        <Text style={styles.doneButtonText}>Done</Text>
+        <Text style={styles.doneButtonText}>{t('common.done')}</Text>
       </TouchableOpacity>
     </View>
   );

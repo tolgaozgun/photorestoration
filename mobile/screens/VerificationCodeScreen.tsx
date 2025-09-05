@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -25,6 +26,7 @@ type VerificationCodeScreenRouteProp = RouteProp<RootStackParamList, 'Verificati
 export default function VerificationCodeScreen() {
   const navigation = useNavigation<VerificationCodeScreenNavigationProp>();
   const route = useRoute<VerificationCodeScreenRouteProp>();
+  const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   
   const { email, deviceId, deviceName, deviceType } = route.params;
@@ -92,12 +94,12 @@ export default function VerificationCodeScreen() {
   const handleVerify = async () => {
     const fullCode = code.join('');
     if (fullCode.length !== 6) {
-      Alert.alert('Invalid Code', 'Please enter all 6 digits');
+      Alert.alert(t('verification.invalidCodeTitle'), t('verification.invalidCodeMessage'));
       return;
     }
 
     if (timeLeft <= 0) {
-      Alert.alert('Code Expired', 'The verification code has expired. Please request a new one.');
+      Alert.alert(t('verification.codeExpiredTitle'), t('verification.codeExpiredMessage'));
       navigation.goBack();
       return;
     }
@@ -123,11 +125,11 @@ export default function VerificationCodeScreen() {
         trackEvent('verification_successful', { email });
         
         Alert.alert(
-          'Success!',
-          'Your device has been linked successfully. Your restoration history will now sync across devices.',
+          t('verification.successTitle'),
+          t('verification.successMessage'),
           [
             {
-              text: 'OK',
+              text: t('common.ok'),
               onPress: () => {
                 navigation.reset({
                   index: 0,
@@ -141,8 +143,8 @@ export default function VerificationCodeScreen() {
     } catch (error: any) {
       trackEvent('verification_failed', { email, error: error.message });
       Alert.alert(
-        'Verification Failed',
-        error.response?.data?.detail || 'Invalid verification code. Please try again.'
+        t('verification.failedTitle'),
+        error.response?.data?.detail || t('verification.failedMessage')
       );
     } finally {
       setIsVerifying(false);
@@ -151,12 +153,12 @@ export default function VerificationCodeScreen() {
 
   const handleResendCode = async () => {
     Alert.alert(
-      'Resend Code',
-      'Are you sure you want to request a new verification code?',
+      t('verification.resendCodeTitle'),
+      t('verification.resendCodeConfirmation'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('restoration.cancel'), style: 'cancel' },
         {
-          text: 'Resend',
+          text: t('verification.resendButton'),
           onPress: async () => {
             try {
               const response = await axios.post(
@@ -172,11 +174,11 @@ export default function VerificationCodeScreen() {
               if (response.data.success) {
                 setCode(['', '', '', '', '', '']);
                 setTimeLeft(600);
-                Alert.alert('Code Sent', 'A new verification code has been sent to your email.');
+                Alert.alert(t('verification.codeSentTitle'), t('verification.codeSentMessage'));
                 trackEvent('verification_code_resent', { email });
               }
             } catch (error) {
-              Alert.alert('Error', 'Failed to resend verification code');
+              Alert.alert(t('restoration.error'), t('verification.resendFailedMessage'));
             }
           },
         },
@@ -191,9 +193,9 @@ export default function VerificationCodeScreen() {
         style={styles.content}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Enter Verification Code</Text>
+          <Text style={styles.title}>{t('verification.title')}</Text>
           <Text style={styles.subtitle}>
-            We've sent a 6-digit code to
+            {t('verification.subtitle')}
           </Text>
           <Text style={styles.email}>{email}</Text>
         </View>
@@ -220,7 +222,7 @@ export default function VerificationCodeScreen() {
 
         <View style={styles.timerContainer}>
           <Text style={styles.timerText}>
-            Code expires in {formatTime(timeLeft)}
+            {t('verification.codeExpiresIn')} {formatTime(timeLeft)}
           </Text>
         </View>
 
@@ -232,7 +234,7 @@ export default function VerificationCodeScreen() {
           {isVerifying ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.verifyButtonText}>Verify & Link Device</Text>
+            <Text style={styles.verifyButtonText}>{t('verification.verifyButton')}</Text>
           )}
         </TouchableOpacity>
 
@@ -241,13 +243,12 @@ export default function VerificationCodeScreen() {
           onPress={handleResendCode}
           disabled={isVerifying}
         >
-          <Text style={styles.resendButtonText}>Resend Code</Text>
+          <Text style={styles.resendButtonText}>{t('verification.resendButton')}</Text>
         </TouchableOpacity>
 
         <View style={styles.infoContainer}>
           <Text style={styles.infoText}>
-            This will sync your restoration history across devices. 
-            It does not affect your purchases.
+            {t('verification.infoText')}
           </Text>
         </View>
       </KeyboardAvoidingView>

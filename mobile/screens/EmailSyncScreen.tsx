@@ -16,6 +16,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { useTranslation } from 'react-i18next';
 import * as Device from 'expo-device';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 import { useAnalytics } from '../contexts/AnalyticsContext';
@@ -24,6 +25,7 @@ type EmailSyncScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Em
 
 export default function EmailSyncScreen() {
   const navigation = useNavigation<EmailSyncScreenNavigationProp>();
+  const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +68,7 @@ export default function EmailSyncScreen() {
 
   const handleSendVerification = async () => {
     if (!email || !email.includes('@')) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      Alert.alert(t('emailSync.invalidEmailTitle'), t('emailSync.invalidEmailMessage'));
       return;
     }
 
@@ -97,15 +99,15 @@ export default function EmailSyncScreen() {
         });
       } else if (response.data.message === 'Device already linked') {
         Alert.alert(
-          'Device Already Linked',
-          `This device is already linked to ${response.data.linked_email}`,
-          [{ text: 'OK' }]
+          t('emailSync.deviceAlreadyLinkedTitle'),
+          t('emailSync.deviceAlreadyLinkedMessage', { email: response.data.linked_email }),
+          [{ text: t('common.ok') }]
         );
       }
     } catch (error: any) {
       Alert.alert(
-        'Error',
-        error.response?.data?.detail || 'Failed to send verification code'
+        t('restoration.error'),
+        error.response?.data?.detail || t('emailSync.sendCodeFailed')
       );
     } finally {
       setIsLoading(false);
@@ -114,12 +116,12 @@ export default function EmailSyncScreen() {
 
   const handleRemoveDevice = async (deviceIdToRemove: string, deviceName: string) => {
     Alert.alert(
-      'Remove Device',
-      `Are you sure you want to remove "${deviceName}" from your synced devices?`,
+      t('emailSync.removeDeviceTitle'),
+      t('emailSync.removeDeviceConfirmation', { deviceName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('restoration.cancel'), style: 'cancel' },
         {
-          text: 'Remove',
+          text: t('emailSync.removeButton'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -146,8 +148,8 @@ export default function EmailSyncScreen() {
               }
             } catch (error: any) {
               Alert.alert(
-                'Error',
-                error.response?.data?.detail || 'Failed to remove device'
+                t('restoration.error'),
+                error.response?.data?.detail || t('emailSync.removeDeviceFailed')
               );
             }
           },
@@ -158,12 +160,12 @@ export default function EmailSyncScreen() {
 
   const handleUnlinkEmail = async () => {
     Alert.alert(
-      'Unlink Email',
-      'This will stop syncing your restoration history. Your restorations will remain on this device.',
+      t('emailSync.unlinkEmailTitle'),
+      t('emailSync.unlinkEmailConfirmation'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('restoration.cancel'), style: 'cancel' },
         {
-          text: 'Unlink',
+          text: t('emailSync.unlinkButton'),
           style: 'destructive',
           onPress: async () => {
             const deviceId = await SecureStore.getItemAsync('userId');
@@ -188,30 +190,29 @@ export default function EmailSyncScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>History Sync</Text>
+          <Text style={styles.title}>{t('emailSync.title')}</Text>
           <Text style={styles.subtitle}>
-            Sync your restoration history across devices
+            {t('emailSync.subtitle')}
           </Text>
         </View>
 
         <View style={styles.infoCard}>
           <Text style={styles.infoIcon}>ℹ️</Text>
           <Text style={styles.infoText}>
-            This is an optional feature for syncing your restoration history. 
-            It will not affect your in-app purchases or your ability to restore them.
+            {t('emailSync.infoText')}
           </Text>
         </View>
 
         {!linkedEmail ? (
           <View style={styles.linkSection}>
-            <Text style={styles.sectionTitle}>Link Your Email</Text>
+            <Text style={styles.sectionTitle}>{t('emailSync.linkEmailSectionTitle')}</Text>
             <Text style={styles.description}>
-              Enter your email to sync your restoration history across all your devices.
+              {t('emailSync.linkEmailDescription')}
             </Text>
             
             <TextInput
               style={styles.input}
-              placeholder="Enter your email"
+              placeholder={t('emailSync.emailPlaceholder')}
               placeholderTextColor="#666"
               value={email}
               onChangeText={setEmail}
@@ -228,16 +229,16 @@ export default function EmailSyncScreen() {
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Send Verification Code</Text>
+                <Text style={styles.buttonText}>{t('emailSync.sendVerificationCodeButton')}</Text>
               )}
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.linkedSection}>
             <View style={styles.linkedHeader}>
-              <Text style={styles.sectionTitle}>Linked Email</Text>
+              <Text style={styles.sectionTitle}>{t('emailSync.linkedEmailSectionTitle')}</Text>
               <TouchableOpacity onPress={handleUnlinkEmail}>
-                <Text style={styles.unlinkText}>Unlink</Text>
+                <Text style={styles.unlinkText}>{t('emailSync.unlinkButton')}</Text>
               </TouchableOpacity>
             </View>
             
@@ -245,7 +246,7 @@ export default function EmailSyncScreen() {
               <Text style={styles.linkedEmail}>{linkedEmail}</Text>
             </View>
 
-            <Text style={styles.devicesTitle}>Linked Devices ({linkedDevices.length})</Text>
+            <Text style={styles.devicesTitle}>{t('emailSync.linkedDevicesSectionTitle', { count: linkedDevices.length })}</Text>
             
             {linkedDevices.map((device) => {
               const deviceId = SecureStore.getItemAsync('userId');
@@ -255,10 +256,10 @@ export default function EmailSyncScreen() {
                 <View key={device.device_id} style={styles.deviceCard}>
                   <View style={styles.deviceInfo}>
                     <Text style={styles.deviceName}>
-                      {device.device_name} {isCurrentDevice && '(This Device)'}
+                      {device.device_name} {isCurrentDevice && t('emailSync.thisDeviceLabel')}
                     </Text>
                     <Text style={styles.deviceDetails}>
-                      {device.device_type} • Linked {new Date(device.linked_at).toLocaleDateString()}
+                      {t('emailSync.linkedLabel')} {new Date(device.linked_at).toLocaleDateString()}
                     </Text>
                   </View>
                   
@@ -267,7 +268,7 @@ export default function EmailSyncScreen() {
                       onPress={() => handleRemoveDevice(device.device_id, device.device_name)}
                       style={styles.removeButton}
                     >
-                      <Text style={styles.removeButtonText}>Remove</Text>
+                      <Text style={styles.removeButtonText}>{t('emailSync.removeButton')}</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -278,8 +279,7 @@ export default function EmailSyncScreen() {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Your purchase history is managed separately through your app store account 
-            and is not affected by this feature.
+            {t('emailSync.footerText')}
           </Text>
         </View>
       </ScrollView>

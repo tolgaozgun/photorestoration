@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function PhotoInputScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { trackEvent } = useAnalytics();
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
@@ -79,7 +81,7 @@ export default function PhotoInputScreen({ navigation }: Props) {
 
   const pickImageFromGallery = async () => {
     if (!hasGalleryPermission) {
-      Alert.alert('Permission Required', 'Please enable gallery access in settings.');
+      Alert.alert(t('home.permissionRequired'), t('home.galleryPermission'));
       return;
     }
 
@@ -122,11 +124,11 @@ export default function PhotoInputScreen({ navigation }: Props) {
           { opacity: fadeAnim }
         ]}
       >
-        <Text style={styles.title}>Choose Photo</Text>
+        <Text style={styles.title}>{t('photoInput.title')}</Text>
         {hasCredits && (
           <View style={styles.creditsContainer}>
             <Text style={styles.creditsCount}>{totalCredits}</Text>
-            <Text style={styles.creditsLabel}>credits</Text>
+            <Text style={styles.creditsLabel}>{t('photoInput.creditsLabel')}</Text>
           </View>
         )}
       </Animated.View>
@@ -155,8 +157,8 @@ export default function PhotoInputScreen({ navigation }: Props) {
                     <Text style={styles.primaryIcon}>🖼️</Text>
                   </View>
                   <View style={styles.textContainer}>
-                    <Text style={styles.primaryText}>Choose from Photos</Text>
-                    <Text style={styles.primarySubtext}>Select from your gallery</Text>
+                    <Text style={styles.primaryText}>{t('photoInput.chooseFromPhotos')}</Text>
+                    <Text style={styles.primarySubtext}>{t('photoInput.chooseFromPhotosSubtitle')}</Text>
                   </View>
                 </View>
               </View>
@@ -173,7 +175,7 @@ export default function PhotoInputScreen({ navigation }: Props) {
           ]}
         >
           <Text style={styles.helpText}>
-            💡 Best results with old family photos, faded memories, or damaged images
+            {t('photoInput.helperText')}
           </Text>
         </Animated.View>
 
@@ -186,16 +188,16 @@ export default function PhotoInputScreen({ navigation }: Props) {
             ]}
           >
             <Text style={styles.warningText}>
-              ⚠️ No credits remaining. Purchase more to continue restoring photos.
+              {t('photoInput.noCreditsWarning')}
             </Text>
             <TouchableOpacity 
               style={styles.purchaseButton}
               onPress={() => {
                 trackEvent('action', { type: 'purchase_button_tap' });
-                Alert.alert('Get Credits', 'Purchase options coming soon!');
+                Alert.alert(t('purchase.title'), t('purchase.comingSoonMessage'));
               }}
             >
-              <Text style={styles.purchaseText}>Get Credits →</Text>
+              <Text style={styles.purchaseText}>{t('photoInput.getCreditsButton')}</Text>
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -208,9 +210,9 @@ export default function PhotoInputScreen({ navigation }: Props) {
           ]}
         >
           <View style={styles.recentHeader}>
-            <Text style={styles.recentTitle}>Recent Restorations</Text>
+            <Text style={styles.recentTitle}>{t('photoInput.recentRestorationsTitle')}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('History')}>
-              <Text style={styles.viewAllText}>View All</Text>
+              <Text style={styles.viewAllText}>{t('photoInput.viewAllButton')}</Text>
             </TouchableOpacity>
           </View>
           
@@ -219,7 +221,7 @@ export default function PhotoInputScreen({ navigation }: Props) {
               <View style={styles.recentPlaceholder}>
                 <Text style={styles.recentPlaceholderText}>📷</Text>
               </View>
-              <Text style={styles.recentItemText}>No recent restorations yet</Text>
+              <Text style={styles.recentItemText}>{t('photoInput.noRecentRestorations')}</Text>
             </View>
           </View>
         </Animated.View>

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -33,45 +34,45 @@ const ALL_MODES: ModeData[] = [
   {
     id: 'enhance',
     icon: '✨',
-    title: 'Auto Enhance',
-    description: 'Perfect for blurry or low-quality photos',
-    subtitle: 'Remove blur & sharpen details',
+    title: t('modes.auto.title'),
+    description: t('modes.auto.description'),
+    subtitle: t('modes.auto.subtitle'),
     isRecommended: true,
   },
   {
     id: 'de-scratch',
     icon: '🧹',
-    title: 'Fix Scratches',
-    description: 'Remove scratches, spots, and damage',
-    subtitle: 'Repair physical damage',
+    title: t('modes.scratch.title'),
+    description: t('modes.scratch.description'),
+    subtitle: t('modes.scratch.subtitle'),
   },
   {
     id: 'colorize',
     icon: '🎨',
-    title: 'Add Color',
-    description: 'Bring life to black & white photos',
-    subtitle: 'Colorize old memories',
+    title: t('modes.colorize.title'),
+    description: t('modes.colorize.description'),
+    subtitle: t('modes.colorize.subtitle'),
   },
   {
     id: 'enlighten',
     icon: '💡',
-    title: 'Fix Lighting',
-    description: 'Correct dark or overexposed photos',
-    subtitle: 'Balance exposure & contrast',
+    title: t('modes.enlighten.title'),
+    description: t('modes.enlighten.description'),
+    subtitle: t('modes.enlighten.subtitle'),
   },
   {
     id: 'recreate',
     icon: '🖼️',
-    title: 'Restore Portraits',
-    description: 'Rebuild severely damaged faces',
-    subtitle: 'Advanced face restoration',
+    title: t('modes.recreate.title'),
+    description: t('modes.recreate.description'),
+    subtitle: t('modes.recreate.subtitle'),
   },
   {
     id: 'combine',
     icon: '👥',
-    title: 'Merge Ancestors',
-    description: 'Combine features with family photos',
-    subtitle: 'Experimental feature',
+    title: t('modes.combine.title'),
+    description: t('modes.combine.description'),
+    subtitle: t('modes.combine.subtitle'),
   },
 ];
 
@@ -81,6 +82,7 @@ interface Props {
 }
 
 export default function ModeSelectionScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { imageUri } = route.params as { imageUri: string };
   const { trackEvent } = useAnalytics();
   const [selectedMode, setSelectedMode] = useState<ModeType>('enhance');
@@ -148,7 +150,7 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
         >
           {mode.isRecommended && (
             <View style={styles.recommendedBadge}>
-              <Text style={styles.recommendedText}>Recommended</Text>
+              <Text style={styles.recommendedText}>{t('modes.recommended')}</Text>
             </View>
           )}
           
@@ -197,7 +199,7 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Choose Enhancement</Text>
+        <Text style={styles.title}>{t('modes.chooseEnhancement')}</Text>
         <View style={styles.placeholder} />
       </Animated.View>
 
@@ -219,7 +221,7 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
         >
           {/* Primary Modes */}
           <Animated.View style={{ opacity: fadeAnim }}>
-            <Text style={styles.sectionTitle}>Select the best option for your photo:</Text>
+            <Text style={styles.sectionTitle}>{t('modes.selectOption')}</Text>
           </Animated.View>
 
           {ALL_MODES.map((mode, index) => renderModeCard(mode, index))}
@@ -244,7 +246,7 @@ export default function ModeSelectionScreen({ navigation, route }: Props) {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <Text style={styles.continueText}>Continue with {selectedMode === 'enhance' ? 'Auto Enhance' : ALL_MODES.find(m => m.id === selectedMode)?.title}</Text>
+            <Text style={styles.continueText}>{t('modes.continueWith', { modeName: selectedMode === 'enhance' ? t('modes.auto.title') : t(`modes.${selectedMode}.title`) })}</Text>
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>

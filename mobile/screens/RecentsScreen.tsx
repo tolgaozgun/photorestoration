@@ -10,6 +10,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
@@ -26,6 +27,7 @@ const GRID_ITEM_SIZE = (screenWidth - 36) / 3; // 3 columns with minimal padding
 
 export default function RecentsScreen() {
   const navigation = useNavigation<RecentsScreenNavigationProp>();
+  const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
   const [recentImages, setRecentImages] = useState<Array<{ 
     id: string; 
@@ -117,9 +119,9 @@ export default function RecentsScreen() {
   const EmptyState = () => (
     <View style={styles.emptyState}>
       <Text style={styles.emptyIcon}>📷</Text>
-      <Text style={styles.emptyTitle}>No Restorations Yet</Text>
+      <Text style={styles.emptyTitle}>{t('recents.emptyTitle')}</Text>
       <Text style={styles.emptyText}>
-        Your restored photos will appear here
+        {t('recents.emptySubtitle')}
       </Text>
     </View>
   );
@@ -129,9 +131,9 @@ export default function RecentsScreen() {
       <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Recent</Text>
+          <Text style={styles.title}>{t('navigation.recents')}</Text>
           {recentImages.length > 0 && (
-            <Text style={styles.countText}>{recentImages.length} photos</Text>
+            <Text style={styles.countText}>{recentImages.length} {t('recents.photosCount')}</Text>
           )}
         </View>
 

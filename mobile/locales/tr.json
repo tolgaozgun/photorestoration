@@ -1,0 +1,331 @@
+{
+  "common": {
+    "ok": "Tamam",
+    "loading": "Yükleniyor...",
+    "done": "Bitti"
+  },
+  "home": {
+    "permissionRequired": "İzin Gerekli",
+    "galleryPermission": "Lütfen ayarlardan galeri erişimini etkinleştirin.",
+    "cameraPermission": "Lütfen ayarlardan kamera erişimini etkinleştirin.",
+    "cameraPermissionRequired": "Kamera İzni Gerekli",
+    "mainTitle": "Fotoğraflarınızı Geri Yükleyin",
+    "subtitle": "Anıları hayata döndürmek için 6 restorasyon modundan birini seçin",
+    "permissionDenied": "İzin Reddedildi"
+  },
+  "modes": {
+    "selectMode": "Bir Mod Seçin",
+    "showMore": "Daha Fazla Seçenek Göster",
+    "showLess": "Daha Az Seçenek Göster",
+    "recommended": "Önerilen",
+    "auto": {
+      "title": "Otomatik Geliştir",
+      "subtitle": "Genel iyileştirmeler için en iyisi",
+      "description": "Bulanık veya düşük kaliteli fotoğraflar için mükemmel"
+    },
+    "scratch": {
+      "title": "Çizikleri Düzelt",
+      "subtitle": "Fiziksel hasarlı fotoğraflar için en iyisi",
+      "description": "Çizikleri, lekeleri ve hasarı giderin"
+    },
+    "colorize": {
+      "title": "Renk Ekle",
+      "subtitle": "Eski anıları renklendirin",
+      "description": "Siyah beyaz fotoğraflara hayat verin"
+    },
+    "enlighten": {
+      "title": "Aydınlatmayı Düzelt",
+      "subtitle": "Pozlama ve kontrastı dengeleyin",
+      "description": "Karanlık veya aşırı pozlanmış fotoğrafları düzeltin"
+    },
+    "recreate": {
+      "title": "Portreleri Geri Yükle",
+      "subtitle": "Gelişmiş yüz restorasyonu",
+      "description": "Ağır hasarlı yüzleri yeniden oluşturun"
+    },
+    "combine": {
+      "title": "Ataları Birleştir",
+      "subtitle": "Deneysel özellik",
+      "description": "Özellikleri aile fotoğraflarıyla birleştirin"
+    },
+    "chooseEnhancement": "Geliştirmeyi Seç",
+    "selectOption": "Fotoğrafınız için en iyi seçeneği seçin:",
+    "continueWith": "{{modeName}} ile devam et"
+  },
+  "preview": {
+    "title": "Önizleme ve Ayarlama",
+    "quality": {
+      "fast": "Hızlı",
+      "best": "En İyi",
+      "good": "İyi"
+    },
+    "timeIndicator": "Tahmini süre: ~{{time}}s",
+    "apply": "Geliştirmeyi Uygula",
+    "processingQuality": "İşleme Kalitesi",
+    "timeEstimate": "Tahmini süre: {{time}} • {{quality}} kalite",
+    "noCreditsAvailable": "Kredi Yok",
+    "usesCredit": "1 {{resolution}} kredi kullanır",
+    "continueToSave": "Kaydetmeye Devam Et"
+  },
+  "result": {
+    "save": "Kaydet",
+    "share": "Paylaş",
+    "tryAnother": "Başka Bir Fotoğraf Dene",
+    "viewHistory": "Geçmişi Görüntüle",
+    "saveSuccessTitle": "Kaydedildi!",
+    "saveSuccessMessage": "Fotoğraf cihazınıza kaydedildi.",
+    "saveErrorTitle": "Kaydetme Başarısız",
+    "saveErrorMessage": "Fotoğraf kaydedilemedi. Lütfen tekrar deneyin.",
+    "shareErrorTitle": "Paylaşma Başarısız",
+    "shareErrorMessage": "Fotoğraf paylaşılamadı. Lütfen tekrar deneyin.",
+    "shareNotAvailableMessage": "Bu cihazda paylaşım mevcut değil.",
+    "title": "🎉 Fotoğraf Geri Yüklendi!",
+    "subtitle": "{{mode}} modu kullanılarak geliştirildi • {{time}}",
+    "watermarkText": "Demo Filigran",
+    "saving": "Kaydediliyor...",
+    "saved": "Kaydedildi",
+    "savedToPhotos": "Fotoğraflara Kaydedildi!",
+    "saveToPhotos": "Fotoğraflara Kaydet",
+    "modeUsed": "Kullanılan Mod",
+    "processingTime": "İşlem Süresi",
+    "quality": "Kalite",
+    "qualityDemo": "Demo",
+    "qualityFull": "Tam"
+  },
+  "restoration": {
+    "before": "Önce",
+    "after": "Sonra",
+    "selectResolution": "Çözünürlük Seç",
+    "standard": "Standart",
+    "standardResolution": "~1024×1024",
+    "hd": "HD",
+    "hdResolution": "~2048×2048",
+    "fast": "Hızlı",
+    "fastResolution": "İyi kalite, ~30s",
+    "bestQuality": "En İyi Kalite",
+    "bestQualityResolution": "En yüksek detay, ~90s",
+    "processing": "Fotoğrafınız geliştiriliyor...",
+    "enhancePhoto": "Fotoğrafı Geliştir",
+    "exportPhoto": "Fotoğrafı Dışa Aktar",
+    "error": "Hata",
+    "userNotInitialized": "Kullanıcı başlatılmadı",
+    "noCredits": "Kredi Yok",
+    "noCreditsMessage": "Hiç {{resolution}} krediniz kalmadı. Daha fazla satın almak ister misiniz?",
+    "cancel": "İptal",
+    "purchase": "Satın Al",
+    "enhanceFailed": "Görüntü geliştirilemedi. Lütfen tekrar deneyin.",
+    "processingSubtext": "{{mode}} modu kullanılıyor • {{qualityText}} kalite",
+    "selectEnhancementMode": "Geliştirme Modunu Seç",
+    "enhance": {
+      "description": "Bulanıklığı gider ve keskinleştir"
+    },
+    "colorize": {
+      "description": "Anılara renk kat"
+    },
+    "scratch": {
+      "description": "Çizikleri ve kiri gider"
+    },
+    "enlighten": {
+      "description": "Aydınlatmayı düzelt"
+    },
+    "recreate": {
+      "description": "Hasarlı portreleri geri yükle"
+    },
+    "combine": {
+      "description": "Atalarla birleştir"
+    }
+  },
+  "navigation": {
+    "preview": "Önizleme",
+    "export": "Dışa Aktar",
+    "sync": "Senkronize Et",
+    "verifyEmail": "E-postayı Doğrula",
+    "back": "Geri",
+    "home": "Geri Yükle",
+    "recents": "Son",
+    "settings": "Ayarlar"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "sync": "Senkronizasyon",
+    "notLoggedIn": "Giriş yapmadınız",
+    "notLoggedInSubtitle": "Restorasyon geçmişinizi cihazlar arasında senkronize etmek için giriş yapın",
+    "login": "Senkronize etmek için giriş yapın",
+    "syncNote": "Bu, uygulama içi satın alımlarınızı etkilemez. Bu özelliğe ihtiyaç duymadan istediğiniz zaman geri yükleyebilirsiniz.",
+    "loggedIn": "Giriş yapıldı",
+    "manageDevices": "Cihazları Yönet",
+    "manageDevicesSubtitle": "Senkronize edilmiş cihazları görüntüleyin ve yönetin",
+    "purchases": "Satın Alımlar",
+    "restorePurchases": "Satın Alımları Geri Yükle",
+    "restorePurchasesSubtitle": "Önceki satın alımları geri yükle",
+    "purchaseHistory": "Satın Alma Geçmişi",
+    "purchaseHistorySubtitle": "Tüm geçmiş satın alımları görüntüle",
+    "getMoreCredits": "Daha Fazla Kredi Al",
+    "getMoreCreditsSubtitle": "Kredi paketleri satın al",
+    "legal": "Yasal",
+    "terms": "Hizmet Şartları",
+    "privacy": "Gizlilik Politikası",
+    "support": "Destek",
+    "contactSupport": "Destekle İletişime Geçin",
+    "contactSupportSubtitle": "Uygulama ile ilgili yardım alın",
+    "rateApp": "Uygulamayı Değerlendir",
+    "rateAppSubtitle": "Geri bildiriminizi paylaşın",
+    "language": "Dil",
+    "version": "Sürüm 1.0.0",
+    "copyright": "© 2024 Fotoğraf Restorasyon AI",
+    "restorePurchasesAlertTitle": "Satın Alımları Geri Yükle",
+    "restorePurchasesAlertMessage": "Bu, bu Apple kimliği veya Google Hesabı ile yapılan önceki satın alımları geri yükleyecektir.",
+    "cancel": "İptal",
+    "restore": "Geri Yükle",
+    "success": "Başarılı",
+    "purchasesRestored": "Satın alımlar başarıyla geri yüklendi!",
+    "noPurchasesFound": "Satın alma bulunamadı",
+    "settingsButton": "Ayarlar",
+    "languageNames": {
+      "en": "İngilizce",
+      "tr": "Türkçe",
+      "de": "Almanca",
+      "zh": "Çince"
+    },
+    "disableSyncTitle": "Senkronizasyonu Devre Dışı Bırak?",
+    "disableSyncMessage": "Bu, restorasyon geçmişinizin cihazlar arasında senkronize edilmesini durduracaktır. Restorasyonlarınız bu cihazda kalacaktır.",
+    "disable": "Devre Dışı Bırak",
+    "userIdTitle": "Kullanıcı Kimliği",
+    "userIdMessage": "Benzersiz Kimliğiniz:\n\n{{userId}}\n\nVerilerinizi başka bir cihazda geri yüklemek için bu Kimliği kaydedin.",
+    "yourUniqueId": "Benzersiz Kimliğiniz",
+    "syncAcrossDevices": "Cihazlar Arasında Senkronize Et",
+    "syncYourHistory": "Restorasyon geçmişinizi senkronize edin",
+    "syncedTo": "{{email}} ile senkronize edildi"
+  },
+  "onboarding": {
+    "skip": "Atla",
+    "continue": "Devam Et",
+    "getStarted": "Başla",
+    "screen1": {
+      "title": "Eski Fotoğrafları Hayata Döndürün",
+      "subtitle": "Hasarlı, solmuş veya çizilmiş fotoğrafları saniyeler içinde geri yükleyin",
+      "damaged": "Hasarlı",
+      "restored": "Geri Yüklendi"
+    },
+    "screen2": {
+      "title": "Nasıl Çalışır",
+      "subtitle": "Fotoğraf Seç → AI Geri Yükler → Sonucu Kaydet",
+      "step1": "Fotoğraf Seç",
+      "step2": "AI Geri Yükler",
+      "step3": "Sonucu Kaydet"
+    },
+    "screen3": {
+      "title": "İlk fotoğrafınızı geri yükleyelim",
+      "subtitle": "Sihri görmek için hasarlı veya eski bir fotoğraf seçin",
+      "accessPhotos": "Fotoğraflara Eriş",
+      "failedToAccessPhotos": "Fotoğraflara erişilemedi. Lütfen tekrar deneyin.",
+      "failedToAccessCamera": "Kameraya erişilemedi. Lütfen tekrar deneyin.",
+      "helperText": "💡 Eski aile fotoğrafları, solmuş anılar veya çizilmiş görüntülerle en iyi sonuçları verir"
+    }
+  },
+  "recents": {
+    "title": "Son Restorasyon Yok",
+    "subtitle": "Geçmiş fotoğraf restorasyonlarınız burada görünecektir.",
+    "cta": "Fotoğrafları restore etmeye başla",
+    "photosCount": "fotoğraf",
+    "emptyTitle": "Henüz Restorasyon Yok",
+    "emptySubtitle": "Geri yüklenen fotoğraflarınız burada görünecektir"
+  },
+  "pro": {
+    "title": "Pro'ya Geç",
+    "subtitle": "Sınırsız restorasyonun kilidini açın ve özel özelliklere erişin.",
+    "cta": "Daha Fazla Kredi Al"
+  },
+  "about": {
+    "title": "Fotoğraf Restorasyon AI Hakkında"
+  },
+  "photoInput": {
+    "chooseFromPhotos": "Fotoğraflardan Seç",
+    "takeNewPhoto": "Yeni Fotoğraf Çek",
+    "scanDocument": "Belge Tara",
+    "title": "Fotoğraf Seç",
+    "creditsLabel": "kredi",
+    "chooseFromPhotosSubtitle": "Galerinizden seçin",
+    "helperText": "💡 Eski aile fotoğrafları, solmuş anılar veya hasarlı görüntülerle en iyi sonuçlar",
+    "noCreditsWarning": "⚠️ Kredi kalmadı. Fotoğrafları geri yüklemeye devam etmek için daha fazla satın alın.",
+    "getCreditsButton": "Kredi Al →",
+    "recentRestorationsTitle": "Son Restorasyonlar",
+    "viewAllButton": "Tümünü Görüntüle",
+    "noRecentRestorations": "Henüz son restorasyon yok",
+    "choosePhoto": "Fotoğraf Seç"
+  },
+  "history": {
+    "title": "Restorasyon Geçmişi",
+    "empty": "Henüz restorasyon geçmişi yok."
+  },
+  "profile": {
+    "title": "Profil",
+    "account": "Hesap"
+  },
+  "purchase": {
+    "title": "Daha Fazla Kredi Al",
+    "description": "Daha fazla fotoğraf geliştirmek için bir kredi paketi seçin.",
+    "standard25": "25 Standart Kredi",
+    "hd10": "10 HD Kredi",
+    "comingSoonTitle": "Çok Yakında!",
+    "comingSoonMessage": "Satın alma seçenekleri yakında mevcut olacak."
+  },
+  "verification": {
+    "invalidCodeTitle": "Geçersiz Kod",
+    "invalidCodeMessage": "Lütfen 6 haneli kodu girin",
+    "codeExpiredTitle": "Kod Süresi Doldu",
+    "codeExpiredMessage": "Doğrulama kodunun süresi doldu. Lütfen yeni bir kod isteyin.",
+    "successTitle": "Başarılı!",
+    "successMessage": "Cihazınız başarıyla bağlandı. Restorasyon geçmişiniz artık cihazlar arasında senkronize edilecek.",
+    "failedTitle": "Doğrulama Başarısız",
+    "failedMessage": "Geçersiz doğrulama kodu. Lütfen tekrar deneyin.",
+    "resendCodeTitle": "Kodu Yeniden Gönder",
+    "resendCodeConfirmation": "Yeni bir doğrulama kodu istemek istediğinizden emin misiniz?",
+    "resendButton": "Yeniden Gönder",
+    "codeSentTitle": "Kod Gönderildi",
+    "codeSentMessage": "Yeni bir doğrulama kodu e-postanıza gönderildi.",
+    "resendFailedMessage": "Doğrulama kodu yeniden gönderilemedi",
+    "title": "Doğrulama Kodunu Girin",
+    "subtitle": "Size 6 haneli bir kod gönderdik",
+    "codeExpiresIn": "Kodun süresi doluyor",
+    "verifyButton": "Doğrula ve Cihazı Bağla",
+    "infoText": "Bu, restorasyon geçmişinizi cihazlar arasında senkronize edecektir. Satın alımlarınızı etkilemez."
+  },
+  "emailSync": {
+    "invalidEmailTitle": "Geçersiz E-posta",
+    "invalidEmailMessage": "Lütfen geçerli bir e-posta adresi girin",
+    "deviceAlreadyLinkedTitle": "Cihaz Zaten Bağlı",
+    "deviceAlreadyLinkedMessage": "Bu cihaz zaten {{email}} adresine bağlı",
+    "sendCodeFailed": "Doğrulama kodu gönderilemedi",
+    "removeDeviceTitle": "Cihazı Kaldır",
+    "removeDeviceConfirmation": "\"{{deviceName}}\" cihazını senkronize edilmiş cihazlarınızdan kaldırmak istediğinizden emin misiniz?",
+    "removeButton": "Kaldır",
+    "removeDeviceFailed": "Cihaz kaldırılamadı",
+    "unlinkEmailTitle": "E-postayı Bağlantısını Kes",
+    "unlinkEmailConfirmation": "Bu, restorasyon geçmişinizin senkronizasyonunu durduracaktır. Restorasyonlarınız bu cihazda kalacaktır.",
+    "unlinkButton": "Bağlantıyı Kes",
+    "title": "Geçmiş Senkronizasyonu",
+    "subtitle": "Restorasyon geçmişinizi cihazlar arasında senkronize edin",
+    "infoText": "Bu, restorasyon geçmişinizi senkronize etmek için isteğe bağlı bir özelliktir. Uygulama içi satın alımlarınızı veya bunları geri yükleme yeteneğinizi etkilemez.",
+    "linkEmailSectionTitle": "E-postanızı Bağlayın",
+    "linkEmailDescription": "Restorasyon geçmişinizi tüm cihazlarınız arasında senkronize etmek için e-postanızı girin.",
+    "emailPlaceholder": "E-postanızı girin",
+    "sendVerificationCodeButton": "Doğrulama Kodu Gönder",
+    "linkedEmailSectionTitle": "Bağlı E-posta",
+    "linkedDevicesSectionTitle": "Bağlı Cihazlar ({{count}})",
+    "thisDeviceLabel": "(Bu Cihaz)",
+    "linkedLabel": "Bağlı",
+    "footerText": "Satın alma geçmişiniz, uygulama mağazası hesabınız aracılığıyla ayrı olarak yönetilir ve bu özellikten etkilenmez."
+  },
+  "export": {
+    "photoSaved": "Fotoğraf galerine kaydedildi!",
+    "saveFailed": "Fotoğraf kaydedilemedi. Lütfen tekrar deneyin.",
+    "shareFailed": "Fotoğraf paylaşılamadı. Lütfen tekrar deneyin.",
+    "watermarkText": "Fotoğraf Restorasyon AI",
+    "watermarkNotice": "⚠️ Bu görüntü bir filigran içeriyor",
+    "watermarkSubtext": "Filigranı kaldırmak için kredi satın alın",
+    "saveToDevice": "Cihaza Kaydet",
+    "sharePhoto": "Fotoğrafı Paylaş",
+    "removeWatermark": "Filigranı Kaldır"
+  }
+}

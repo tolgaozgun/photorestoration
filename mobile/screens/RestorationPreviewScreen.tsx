@@ -18,6 +18,7 @@ import { RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
+import { useTranslation } from 'react-i18next';
 import Slider from '@react-native-community/slider';
 
 type RestorationPreviewScreenNavigationProp = StackNavigationProp<
@@ -34,6 +35,7 @@ interface Props {
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function RestorationPreviewScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { imageUri } = route.params;
   const { user, updateCredits } = useUser();
   const { trackEvent } = useAnalytics();
@@ -46,7 +48,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
 
   const processImage = async () => {
     if (!user) {
-      Alert.alert('Error', 'User not initialized');
+      Alert.alert(t('restoration.error'), t('restoration.userNotInitialized'));
       return;
     }
 
@@ -56,11 +58,11 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
 
     if (!hasCredits) {
       Alert.alert(
-        'No Credits',
-        `You don't have any ${selectedResolution.toUpperCase()} credits left. Would you like to purchase more?`,
+        t('restoration.noCredits'),
+        t('restoration.noCreditsMessage', { resolution: selectedResolution.toUpperCase() }),
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Purchase', onPress: () => navigation.navigate('Home') },
+          { text: t('restoration.cancel'), style: 'cancel' },
+          { text: t('restoration.purchase'), onPress: () => navigation.navigate('Home') },
         ]
       );
       return;
@@ -112,7 +114,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
 
     } catch (error) {
       console.error('Enhancement error:', error);
-      Alert.alert('Error', 'Failed to enhance image. Please try again.');
+      Alert.alert(t('restoration.error'), t('restoration.enhanceFailed'));
       trackEvent(`restore_${selectedResolution}`, { failed: true, error: error.message });
     } finally {
       setIsProcessing(false);
@@ -150,7 +152,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
               />
             </View>
             <View style={styles.sliderContainer}>
-              <Text style={styles.sliderLabel}>Before</Text>
+              <Text style={styles.sliderLabel}>{t('restoration.before')}</Text>
               <Slider
                 style={styles.slider}
                 minimumValue={0}
@@ -161,7 +163,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                 maximumTrackTintColor="#333"
                 thumbTintColor="#007AFF"
               />
-              <Text style={styles.sliderLabel}>After</Text>
+              <Text style={styles.sliderLabel}>{t('restoration.after')}</Text>
             </View>
           </>
         )}
@@ -170,7 +172,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       {!enhancedImage && !isProcessing && (
         <>
           <View style={styles.modeContainer}>
-            <Text style={styles.sectionTitle}>Select Enhancement Mode</Text>
+            <Text style={styles.sectionTitle}>{t('restoration.selectEnhancementMode')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.modeScroll}>
               <TouchableOpacity
                 style={[
@@ -184,9 +186,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                   styles.modeButtonText,
                   selectedMode === 'enhance' && styles.modeButtonTextActive,
                 ]}>
-                  Enhance
+                  {t('modes.enhance.title')}
                 </Text>
-                <Text style={styles.modeDescription}>Remove blur & sharpen</Text>
+                <Text style={styles.modeDescription}>{t('modes.enhance.description')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -201,9 +203,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                   styles.modeButtonText,
                   selectedMode === 'colorize' && styles.modeButtonTextActive,
                 ]}>
-                  Colorize
+                  {t('modes.colorize.title')}
                 </Text>
-                <Text style={styles.modeDescription}>Add color to memories</Text>
+                <Text style={styles.modeDescription}>{t('modes.colorize.description')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -218,9 +220,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                   styles.modeButtonText,
                   selectedMode === 'de-scratch' && styles.modeButtonTextActive,
                 ]}>
-                  De-scratch
+                  {t('modes.scratch.title')}
                 </Text>
-                <Text style={styles.modeDescription}>Remove scratches & dirt</Text>
+                <Text style={styles.modeDescription}>{t('modes.scratch.description')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -235,9 +237,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                   styles.modeButtonText,
                   selectedMode === 'enlighten' && styles.modeButtonTextActive,
                 ]}>
-                  Enlighten
+                  {t('modes.enlighten.title')}
                 </Text>
-                <Text style={styles.modeDescription}>Correct lighting</Text>
+                <Text style={styles.modeDescription}>{t('modes.enlighten.description')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -252,9 +254,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                   styles.modeButtonText,
                   selectedMode === 'recreate' && styles.modeButtonTextActive,
                 ]}>
-                  Recreate
+                  {t('modes.recreate.title')}
                 </Text>
-                <Text style={styles.modeDescription}>Restore damaged portraits</Text>
+                <Text style={styles.modeDescription}>{t('modes.recreate.description')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -269,15 +271,15 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                   styles.modeButtonText,
                   selectedMode === 'combine' && styles.modeButtonTextActive,
                 ]}>
-                  Combine
+                  {t('modes.combine.title')}
                 </Text>
-                <Text style={styles.modeDescription}>Merge with ancestors</Text>
+                <Text style={styles.modeDescription}>{t('modes.combine.description')}</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
 
           <View style={styles.resolutionContainer}>
-            <Text style={styles.sectionTitle}>Select Resolution</Text>
+            <Text style={styles.sectionTitle}>{t('restoration.selectResolution')}</Text>
             <View style={styles.resolutionButtons}>
             <TouchableOpacity
               style={[
@@ -290,9 +292,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                 styles.resolutionButtonText,
                 selectedResolution === 'standard' && styles.resolutionButtonTextActive,
               ]}>
-                Standard
+                {t('restoration.standard')}
               </Text>
-              <Text style={styles.resolutionInfo}>~1024×1024</Text>
+              <Text style={styles.resolutionInfo}>{t('restoration.standardResolution')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -305,9 +307,9 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
                 styles.resolutionButtonText,
                 selectedResolution === 'hd' && styles.resolutionButtonTextActive,
               ]}>
-                HD
+                {t('restoration.hd')}
               </Text>
-              <Text style={styles.resolutionInfo}>~2048×2048</Text>
+              <Text style={styles.resolutionInfo}>{t('restoration.hdResolution')}</Text>
             </TouchableOpacity>
           </View>
           </View>
@@ -317,20 +319,20 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       {isProcessing && (
         <View style={styles.processingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.processingText}>Enhancing your photo...</Text>
+          <Text style={styles.processingText}>{t('restoration.processing')}</Text>
         </View>
       )}
 
       <View style={styles.buttonsContainer}>
         {!enhancedImage && !isProcessing && (
           <TouchableOpacity style={styles.primaryButton} onPress={processImage}>
-            <Text style={styles.primaryButtonText}>Enhance Photo</Text>
+            <Text style={styles.primaryButtonText}>{t('restoration.enhancePhoto')}</Text>
           </TouchableOpacity>
         )}
 
         {enhancedImage && (
           <TouchableOpacity style={styles.primaryButton} onPress={handleExport}>
-            <Text style={styles.primaryButtonText}>Export Photo</Text>
+            <Text style={styles.primaryButtonText}>{t('restoration.exportPhoto')}</Text>
           </TouchableOpacity>
         )}
       </View>

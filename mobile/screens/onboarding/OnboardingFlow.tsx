@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { Animated } from 'react-native';
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
+  const { t } = useTranslation();
   const [currentScreen, setCurrentScreen] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -146,7 +148,7 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
               style={styles.backButton}
               onPress={goToPreviousScreen}
             >
-              <Text style={styles.backButtonText}>‹ Back</Text>
+              <Text style={styles.backButtonText}>‹ {t('navigation.back')}</Text>
             </TouchableOpacity>
           )}
           
@@ -155,7 +157,7 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
             style={styles.skipButton}
             onPress={handleSkip}
           >
-            <Text style={styles.skipButtonText}>Skip</Text>
+            <Text style={styles.skipButtonText}>{t('onboarding.skip')}</Text>
           </TouchableOpacity>
         </View>
       )}

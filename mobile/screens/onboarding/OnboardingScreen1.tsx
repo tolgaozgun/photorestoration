@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export default function OnboardingScreen1({ onContinue }: Props) {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -69,7 +71,7 @@ export default function OnboardingScreen1({ onContinue }: Props) {
                   <View style={styles.fadeOverlay} />
                 </View>
               </View>
-              <Text style={styles.imageLabel}>Damaged</Text>
+              <Text style={styles.imageLabel}>{t('onboarding.screen1.damaged')}</Text>
             </View>
 
             <Animated.View style={[styles.arrowContainer, { opacity: fadeAnim }]}>
@@ -81,7 +83,7 @@ export default function OnboardingScreen1({ onContinue }: Props) {
                 <Text style={styles.imageIcon}>✨</Text>
                 <View style={styles.enhancedGlow} />
               </View>
-              <Text style={styles.imageLabel}>Restored</Text>
+              <Text style={styles.imageLabel}>{t('onboarding.screen1.restored')}</Text>
             </View>
           </View>
         </Animated.View>
@@ -96,9 +98,9 @@ export default function OnboardingScreen1({ onContinue }: Props) {
             }
           ]}
         >
-          <Text style={styles.title}>Bring Old Photos Back to Life</Text>
+          <Text style={styles.title}>{t('onboarding.screen1.title')}</Text>
           <Text style={styles.subtitle}>
-            Restore damaged, faded, or scratched photos in seconds
+            {t('onboarding.screen1.subtitle')}
           </Text>
         </Animated.View>
 
@@ -118,7 +120,7 @@ export default function OnboardingScreen1({ onContinue }: Props) {
             activeOpacity={0.9}
           >
             <View style={styles.continueGradient}>
-              <Text style={styles.continueText}>Continue</Text>
+              <Text style={styles.continueText}>{t('onboarding.continue')}</Text>
             </View>
           </TouchableOpacity>
         </Animated.View>

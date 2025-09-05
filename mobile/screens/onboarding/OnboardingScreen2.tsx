@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function OnboardingScreen2({ onContinue }: Props) {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const iconAnims = [
@@ -77,7 +79,7 @@ export default function OnboardingScreen2({ onContinue }: Props) {
               <View style={styles.stepIcon}>
                 <Text style={styles.stepEmoji}>📱</Text>
               </View>
-              <Text style={styles.stepText}>Choose Photo</Text>
+              <Text style={styles.stepText}>{t('onboarding.screen2.step1')}</Text>
             </Animated.View>
 
             {/* Connector */}
@@ -99,7 +101,7 @@ export default function OnboardingScreen2({ onContinue }: Props) {
               <View style={styles.stepIcon}>
                 <Text style={styles.stepEmoji}>✨</Text>
               </View>
-              <Text style={styles.stepText}>AI Restores</Text>
+              <Text style={styles.stepText}>{t('onboarding.screen2.step2')}</Text>
             </Animated.View>
 
             {/* Connector */}
@@ -121,7 +123,7 @@ export default function OnboardingScreen2({ onContinue }: Props) {
               <View style={styles.stepIcon}>
                 <Text style={styles.stepEmoji}>💾</Text>
               </View>
-              <Text style={styles.stepText}>Save Result</Text>
+              <Text style={styles.stepText}>{t('onboarding.screen2.step3')}</Text>
             </Animated.View>
           </View>
         </Animated.View>
@@ -136,9 +138,9 @@ export default function OnboardingScreen2({ onContinue }: Props) {
             }
           ]}
         >
-          <Text style={styles.title}>Choose Photo → AI Restores → Save Result</Text>
+          <Text style={styles.title}>{t('onboarding.screen2.title')}</Text>
           <Text style={styles.subtitle}>
-            No complicated settings. No photo editing skills needed.
+            {t('onboarding.screen2.subtitle')}
           </Text>
         </Animated.View>
 
@@ -158,7 +160,7 @@ export default function OnboardingScreen2({ onContinue }: Props) {
             activeOpacity={0.9}
           >
             <View style={styles.continueGradient}>
-              <Text style={styles.continueText}>Get Started</Text>
+              <Text style={styles.continueText}>{t('onboarding.getStarted')}</Text>
             </View>
           </TouchableOpacity>
         </Animated.View>

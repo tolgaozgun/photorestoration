@@ -15,12 +15,14 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const { t } = useTranslation();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
@@ -57,7 +59,7 @@ export default function HomeScreen() {
 
   const pickImageFromGallery = async () => {
     if (!hasGalleryPermission) {
-      Alert.alert('Permission Required', 'Please enable gallery access in settings.');
+      Alert.alert(t('home.permissionRequired'), t('home.galleryPermission'));
       return;
     }
 
@@ -105,11 +107,11 @@ export default function HomeScreen() {
             { opacity: fadeAnim }
           ]}
         >
-          <Text style={styles.title}>Restore</Text>
+          <Text style={styles.title}>{t('navigation.home')}</Text>
           {hasCredits && (
             <View style={styles.creditsBar}>
               <Text style={styles.creditText}>{totalCredits}</Text>
-              <Text style={styles.creditLabel}>credits</Text>
+              <Text style={styles.creditLabel}>{t('photoInput.creditsLabel')}</Text>
             </View>
           )}
         </Animated.View>
@@ -129,9 +131,9 @@ export default function HomeScreen() {
               <Text style={styles.mainIcon}>✨</Text>
             </View>
             
-            <Text style={styles.mainTitle}>Restore Your Photos</Text>
+            <Text style={styles.mainTitle}>{t('home.mainTitle')}</Text>
             <Text style={styles.subtitle}>
-              Choose from 6 restoration modes to bring memories back to life
+              {t('home.subtitle')}
             </Text>
 
             <TouchableOpacity
@@ -146,7 +148,7 @@ export default function HomeScreen() {
                 end={{ x: 1, y: 0 }}
               >
                 <Text style={styles.uploadIcon}>📷</Text>
-                <Text style={styles.uploadText}>Choose Photo</Text>
+                <Text style={styles.uploadText}>{t('photoInput.choosePhoto')}</Text>
               </LinearGradient>
             </TouchableOpacity>
 
@@ -155,11 +157,11 @@ export default function HomeScreen() {
                 style={styles.getCreditsButton}
                 onPress={() => {
                   trackEvent('action', { type: 'purchase_button_tap' });
-                  Alert.alert('Get Credits', 'Purchase options coming soon!');
+                  Alert.alert(t('purchase.title'), t('purchase.comingSoonMessage'));
                 }}
                 activeOpacity={0.7}
               >
-                <Text style={styles.getCreditsText}>Get Credits →</Text>
+                <Text style={styles.getCreditsText}>{t('photoInput.getCreditsButton')}</Text>
               </TouchableOpacity>
             )}
           </Animated.View>

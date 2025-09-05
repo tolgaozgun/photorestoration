@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export default function PreviewScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const { imageUri, selectedMode } = route.params as { imageUri: string; selectedMode: string; };
   const { user, updateCredits } = useUser();
   const { trackEvent } = useAnalytics();
@@ -38,10 +40,21 @@ export default function PreviewScreen({ navigation, route }: Props) {
   const [comparisonSlider, setComparisonSlider] = useState(0.5);
   const [watermark, setWatermark] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
+  const [qualityLevel, setQualityLevel] = useState(0.5); // Initial quality level
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+
+  const qualityInfo = useMemo(() => {
+    if (qualityLevel <= 0.3) {
+      return { text: 'Fast', time: '~10s', quality: 'standard' };
+    } else if (qualityLevel >= 0.7) {
+      return { text: 'Best', time: '~30s', quality: 'hd' };
+    } else {
+      return { text: 'Good', time: '~20s', quality: 'standard' };
+    }
+  }, [qualityLevel]);
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'preview', mode: selectedMode });
@@ -72,17 +85,17 @@ export default function PreviewScreen({ navigation, route }: Props) {
 
   const processImage = async () => {
     if (!user) {
-      Alert.alert('Error', 'User not initialized');
+      Alert.alert(t('restoration.error'), t('restoration.userNotInitialized'));
       return;
     }
 
     if (!canProcess()) {
       Alert.alert(
-        'No Credits',
-        `You don't have any ${selectedResolution.toUpperCase()} credits left. Would you like to purchase more?`,
+        t('restoration.noCredits'),
+        t('restoration.noCreditsMessage', { resolution: selectedResolution.toUpperCase() }),
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Purchase', onPress: () => navigation.navigate('PhotoInput') },
+          { text: t('restoration.cancel'), style: 'cancel' },
+          { text: t('restoration.purchase'), onPress: () => navigation.navigate('PhotoInput') },
         ]
       );
       return;
@@ -145,7 +158,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
 
     } catch (error) {
       console.error('Enhancement error:', error);
-      Alert.alert('Error', 'Failed to enhance image. Please try again.');
+      Alert.alert(t('restoration.error'), t('restoration.enhanceFailed'));
       trackEvent(`restore_${selectedResolution}`, { 
         failed: true, 
         error: error.message,
@@ -196,7 +209,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
         
         {/* Comparison Slider */}
         <View style={styles.comparisonSlider}>
-          <Text style={styles.sliderLabel}>Before</Text>
+          <Text style={styles.sliderLabel}>{t('restoration.before')}</Text>
           <Slider
             style={styles.slider}
             minimumValue={0}
@@ -207,7 +220,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
             maximumTrackTintColor="rgba(255, 255, 255, 0.3)"
             thumbTintColor="#FF6B6B"
           />
-          <Text style={styles.sliderLabel}>After</Text>
+          <Text style={styles.sliderLabel}>{t('restoration.after')}</Text>
         </View>
       </View>
     );
@@ -228,7 +241,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Preview & Adjust</Text>
+        <Text style={styles.title}>{t('preview.title')}</Text>
         <View style={styles.placeholder} />
       </Animated.View>
 
@@ -254,14 +267,14 @@ export default function PreviewScreen({ navigation, route }: Props) {
               { opacity: fadeAnim }
             ]}
           >
-            <Text style={styles.controlTitle}>Processing Quality</Text>
+            <Text style={styles.controlTitle}>{t('preview.processingQuality')}</Text>
             <View style={styles.qualitySliderContainer}>
               <View style={styles.qualityLabels}>
-                <Text style={styles.qualityLabel}>Fast</Text>
+                <Text style={styles.qualityLabel}>{t('preview.quality.fast')}</Text>
                 <Text style={[styles.qualitySelected, { fontSize: 16, fontWeight: '600' }]}>
-                  {qualityInfo.text}
+                  {t(`preview.quality.${qualityInfo.text.toLowerCase()}`)}
                 </Text>
-                <Text style={styles.qualityLabel}>Best</Text>
+                <Text style={styles.qualityLabel}>{t('preview.quality.best')}</Text>
               </View>
               <Slider
                 style={styles.qualitySlider}
@@ -274,7 +287,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
                 thumbTintColor="#FF6B6B"
               />
               <Text style={styles.timeEstimate}>
-                Estimated time: {qualityInfo.time} • {qualityInfo.quality.toUpperCase()} quality
+                {t('preview.timeEstimate', { time: qualityInfo.time, quality: qualityInfo.quality.toUpperCase() })}
               </Text>
             </View>
           </Animated.View>
@@ -288,9 +301,9 @@ export default function PreviewScreen({ navigation, route }: Props) {
             ]}
           >
             <ActivityIndicator size="large" color="#FF6B6B" />
-            <Text style={styles.processingText}>Enhancing your photo...</Text>
+            <Text style={styles.processingText}>{t('restoration.processing')}</Text>
             <Text style={styles.processingSubtext}>
-              Using {selectedMode} mode • {qualityInfo.text} quality
+              {t('restoration.processingSubtext', { mode: selectedMode, qualityText: qualityInfo.text })}
             </Text>
           </Animated.View>
         )}
@@ -320,11 +333,11 @@ export default function PreviewScreen({ navigation, route }: Props) {
               end={{ x: 1, y: 0 }}
             >
               <Text style={styles.processText}>
-                {canProcess() ? 'Apply Enhancement' : 'No Credits Available'}
+                {canProcess() ? t('preview.apply') : t('preview.noCreditsAvailable')}
               </Text>
               {canProcess() && (
                 <Text style={styles.processSubtext}>
-                  Uses 1 {selectedResolution.toUpperCase()} credit
+                  {t('preview.usesCredit', { resolution: selectedResolution.toUpperCase() })}
                 </Text>
               )}
             </LinearGradient>
@@ -343,7 +356,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
-              <Text style={styles.continueText}>Continue to Save</Text>
+              <Text style={styles.continueText}>{t('preview.continueToSave')}</Text>
             </LinearGradient>
           </TouchableOpacity>
         )}

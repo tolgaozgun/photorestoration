@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function OnboardingScreen3({ onPhotoSelected }: Props) {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -63,11 +65,11 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
       
       if (permissionResult.status !== 'granted') {
         Alert.alert(
-          'Permission Required',
-          'Please allow access to your photos to continue.',
+          t('home.permissionRequired'),
+          t('home.galleryPermission'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Settings', onPress: () => {} },
+            { text: t('restoration.cancel'), style: 'cancel' },
+            { text: t('settings.settingsButton'), onPress: () => {} },
           ]
         );
         return;
@@ -85,7 +87,7 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to access photos. Please try again.');
+      Alert.alert(t('restoration.error'), t('onboarding.screen3.failedToAccessPhotos'));
     }
   };
 
@@ -95,11 +97,11 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
       
       if (permissionResult.status !== 'granted') {
         Alert.alert(
-          'Camera Permission Required',
-          'Please allow camera access to take photos.',
+          t('home.cameraPermissionRequired'),
+          t('home.cameraPermission'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Settings', onPress: () => {} },
+            { text: t('restoration.cancel'), style: 'cancel' },
+            { text: t('settings.settingsButton'), onPress: () => {} },
           ]
         );
         return;
@@ -115,7 +117,7 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
       }
     } catch (error) {
       console.error('Error taking picture:', error);
-      Alert.alert('Error', 'Failed to access camera. Please try again.');
+      Alert.alert(t('restoration.error'), t('onboarding.screen3.failedToAccessCamera'));
     }
   };
 
@@ -138,9 +140,9 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
           <View style={styles.iconContainer}>
             <Text style={styles.headerIcon}>📸</Text>
           </View>
-          <Text style={styles.title}>Let's restore your first photo</Text>
+          <Text style={styles.title}>{t('onboarding.screen3.title')}</Text>
           <Text style={styles.subtitle}>
-            Choose a damaged or old photo to see the magic
+            {t('onboarding.screen3.subtitle')}
           </Text>
         </Animated.View>
 
@@ -163,7 +165,7 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
             >
               <View style={styles.primaryGradient}>
                 <Text style={styles.primaryIcon}>🖼️</Text>
-                <Text style={styles.primaryText}>Choose from Photos</Text>
+                <Text style={styles.primaryText}>{t('photoInput.chooseFromPhotos')}</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>
@@ -176,7 +178,7 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
           >
             <View style={styles.secondaryContent}>
               <Text style={styles.secondaryIcon}>📷</Text>
-              <Text style={styles.secondaryText}>Take New Photo</Text>
+              <Text style={styles.secondaryText}>{t('photoInput.takeNewPhoto')}</Text>
             </View>
           </TouchableOpacity>
 
@@ -186,7 +188,7 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
             onPress={requestPermissionAndPickImage} // For now, same as photos
             activeOpacity={0.7}
           >
-            <Text style={styles.tertiaryText}>Scan Document</Text>
+            <Text style={styles.tertiaryText}>{t('photoInput.scanDocument')}</Text>
           </TouchableOpacity>
         </Animated.View>
 
@@ -200,7 +202,7 @@ export default function OnboardingScreen3({ onPhotoSelected }: Props) {
           ]}
         >
           <Text style={styles.helperText}>
-            💡 Works best with old family photos, faded memories, or scratched images
+            {t('onboarding.screen3.helperText')}
           </Text>
         </Animated.View>
       </View>

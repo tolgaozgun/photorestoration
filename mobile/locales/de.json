@@ -1,0 +1,331 @@
+{
+  "common": {
+    "ok": "OK",
+    "loading": "Wird geladen...",
+    "done": "Fertig"
+  },
+  "home": {
+    "permissionRequired": "Genehmigung erforderlich",
+    "galleryPermission": "Bitte aktivieren Sie den Galeriezugriff in den Einstellungen.",
+    "cameraPermission": "Bitte aktivieren Sie den Kamerazugriff in den Einstellungen.",
+    "cameraPermissionRequired": "Kameraberechtigung erforderlich",
+    "mainTitle": "Ihre Fotos wiederherstellen",
+    "subtitle": "Wählen Sie aus 6 Wiederherstellungsmodi, um Erinnerungen wieder zum Leben zu erwecken",
+    "permissionDenied": "Berechtigung verweigert"
+  },
+  "modes": {
+    "selectMode": "Wählen Sie einen Modus",
+    "showMore": "Mehr Optionen Anzeigen",
+    "showLess": "Weniger Optionen Anzeigen",
+    "recommended": "Empfohlen",
+    "auto": {
+      "title": "Automatisch verbessern",
+      "subtitle": "Am besten für allgemeine Verbesserungen",
+      "description": "Perfekt für unscharfe oder minderwertige Fotos"
+    },
+    "scratch": {
+      "title": "Kratzer beheben",
+      "subtitle": "Am besten für Fotos mit physischen Schäden",
+      "description": "Kratzer, Flecken und Beschädigungen entfernen"
+    },
+    "colorize": {
+      "title": "Farbe hinzufügen",
+      "subtitle": "Alte Erinnerungen kolorieren",
+      "description": "Schwarz-Weiß-Fotos zum Leben erwecken"
+    },
+    "enlighten": {
+      "title": "Beleuchtung korrigieren",
+      "subtitle": "Belichtung und Kontrast ausgleichen",
+      "description": "Dunkle oder überbelichtete Fotos korrigieren"
+    },
+    "recreate": {
+      "title": "Porträts wiederherstellen",
+      "subtitle": "Fortgeschrittene Gesichtsrestaurierung",
+      "description": "Stark beschädigte Gesichter wiederherstellen"
+    },
+    "combine": {
+      "title": "Vorfahren zusammenführen",
+      "subtitle": "Experimentelle Funktion",
+      "description": "Merkmale mit Familienfotos kombinieren"
+    },
+    "chooseEnhancement": "Verbesserung auswählen",
+    "selectOption": "Wählen Sie die beste Option für Ihr Foto:",
+    "continueWith": "Weiter mit {{modeName}}"
+  },
+  "preview": {
+    "title": "Vorschau & Anpassen",
+    "quality": {
+      "fast": "Schnell",
+      "best": "Beste",
+      "good": "Gut"
+    },
+    "timeIndicator": "Geschätzte Zeit: ~{{time}}s",
+    "apply": "Verbesserung anwenden",
+    "processingQuality": "Verarbeitungsqualität",
+    "timeEstimate": "Geschätzte Zeit: {{time}} • {{quality}} Qualität",
+    "noCreditsAvailable": "Keine Guthaben verfügbar",
+    "usesCredit": "Verwendet 1 {{resolution}} Guthaben",
+    "continueToSave": "Weiter zum Speichern"
+  },
+  "result": {
+    "save": "Speichern",
+    "share": "Teilen",
+    "tryAnother": "Versuchen Sie es mit einem anderen Foto",
+    "viewHistory": "Verlauf anzeigen",
+    "saveSuccessTitle": "Gespeichert!",
+    "saveSuccessMessage": "Foto auf Ihrem Gerät gespeichert.",
+    "saveErrorTitle": "Speichern fehlgeschlagen",
+    "saveErrorMessage": "Foto konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    "shareErrorTitle": "Teilen fehlgeschlagen",
+    "shareErrorMessage": "Foto konnte nicht geteilt werden. Bitte versuchen Sie es erneut.",
+    "shareNotAvailableMessage": "Teilen ist auf diesem Gerät nicht verfügbar.",
+    "title": "🎉 Foto wiederhergestellt!",
+    "subtitle": "Verbessert mit {{mode}} Modus • {{time}}",
+    "watermarkText": "Demo-Wasserzeichen",
+    "saving": "Wird gespeichert...",
+    "saved": "Gespeichert",
+    "savedToPhotos": "In Fotos gespeichert!",
+    "saveToPhotos": "In Fotos speichern",
+    "modeUsed": "Verwendeter Modus",
+    "processingTime": "Verarbeitungszeit",
+    "quality": "Qualität",
+    "qualityDemo": "Demo",
+    "qualityFull": "Voll"
+  },
+  "restoration": {
+    "before": "Vorher",
+    "after": "Nachher",
+    "selectResolution": "Auflösung Wählen",
+    "standard": "Standard",
+    "standardResolution": "~1024×1024",
+    "hd": "HD",
+    "hdResolution": "~2048×2048",
+    "fast": "Schnell",
+    "fastResolution": "Gute Qualität, ~30s",
+    "bestQuality": "Beste Qualität",
+    "bestQualityResolution": "Höchste Detailtreue, ~90s",
+    "processing": "Ihr Foto wird verbessert...",
+    "enhancePhoto": "Foto Verbessern",
+    "exportPhoto": "Foto Exportieren",
+    "error": "Fehler",
+    "userNotInitialized": "Benutzer nicht initialisiert",
+    "noCredits": "Keine Guthaben",
+    "noCreditsMessage": "Sie haben keine {{resolution}} Guthaben mehr. Möchten Sie mehr kaufen?",
+    "cancel": "Abbrechen",
+    "purchase": "Kaufen",
+    "enhanceFailed": "Bild konnte nicht verbessert werden. Bitte versuchen Sie es erneut.",
+    "processingSubtext": "Verwenden von {{mode}} Modus • {{qualityText}} Qualität",
+    "selectEnhancementMode": "Verbesserungsmodus auswählen",
+    "enhance": {
+      "description": "Unschärfe entfernen & Details schärfen"
+    },
+    "colorize": {
+      "description": "Erinnerungen Farbe hinzufügen"
+    },
+    "scratch": {
+      "description": "Kratzer & Schmutz entfernen"
+    },
+    "enlighten": {
+      "description": "Beleuchtung korrigieren"
+    },
+    "recreate": {
+      "description": "Beschädigte Porträts wiederherstellen"
+    },
+    "combine": {
+      "description": "Mit Vorfahren zusammenführen"
+    }
+  },
+  "navigation": {
+    "preview": "Vorschau",
+    "export": "Exportieren",
+    "sync": "Synchronisieren",
+    "verifyEmail": "E-Mail Bestätigen",
+    "back": "Zurück",
+    "home": "Wiederherstellen",
+    "recents": "Letzte",
+    "settings": "Einstellungen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "sync": "Synchronisieren",
+    "notLoggedIn": "Sie sind nicht angemeldet",
+    "notLoggedInSubtitle": "Melden Sie sich an, um Ihren Wiederherstellungsverlauf auf allen Geräten zu synchronisieren",
+    "login": "Zum Synchronisieren anmelden",
+    "syncNote": "Dies hat keine Auswirkungen auf Ihre In-App-Käufe. Sie können sie jederzeit wiederherstellen, ohne diese Funktion zu benötigen.",
+    "loggedIn": "Angemeldet",
+    "manageDevices": "Geräte Verwalten",
+    "manageDevicesSubtitle": "Synchronisierte Geräte anzeigen und verwalten",
+    "purchases": "Käufe",
+    "restorePurchases": "Käufe Wiederherstellen",
+    "restorePurchasesSubtitle": "Frühere Käufe wiederherstellen",
+    "purchaseHistory": "Kaufverlauf",
+    "purchaseHistorySubtitle": "Alle vergangenen Käufe anzeigen",
+    "getMoreCredits": "Mehr Guthaben Erhalten",
+    "getMoreCreditsSubtitle": "Guthabenpakete kaufen",
+    "legal": "Rechtliches",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutz-Bestimmungen",
+    "support": "Unterstützung",
+    "contactSupport": "Support Kontaktieren",
+    "contactSupportSubtitle": "Hilfe bei der App erhalten",
+    "rateApp": "App Bewerten",
+    "rateAppSubtitle": "Teilen Sie Ihr Feedback",
+    "language": "Sprache",
+    "version": "Version 1.0.0",
+    "copyright": "© 2024 Photo Restoration AI",
+    "restorePurchasesAlertTitle": "Käufe Wiederherstellen",
+    "restorePurchasesAlertMessage": "Dadurch werden alle früheren Käufe wiederhergestellt, die mit dieser Apple ID oder diesem Google-Konto getätigt wurden.",
+    "cancel": "Abbrechen",
+    "restore": "Wiederherstellen",
+    "success": "Erfolg",
+    "purchasesRestored": "Käufe erfolgreich wiederhergestellt!",
+    "noPurchasesFound": "Keine Käufe gefunden",
+    "settingsButton": "Einstellungen",
+    "languageNames": {
+      "en": "Englisch",
+      "tr": "Türkisch",
+      "de": "Deutsch",
+      "zh": "Chinesisch"
+    },
+    "disableSyncTitle": "Synchronisierung deaktivieren?",
+    "disableSyncMessage": "Dadurch wird die Synchronisierung Ihres Wiederherstellungsverlaufs auf allen Geräten beendet. Ihre Wiederherstellungen bleiben auf diesem Gerät.",
+    "disable": "Deaktivieren",
+    "userIdTitle": "Benutzer-ID",
+    "userIdMessage": "Ihre eindeutige ID:\n\n{{userId}}\n\nSpeichern Sie diese ID, um Ihre Daten auf einem anderen Gerät wiederherzustellen.",
+    "yourUniqueId": "Ihre eindeutige ID",
+    "syncAcrossDevices": "Geräteübergreifend synchronisieren",
+    "syncYourHistory": "Ihren Wiederherstellungsverlauf synchronisieren",
+    "syncedTo": "Synchronisiert mit {{email}}"
+  },
+  "onboarding": {
+    "skip": "Überspringen",
+    "continue": "Fortsetzen",
+    "getStarted": "Loslegen",
+    "screen1": {
+      "title": "Erwecken Sie alte Fotos wieder zum Leben",
+      "subtitle": "Stellen Sie beschädigte, verblasste oder zerkratzte Fotos in Sekunden wieder her",
+      "damaged": "Beschädigt",
+      "restored": "Wiederhergestellt"
+    },
+    "screen2": {
+      "title": "Wie es funktioniert",
+      "subtitle": "Foto auswählen → KI stellt wieder her → Ergebnis speichern",
+      "step1": "Foto auswählen",
+      "step2": "KI stellt wieder her",
+      "step3": "Ergebnis speichern"
+    },
+    "screen3": {
+      "title": "Lassen Sie uns Ihr erstes Foto wiederherstellen",
+      "subtitle": "Wählen Sie ein beschädigtes oder altes Foto, um die Magie zu sehen",
+      "accessPhotos": "Zugriff auf Fotos",
+      "failedToAccessPhotos": "Zugriff auf Fotos fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "failedToAccessCamera": "Zugriff auf Kamera fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "helperText": "💡 Funktioniert am besten mit alten Familienfotos, verblassten Erinnerungen oder zerkratzten Bildern"
+    }
+  },
+  "recents": {
+    "title": "Keine Letzten Wiederherstellungen",
+    "subtitle": "Ihre früheren Fotowiederherstellungen werden hier angezeigt.",
+    "cta": "Beginnen Sie mit der Wiederherstellung von Fotos",
+    "photosCount": "Fotos",
+    "emptyTitle": "Noch keine Wiederherstellungen",
+    "emptySubtitle": "Ihre wiederhergestellten Fotos werden hier angezeigt"
+  },
+  "pro": {
+    "title": "Pro Werden",
+    "subtitle": "Schalten Sie unbegrenzte Wiederherstellungen frei und erhalten Sie Zugriff auf exklusive Funktionen.",
+    "cta": "Mehr Guthaben Erhalten"
+  },
+  "about": {
+    "title": "Über Photo Restoration AI"
+  },
+  "photoInput": {
+    "chooseFromPhotos": "Aus Fotos auswählen",
+    "takeNewPhoto": "Neues Foto aufnehmen",
+    "scanDocument": "Dokument scannen",
+    "title": "Foto auswählen",
+    "creditsLabel": "Guthaben",
+    "chooseFromPhotosSubtitle": "Aus Ihrer Galerie auswählen",
+    "helperText": "💡 Beste Ergebnisse mit alten Familienfotos, verblassten Erinnerungen oder beschädigten Bildern",
+    "noCreditsWarning": "⚠️ Keine Guthaben mehr vorhanden. Kaufen Sie mehr, um Fotos weiterherzustellen.",
+    "getCreditsButton": "Guthaben erhalten →",
+    "recentRestorationsTitle": "Letzte Wiederherstellungen",
+    "viewAllButton": "Alle anzeigen",
+    "noRecentRestorations": "Noch keine letzten Wiederherstellungen",
+    "choosePhoto": "Foto auswählen"
+  },
+  "history": {
+    "title": "Wiederherstellungsverlauf",
+    "empty": "Noch kein Wiederherstellungsverlauf."
+  },
+  "profile": {
+    "title": "Profil",
+    "account": "Konto"
+  },
+  "purchase": {
+    "title": "Mehr Guthaben Erhalten",
+    "description": "Wählen Sie ein Guthabenpaket, um weitere Fotos zu verbessern.",
+    "standard25": "25 Standard-Guthaben",
+    "hd10": "10 HD-Guthaben",
+    "comingSoonTitle": "Demnächst!",
+    "comingSoonMessage": "Kaufoptionen werden in Kürze verfügbar sein."
+  },
+  "verification": {
+    "invalidCodeTitle": "Ungültiger Code",
+    "invalidCodeMessage": "Bitte geben Sie alle 6 Ziffern ein",
+    "codeExpiredTitle": "Code abgelaufen",
+    "codeExpiredMessage": "Der Bestätigungscode ist abgelaufen. Bitte fordern Sie einen neuen an.",
+    "successTitle": "Erfolg!",
+    "successMessage": "Ihr Gerät wurde erfolgreich verknüpft. Ihre Wiederherstellungsverlauf wird nun geräteübergreifend synchronisiert.",
+    "failedTitle": "Verifizierung fehlgeschlagen",
+    "failedMessage": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut.",
+    "resendCodeTitle": "Code erneut senden",
+    "resendCodeConfirmation": "Möchten Sie wirklich einen neuen Bestätigungscode anfordern?",
+    "resendButton": "Erneut senden",
+    "codeSentTitle": "Code gesendet",
+    "codeSentMessage": "Ein neuer Bestätigungscode wurde an Ihre E-Mail-Adresse gesendet.",
+    "resendFailedMessage": "Bestätigungscode konnte nicht erneut gesendet werden",
+    "title": "Bestätigungscode eingeben",
+    "subtitle": "Wir haben einen 6-stelligen Code an",
+    "codeExpiresIn": "Code läuft ab in",
+    "verifyButton": "Gerät verifizieren & verknüpfen",
+    "infoText": "Dadurch wird Ihr Wiederherstellungsverlauf geräteübergreifend synchronisiert. Dies hat keine Auswirkungen auf Ihre Käufe."
+  },
+  "emailSync": {
+    "invalidEmailTitle": "Ungültige E-Mail",
+    "invalidEmailMessage": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "deviceAlreadyLinkedTitle": "Gerät bereits verknüpft",
+    "deviceAlreadyLinkedMessage": "Dieses Gerät ist bereits mit {{email}} verknüpft",
+    "sendCodeFailed": "Bestätigungscode konnte nicht gesendet werden",
+    "removeDeviceTitle": "Gerät entfernen",
+    "removeDeviceConfirmation": "Möchten Sie \"{{deviceName}}\" wirklich aus Ihren synchronisierten Geräten entfernen?",
+    "removeButton": "Entfernen",
+    "removeDeviceFailed": "Gerät konnte nicht entfernt werden",
+    "unlinkEmailTitle": "E-Mail-Verknüpfung aufheben",
+    "unlinkEmailConfirmation": "Dadurch wird die Synchronisierung Ihres Wiederherstellungsverlaufs beendet. Ihre Wiederherstellungen bleiben auf diesem Gerät.",
+    "unlinkButton": "Verknüpfung aufheben",
+    "title": "Verlaufssynchronisierung",
+    "subtitle": "Synchronisieren Sie Ihren Wiederherstellungsverlauf geräteübergreifend",
+    "infoText": "Dies ist eine optionale Funktion zur Synchronisierung Ihres Wiederherstellungsverlaufs. Sie hat keine Auswirkungen auf Ihre In-App-Käufe oder Ihre Möglichkeit, diese wiederherzustellen.",
+    "linkEmailSectionTitle": "Ihre E-Mail verknüpfen",
+    "linkEmailDescription": "Geben Sie Ihre E-Mail-Adresse ein, um Ihren Wiederherstellungsverlauf auf allen Ihren Geräten zu synchronisieren.",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail-Adresse ein",
+    "sendVerificationCodeButton": "Bestätigungscode senden",
+    "linkedEmailSectionTitle": "Verknüpfte E-Mail",
+    "linkedDevicesSectionTitle": "Verknüpfte Geräte ({{count}})",
+    "thisDeviceLabel": "(Dieses Gerät)",
+    "linkedLabel": "Verknüpft",
+    "footerText": "Ihre Kaufhistorie wird separat über Ihr App-Store-Konto verwaltet und wird von dieser Funktion nicht beeinflusst."
+  },
+  "export": {
+    "photoSaved": "Foto in Galerie gespeichert!",
+    "saveFailed": "Foto konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    "shareFailed": "Foto konnte nicht geteilt werden. Bitte versuchen Sie es erneut.",
+    "watermarkText": "Foto-Restaurierung AI",
+    "watermarkNotice": "⚠️ Dieses Bild enthält ein Wasserzeichen",
+    "watermarkSubtext": "Guthaben kaufen, um Wasserzeichen zu entfernen",
+    "saveToDevice": "Auf Gerät speichern",
+    "sharePhoto": "Foto teilen",
+    "removeWatermark": "Wasserzeichen entfernen"
+  }
+}

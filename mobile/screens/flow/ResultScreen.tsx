@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export default function ResultScreen({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const params = route.params as {
     originalUri: string;
     enhancedUri: string;
@@ -84,7 +86,7 @@ export default function ResultScreen({ navigation, route }: Props) {
       // Request permissions
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Please enable photo library access to save images.');
+        Alert.alert(t('home.permissionRequired'), t('home.galleryPermission'));
         return;
       }
 
@@ -111,7 +113,7 @@ export default function ResultScreen({ navigation, route }: Props) {
       
     } catch (error) {
       console.error('Save error:', error);
-      Alert.alert('Error', 'Failed to save image. Please try again.');
+      Alert.alert(t('restoration.error'), t('result.saveErrorMessage'));
       trackEvent('action', { type: 'save_failed', mode, error: error.message });
     } finally {
       setIsSaving(false);
@@ -124,7 +126,7 @@ export default function ResultScreen({ navigation, route }: Props) {
 
       // Check if sharing is available
       if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert('Error', 'Sharing is not available on this device.');
+        Alert.alert(t('restoration.error'), t('result.shareNotAvailableMessage'));
         return;
       }
 
@@ -144,7 +146,7 @@ export default function ResultScreen({ navigation, route }: Props) {
       
     } catch (error) {
       console.error('Share error:', error);
-      Alert.alert('Error', 'Failed to share image. Please try again.');
+      Alert.alert(t('restoration.error'), t('result.shareErrorMessage'));
       trackEvent('action', { type: 'share_failed', mode, error: error.message });
     }
   };
@@ -176,9 +178,9 @@ export default function ResultScreen({ navigation, route }: Props) {
           { opacity: fadeAnim }
         ]}
       >
-        <Text style={styles.title}>🎉 Photo Restored!</Text>
+        <Text style={styles.title}>{t('result.title')}</Text>
         <Text style={styles.subtitle}>
-          Enhanced using {mode} mode • {formatProcessingTime(processingTime)}
+          {t('result.subtitle', { mode: t(`modes.${mode}.title`), time: formatProcessingTime(processingTime) })}
         </Text>
       </Animated.View>
 
@@ -201,7 +203,7 @@ export default function ResultScreen({ navigation, route }: Props) {
         {/* Watermark indicator */}
         {watermark && (
           <View style={styles.watermarkBadge}>
-            <Text style={styles.watermarkText}>Demo Watermark</Text>
+            <Text style={styles.watermarkText}>{t('result.watermarkText')}</Text>
           </View>
         )}
 
@@ -219,7 +221,7 @@ export default function ResultScreen({ navigation, route }: Props) {
             <View style={styles.successCircle}>
               <Text style={styles.successCheck}>✓</Text>
             </View>
-            <Text style={styles.successText}>Saved to Photos!</Text>
+            <Text style={styles.successText}>{t('result.savedToPhotos')}</Text>
           </Animated.View>
         )}
       </Animated.View>
@@ -248,17 +250,17 @@ export default function ResultScreen({ navigation, route }: Props) {
               {isSaving ? (
                 <>
                   <Text style={styles.actionIcon}>⏳</Text>
-                  <Text style={styles.actionText}>Saving...</Text>
+                  <Text style={styles.actionText}>{t('result.saving')}</Text>
                 </>
               ) : savedSuccessfully ? (
                 <>
                   <Text style={styles.actionIcon}>✓</Text>
-                  <Text style={styles.actionText}>Saved</Text>
+                  <Text style={styles.actionText}>{t('result.saved')}</Text>
                 </>
               ) : (
                 <>
                   <Text style={styles.actionIcon}>💾</Text>
-                  <Text style={styles.actionText}>Save to Photos</Text>
+                  <Text style={styles.actionText}>{t('result.saveToPhotos')}</Text>
                 </>
               )}
             </LinearGradient>
@@ -271,7 +273,7 @@ export default function ResultScreen({ navigation, route }: Props) {
           >
             <View style={styles.secondaryAction}>
               <Text style={styles.secondaryIcon}>📤</Text>
-              <Text style={styles.secondaryText}>Share</Text>
+              <Text style={styles.secondaryText}>{t('result.share')}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -288,7 +290,7 @@ export default function ResultScreen({ navigation, route }: Props) {
               style={styles.restartGradient}
             >
               <Text style={styles.restartIcon}>🔄</Text>
-              <Text style={styles.restartText}>Try Another Photo</Text>
+              <Text style={styles.restartText}>{t('result.tryAnother')}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -297,7 +299,7 @@ export default function ResultScreen({ navigation, route }: Props) {
             onPress={viewHistory}
             activeOpacity={0.7}
           >
-            <Text style={styles.historyText}>📋 View History</Text>
+            <Text style={styles.historyText}>📋 {t('result.viewHistory')}</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -312,17 +314,17 @@ export default function ResultScreen({ navigation, route }: Props) {
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{mode}</Text>
-            <Text style={styles.statLabel}>Mode Used</Text>
+            <Text style={styles.statLabel}>{t('result.modeUsed')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{formatProcessingTime(processingTime)}</Text>
-            <Text style={styles.statLabel}>Processing Time</Text>
+            <Text style={styles.statLabel}>{t('result.processingTime')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{watermark ? 'Demo' : 'Full'}</Text>
-            <Text style={styles.statLabel}>Quality</Text>
+            <Text style={styles.statValue}>{watermark ? t('result.qualityDemo') : t('result.qualityFull')}</Text>
+            <Text style={styles.statLabel}>{t('result.quality')}</Text>
           </View>
         </View>
       </Animated.View>

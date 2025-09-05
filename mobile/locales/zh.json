@@ -1,0 +1,331 @@
+{
+  "common": {
+    "ok": "确定",
+    "loading": "加载中...",
+    "done": "完成"
+  },
+  "home": {
+    "permissionRequired": "需要许可",
+    "galleryPermission": "请在设置中启用图库访问。",
+    "cameraPermission": "请在设置中启用相机访问。",
+    "cameraPermissionRequired": "需要相机权限",
+    "mainTitle": "恢复您的照片",
+    "subtitle": "从6种恢复模式中选择，让记忆重现生机",
+    "permissionDenied": "权限被拒绝"
+  },
+  "modes": {
+    "selectMode": "选择一个模式",
+    "showMore": "显示更多选项",
+    "showLess": "显示更少选项",
+    "recommended": "推荐",
+    "auto": {
+      "title": "自动增强",
+      "subtitle": "最适合一般性改进",
+      "description": "非常适合模糊或低质量的照片"
+    },
+    "scratch": {
+      "title": "修复划痕",
+      "subtitle": "最适合有物理损坏的照片",
+      "description": "去除划痕、斑点和损坏"
+    },
+    "colorize": {
+      "title": "添加颜色",
+      "subtitle": "为旧回忆上色",
+      "description": "为黑白照片注入活力"
+    },
+    "enlighten": {
+      "title": "修复光线",
+      "subtitle": "平衡曝光和对比度",
+      "description": "纠正过暗或过曝的照片"
+    },
+    "recreate": {
+      "title": "恢复肖像",
+      "subtitle": "高级面部修复",
+      "description": "重建严重受损的面部"
+    },
+    "combine": {
+      "title": "合并祖先",
+      "subtitle": "实验性功能",
+      "description": "将特征与家庭照片结合"
+    },
+    "chooseEnhancement": "选择增强",
+    "selectOption": "为您的照片选择最佳选项：",
+    "continueWith": "继续 {{modeName}}"
+  },
+  "preview": {
+    "title": "预览和调整",
+    "quality": {
+      "fast": "快速",
+      "best": "最好",
+      "good": "良好"
+    },
+    "timeIndicator": "预计时间：〜{{time}}秒",
+    "apply": "应用增强",
+    "processingQuality": "处理质量",
+    "timeEstimate": "预计时间：{{time}} • {{quality}} 质量",
+    "noCreditsAvailable": "没有可用积分",
+    "usesCredit": "使用 1 {{resolution}} 积分",
+    "continueToSave": "继续保存"
+  },
+  "result": {
+    "save": "保存",
+    "share": "分享",
+    "tryAnother": "尝试另一张照片",
+    "viewHistory": "查看历史",
+    "saveSuccessTitle": "已保存！",
+    "saveSuccessMessage": "照片已保存到您的设备。",
+    "saveErrorTitle": "保存失败",
+    "saveErrorMessage": "无法保存照片。请再试一次。",
+    "shareErrorTitle": "分享失败",
+    "shareErrorMessage": "无法分享照片。请再试一次。",
+    "shareNotAvailableMessage": "此设备不支持分享。",
+    "title": "🎉 照片已恢复！",
+    "subtitle": "使用 {{mode}} 模式增强 • {{time}}",
+    "watermarkText": "演示水印",
+    "saving": "正在保存...",
+    "saved": "已保存",
+    "savedToPhotos": "已保存到照片！",
+    "saveToPhotos": "保存到照片",
+    "modeUsed": "使用模式",
+    "processingTime": "处理时间",
+    "quality": "质量",
+    "qualityDemo": "演示",
+    "qualityFull": "完整"
+  },
+  "restoration": {
+    "before": "之前",
+    "after": "之后",
+    "selectResolution": "选择分辨率",
+    "standard": "标准",
+    "standardResolution": "~1024×1024",
+    "hd": "高清",
+    "hdResolution": "~2048×2048",
+    "fast": "快速",
+    "fastResolution": "画质好，约30秒",
+    "bestQuality": "最佳质量",
+    "bestQualityResolution": "最高细节，约90秒",
+    "processing": "正在增强您的照片...",
+    "enhancePhoto": "增强照片",
+    "exportPhoto": "导出照片",
+    "error": "错误",
+    "userNotInitialized": "用户未初始化",
+    "noCredits": "没有积分",
+    "noCreditsMessage": "您没有任何{{resolution}}积分了。您想购买更多吗？",
+    "cancel": "取消",
+    "purchase": "购买",
+    "enhanceFailed": "增强图像失败。请再试一次。",
+    "processingSubtext": "使用 {{mode}} 模式 • {{qualityText}} 质量",
+    "selectEnhancementMode": "选择增强模式",
+    "enhance": {
+      "description": "去除模糊和锐化"
+    },
+    "colorize": {
+      "description": "为回忆添加色彩"
+    },
+    "scratch": {
+      "description": "去除划痕和污垢"
+    },
+    "enlighten": {
+      "description": "校正光线"
+    },
+    "recreate": {
+      "description": "恢复受损肖像"
+    },
+    "combine": {
+      "description": "与祖先合并"
+    }
+  },
+  "navigation": {
+    "preview": "预览",
+    "export": "导出",
+    "sync": "同步",
+    "verifyEmail": "验证电子邮件",
+    "back": "返回",
+    "home": "恢复",
+    "recents": "最近",
+    "settings": "设置"
+  },
+  "settings": {
+    "title": "设置",
+    "sync": "同步",
+    "notLoggedIn": "您尚未登录",
+    "notLoggedInSubtitle": "登录以在设备之间同步您的恢复历史记录",
+    "login": "登录以同步",
+    "syncNote": "这不会影响您的应用内购买。您无需此功能即可随时恢复它们。",
+    "loggedIn": "已登录",
+    "manageDevices": "管理设备",
+    "manageDevicesSubtitle": "查看和管理同步的设备",
+    "purchases": "购买",
+    "restorePurchases": "恢复购买",
+    "restorePurchasesSubtitle": "恢复以前的购买",
+    "purchaseHistory": "购买记录",
+    "purchaseHistorySubtitle": "查看所有过去的购买",
+    "getMoreCredits": "获取更多积分",
+    "getMoreCreditsSubtitle": "购买积分套餐",
+    "legal": "法律",
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "support": "支持",
+    "contactSupport": "联系支持",
+    "contactSupportSubtitle": "获取有关该应用的帮助",
+    "rateApp": "评价应用",
+    "rateAppSubtitle": "分享您的反馈",
+    "language": "语言",
+    "version": "版本 1.0.0",
+    "copyright": "© 2024 照片恢复AI",
+    "restorePurchasesAlertTitle": "恢复购买",
+    "restorePurchasesAlertMessage": "这将恢复使用此Apple ID或Google帐户进行的所有先前购买。",
+    "cancel": "取消",
+    "restore": "恢复",
+    "success": "成功",
+    "purchasesRestored": "购买已成功恢复！",
+    "noPurchasesFound": "未找到购买",
+    "settingsButton": "设置",
+    "languageNames": {
+      "en": "英语",
+      "tr": "土耳其语",
+      "de": "德语",
+      "zh": "中文"
+    },
+    "disableSyncTitle": "禁用同步？",
+    "disableSyncMessage": "这将停止您的恢复历史记录在设备之间同步。您的恢复将保留在此设备上。",
+    "disable": "禁用",
+    "userIdTitle": "用户ID",
+    "userIdMessage": "您的唯一ID：\n\n{{userId}}\n\n保存此ID以在其他设备上恢复您的数据。",
+    "yourUniqueId": "您的唯一ID",
+    "syncAcrossDevices": "跨设备同步",
+    "syncYourHistory": "同步您的恢复历史记录",
+    "syncedTo": "已同步到 {{email}}"
+  },
+  "onboarding": {
+    "skip": "跳过",
+    "continue": "继续",
+    "getStarted": "开始",
+    "screen1": {
+      "title": "让旧照片重获新生",
+      "subtitle": "在几秒钟内恢复损坏、褪色或划伤的照片",
+      "damaged": "损坏",
+      "restored": "已恢复"
+    },
+    "screen2": {
+      "title": "工作原理",
+      "subtitle": "选择照片→AI恢复→保存结果",
+      "step1": "选择照片",
+      "step2": "AI恢复",
+      "step3": "保存结果"
+    },
+    "screen3": {
+      "title": "让我们恢复您的第一张照片",
+      "subtitle": "选择一张损坏或旧的照片，看看魔力",
+      "accessPhotos": "访问照片",
+      "failedToAccessPhotos": "访问照片失败。请再试一次。",
+      "failedToAccessCamera": "访问相机失败。请再试一次。",
+      "helperText": "💡 最适合旧家庭照片、褪色的回忆或划伤的图像"
+    }
+  },
+  "recents": {
+    "title": "没有最近的恢复",
+    "subtitle": "您过去的照片恢复将显示在此处。",
+    "cta": "开始恢复照片",
+    "photosCount": "张照片",
+    "emptyTitle": "暂无恢复",
+    "emptySubtitle": "您恢复的照片将显示在此处"
+  },
+  "pro": {
+    "title": "成为专业版",
+    "subtitle": "解锁无限次修复并获得独家功能。",
+    "cta": "获取更多积分"
+  },
+  "about": {
+    "title": "关于照片恢复AI"
+  },
+  "photoInput": {
+    "chooseFromPhotos": "从照片中选择",
+    "takeNewPhoto": "拍摄新照片",
+    "scanDocument": "扫描文件",
+    "title": "选择照片",
+    "creditsLabel": "积分",
+    "chooseFromPhotosSubtitle": "从您的图库中选择",
+    "helperText": "💡 最适合旧家庭照片、褪色的回忆或损坏的图像",
+    "noCreditsWarning": "⚠️ 没有剩余积分。购买更多以继续恢复照片。",
+    "getCreditsButton": "获取积分 →",
+    "recentRestorationsTitle": "最近的恢复",
+    "viewAllButton": "查看全部",
+    "noRecentRestorations": "暂无最近的恢复",
+    "choosePhoto": "选择照片"
+  },
+  "history": {
+    "title": "恢复历史",
+    "empty": "暂无恢复历史。"
+  },
+  "profile": {
+    "title": "个人资料",
+    "account": "账户"
+  },
+  "purchase": {
+    "title": "获取更多积分",
+    "description": "选择一个积分包以增强更多照片。",
+    "standard25": "25 标准积分",
+    "hd10": "10 高清积分",
+    "comingSoonTitle": "即将推出！",
+    "comingSoonMessage": "购买选项即将推出。"
+  },
+  "verification": {
+    "invalidCodeTitle": "无效代码",
+    "invalidCodeMessage": "请输入所有6位数字",
+    "codeExpiredTitle": "代码已过期",
+    "codeExpiredMessage": "验证码已过期。请重新请求。",
+    "successTitle": "成功！",
+    "successMessage": "您的设备已成功链接。您的恢复历史记录现在将在设备之间同步。",
+    "failedTitle": "验证失败",
+    "failedMessage": "无效验证码。请再试一次。",
+    "resendCodeTitle": "重新发送代码",
+    "resendCodeConfirmation": "您确定要请求新的验证码吗？",
+    "resendButton": "重新发送",
+    "codeSentTitle": "代码已发送",
+    "codeSentMessage": "新的验证码已发送到您的电子邮件。",
+    "resendFailedMessage": "重新发送验证码失败",
+    "title": "输入验证码",
+    "subtitle": "我们已发送一个6位数字代码到",
+    "codeExpiresIn": "代码过期时间",
+    "verifyButton": "验证并链接设备",
+    "infoText": "这将同步您的恢复历史记录到所有设备。这不会影响您的购买。"
+  },
+  "emailSync": {
+    "invalidEmailTitle": "无效电子邮件",
+    "invalidEmailMessage": "请输入有效的电子邮件地址",
+    "deviceAlreadyLinkedTitle": "设备已链接",
+    "deviceAlreadyLinkedMessage": "此设备已链接到 {{email}}",
+    "sendCodeFailed": "发送验证码失败",
+    "removeDeviceTitle": "移除设备",
+    "removeDeviceConfirmation": "您确定要从同步设备中移除“{{deviceName}}”吗？",
+    "removeButton": "移除",
+    "removeDeviceFailed": "移除设备失败",
+    "unlinkEmailTitle": "取消电子邮件链接",
+    "unlinkEmailConfirmation": "这将停止同步您的恢复历史记录。您的恢复将保留在此设备上。",
+    "unlinkButton": "取消链接",
+    "title": "历史同步",
+    "subtitle": "跨设备同步您的恢复历史记录",
+    "infoText": "这是一个可选功能，用于同步您的恢复历史记录。它不会影响您的应用内购买或恢复它们的能力。",
+    "linkEmailSectionTitle": "链接您的电子邮件",
+    "linkEmailDescription": "输入您的电子邮件以在所有设备上同步您的恢复历史记录。",
+    "emailPlaceholder": "输入您的电子邮件",
+    "sendVerificationCodeButton": "发送验证码",
+    "linkedEmailSectionTitle": "已链接电子邮件",
+    "linkedDevicesSectionTitle": "已链接设备 ({{count}})",
+    "thisDeviceLabel": "(此设备)",
+    "linkedLabel": "已链接",
+    "footerText": "您的购买历史记录通过您的应用商店帐户单独管理，不受此功能影响。"
+  },
+  "export": {
+    "photoSaved": "照片已保存到您的图库！",
+    "saveFailed": "保存照片失败。请再试一次。",
+    "shareFailed": "分享照片失败。请再试一次。",
+    "watermarkText": "照片修复AI",
+    "watermarkNotice": "⚠️ 此图像包含水印",
+    "watermarkSubtext": "购买积分以去除水印",
+    "saveToDevice": "保存到设备",
+    "sharePhoto": "分享照片",
+    "removeWatermark": "去除水印"
+  }
+}

@@ -20,10 +20,13 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
+import { useTranslation } from 'react-i18next';
+
 type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Settings'>;
 
 export default function SettingsScreen() {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
+  const { t } = useTranslation();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [userId, setUserId] = useState<string>('');
@@ -79,15 +82,15 @@ export default function SettingsScreen() {
   const handleRestorePurchases = async () => {
     trackEvent('settings_action', { type: 'restore_purchases' });
     Alert.alert(
-      'Restore Purchases',
-      'This will restore any previous purchases made with this Apple ID or Google Account.',
+      t('settings.restorePurchasesAlertTitle'),
+      t('settings.restorePurchasesAlertMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('restoration.cancel'), style: 'cancel' },
         {
-          text: 'Restore',
+          text: t('settings.restore'),
           onPress: () => {
             // TODO: Implement IAP restore
-            Alert.alert('Success', 'Purchases restored successfully!');
+            Alert.alert(t('settings.success'), t('settings.purchasesRestored'));
           },
         },
       ]
@@ -103,12 +106,12 @@ export default function SettingsScreen() {
     } else if (!value && linkedEmail) {
       // Show confirmation to unlink
       Alert.alert(
-        'Disable Sync?',
-        'This will stop syncing your restoration history across devices. Your restorations will remain on this device.',
+        t('settings.disableSyncTitle'),
+        t('settings.disableSyncMessage'),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('restoration.cancel'), style: 'cancel' },
           {
-            text: 'Disable',
+            text: t('settings.disable'),
             style: 'destructive',
             onPress: async () => {
               await SecureStore.deleteItemAsync('linkedEmail');
@@ -123,7 +126,7 @@ export default function SettingsScreen() {
 
   const copyUserId = () => {
     // Note: React Native doesn't have built-in clipboard, would need expo-clipboard
-    Alert.alert('User ID', `Your unique ID:\n\n${userId}\n\nSave this ID to restore your data on another device.`);
+    Alert.alert(t('settings.userIdTitle'), t('settings.userIdMessage', { userId }));
     trackEvent('settings_action', { type: 'copy_user_id' });
   };
 
@@ -201,7 +204,7 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.headerTitle}>Settings</Text>
+          <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         </Animated.View>
 
         {/* User Section */}
@@ -211,18 +214,18 @@ export default function SettingsScreen() {
             { opacity: fadeAnim },
           ]}
         >
-          <Text style={styles.sectionTitle}>Account</Text>
+          <Text style={styles.sectionTitle}>{t('profile.account')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="🔑"
-              title="Your Unique ID"
-              subtitle={userId ? `${userId.substring(0, 8)}...` : 'Loading...'}
+              title={t('settings.yourUniqueId')}
+              subtitle={userId ? `${userId.substring(0, 8)}...` : t('common.loading')}
               onPress={copyUserId}
             />
             <SettingItem
               icon="☁️"
-              title="Sync Across Devices"
-              subtitle={linkedEmail ? `Synced to ${linkedEmail}` : "Sync your restoration history"}
+              title={t('settings.syncAcrossDevices')}
+              subtitle={linkedEmail ? t('settings.syncedTo', { email: linkedEmail }) : t('settings.syncYourHistory')}
               rightElement={
                 <Switch
                   value={syncEnabled}
@@ -235,8 +238,8 @@ export default function SettingsScreen() {
             {linkedEmail && (
               <SettingItem
                 icon="📧"
-                title="Manage Synced Devices"
-                subtitle="View and manage linked devices"
+                title={t('settings.manageDevices')}
+                subtitle={t('settings.manageDevicesSubtitle')}
                 onPress={() => navigation.navigate('EmailSync')}
               />
             )}
@@ -253,30 +256,30 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>Purchases</Text>
+          <Text style={styles.sectionTitle}>{t('settings.purchases')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="🔄"
-              title="Restore Purchases"
-              subtitle="Restore previous purchases"
+              title={t('settings.restorePurchases')}
+              subtitle={t('settings.restorePurchasesSubtitle')}
               onPress={handleRestorePurchases}
             />
             <SettingItem
               icon="📱"
-              title="Purchase History"
-              subtitle="View all past purchases"
+              title={t('settings.purchaseHistory')}
+              subtitle={t('settings.purchaseHistorySubtitle')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'view_purchase_history' });
-                Alert.alert('Purchase History', 'No purchases found');
+                Alert.alert(t('settings.purchaseHistory'), t('settings.noPurchasesFound'));
               }}
             />
             <SettingItem
               icon="💎"
-              title="Get More Credits"
-              subtitle="Purchase credit packages"
+              title={t('settings.getMoreCredits')}
+              subtitle={t('settings.getMoreCreditsSubtitle')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'get_credits_settings' });
-                Alert.alert('Get Credits', 'Purchase options coming soon!');
+                Alert.alert(t('purchase.title'), t('purchase.comingSoonMessage'));
               }}
             />
           </View>
@@ -292,16 +295,16 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>Legal</Text>
+          <Text style={styles.sectionTitle}>{t('settings.legal')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="📄"
-              title="Terms of Service"
+              title={t('settings.terms')}
               onPress={openTerms}
             />
             <SettingItem
               icon="🔒"
-              title="Privacy Policy"
+              title={t('settings.privacy')}
               onPress={openPrivacy}
             />
           </View>
@@ -317,18 +320,18 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>Support</Text>
+          <Text style={styles.sectionTitle}>{t('settings.support')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="💬"
-              title="Contact Support"
-              subtitle="Get help with the app"
+              title={t('settings.contactSupport')}
+              subtitle={t('settings.contactSupportSubtitle')}
               onPress={contactSupport}
             />
             <SettingItem
               icon="⭐"
-              title="Rate App"
-              subtitle="Share your feedback"
+              title={t('settings.rateApp')}
+              subtitle={t('settings.rateAppSubtitle')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'rate_app' });
                 // Platform-specific app store links
@@ -343,8 +346,8 @@ export default function SettingsScreen() {
 
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appVersion}>Version 1.0.0</Text>
-          <Text style={styles.appCopyright}>© 2024 Photo Restoration AI</Text>
+          <Text style={styles.appVersion}>{t('settings.version')}</Text>
+          <Text style={styles.appCopyright}>{t('settings.copyright')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
