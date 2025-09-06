@@ -15,85 +15,52 @@ class ImageEnhancer:
         api_key = os.getenv("GOOGLE_API_KEY")
         if api_key:
             self.client = genai.Client(api_key=api_key)
-            self.model = "gemini-2.0-flash-image-preview"
+            self.model = "gemini-2.5-flash-image-preview"
     
     async def enhance(self, image_data: bytes, resolution: str, mode: str = "enhance") -> bytes:
         """
         Enhance image using Gemini's image generation model
         """
-        if not self.client:
-            raise Exception("Gemini client not initialized")
-        
-        # Open and prepare image
-        img = Image.open(io.BytesIO(image_data))
-        
-        # Determine target size
-        target_size = (2048, 2048) if resolution == "hd" else (1024, 1024)
-        
-        # Resize while maintaining aspect ratio
-        img.thumbnail(target_size, Image.Resampling.LANCZOS)
-        
-        # Convert to RGB if needed
-        if img.mode != 'RGB':
-            img = img.convert('RGB')
-        
-        # Save to bytes for Gemini
-        img_buffer = io.BytesIO()
-        img.save(img_buffer, format='JPEG', quality=95)
-        img_buffer.seek(0)
-        img_bytes = img_buffer.getvalue()
-        
-        # Get the appropriate prompt for the mode
-        prompt = self._get_prompt_for_mode(mode)
-        
-        # Convert image to base64 for Gemini
-        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
-        
-        # Create content for Gemini
-        contents = [
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part.from_text(text=prompt),
-                    types.Part.from_bytes(
-                        data=img_bytes,
-                        mime_type="image/jpeg"
-                    ),
-                ],
-            ),
-        ]
-        
-        generate_content_config = types.GenerateContentConfig(
-            response_modalities=["IMAGE"],
-        )
-        
-        # Generate enhanced image
-        enhanced_data = None
-        
         try:
-            for chunk in self.client.models.generate_content_stream(
+            if not self.client:
+                raise Exception("Gemini client not initialized")
+            
+            # Open and prepare image
+            img = Image.open(io.BytesIO(image_data))
+            
+            # Determine target size
+            target_size = (2048, 2048) if resolution == "hd" else (1024, 1024)
+            
+            # Resize while maintaining aspect ratio
+            img.thumbnail(target_size, Image.Resampling.LANCZOS)
+            
+            # Convert to RGB if needed
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Get the appropriate prompt for the mode
+            prompt = self._get_prompt_for_mode(mode)
+            
+            # Generate enhanced image using the correct API pattern
+            response = self.client.models.generate_content(
                 model=self.model,
-                contents=contents,
-                config=generate_content_config,
-            ):
-                if (
-                    chunk.candidates is None
-                    or chunk.candidates[0].content is None
-                    or chunk.candidates[0].content.parts is None
-                ):
-                    continue
-                    
-                if (chunk.candidates[0].content.parts[0].inline_data and 
-                    chunk.candidates[0].content.parts[0].inline_data.data):
-                    inline_data = chunk.candidates[0].content.parts[0].inline_data
-                    enhanced_data = inline_data.data
-                    break
+                contents=[prompt, img],
+            )
+            
+            # Extract the enhanced image from response
+            enhanced_data = None
+            
+            if response.candidates and response.candidates[0].content:
+                for part in response.candidates[0].content.parts:
+                    if part.inline_data is not None:
+                        enhanced_data = part.inline_data.data
+                        break
             
             if enhanced_data is None:
                 raise Exception("No image data received from Gemini")
             
             return enhanced_data
-            
+                
         except Exception as e:
             # Re-raise the exception to be handled by the API endpoint
             raise Exception(f"Gemini enhancement failed: {str(e)}")
