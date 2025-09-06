@@ -2,11 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import List, Dict
+import sys
+
+# Import from backend root directory
+sys.path.append('/app')
+from email_service import EmailService
+
 from ..models import get_db, EmailVerification, LinkedDevice, User
 from ..services import UserService
 from ..schemas.requests import EmailVerificationRequest, VerifyCodeRequest, RemoveDeviceRequest
 from ..schemas.responses import EmailVerificationResponse, VerifyCodeResponse, LinkedDevicesResponse, RemoveDeviceResponse
-from ..email_service import EmailService
 
 router = APIRouter()
 

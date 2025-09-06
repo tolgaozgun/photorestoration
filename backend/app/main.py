@@ -10,10 +10,14 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 
+# Import from backend root directory
+sys.path.append('/app')
+from email_service import EmailService
+
 from .models import engine
 from .config import settings
 from .routes import enhancement_router, purchase_router, analytics_router, user_router
-from .services import StorageService, EnhancementService, EmailService
+from .services import StorageService, EnhancementService
 from .admin import setup_admin
 
 logging.basicConfig(level=logging.INFO)

@@ -1,7 +1,11 @@
 import io
+import sys
 from PIL import Image
 from fastapi import HTTPException
-from ..image_enhancement import ImageEnhancer
+
+# Import from backend root directory
+sys.path.append('/app')
+from image_enhancement import ImageEnhancer
 
 class EnhancementService:
     def __init__(self):
