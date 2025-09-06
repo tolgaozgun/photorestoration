@@ -55,7 +55,7 @@ class ImageEnhancer:
                 role="user",
                 parts=[
                     types.Part.from_text(text=prompt),
-                    types.Part.from_data(
+                    types.Part.from_bytes(
                         data=img_bytes,
                         mime_type="image/jpeg"
                     ),
