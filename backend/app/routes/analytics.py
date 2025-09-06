@@ -25,3 +25,8 @@ async def track_analytics(request: AnalyticsRequest, db: Session = Depends(get_d
 async def health_check():
     from datetime import datetime
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+
+@router.get("/")
+async def root_health():
+    from datetime import datetime
+    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}

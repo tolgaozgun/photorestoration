@@ -105,6 +105,11 @@ def create_app() -> FastAPI:
     app.include_router(analytics_router, prefix="/api")
     app.include_router(user_router, prefix="/api")
     
+    @app.get("/health")
+    async def health_check():
+        from datetime import datetime
+        return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+    
     @app.get("/debug/admin-static")
     def debug_admin_static():
         import sqladmin

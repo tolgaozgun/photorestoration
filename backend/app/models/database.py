@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import os
+import uuid
 from typing import Optional
 
 def _build_database_url() -> str:
@@ -96,7 +97,7 @@ class User(Base):
 class Purchase(Base):
     __tablename__ = "purchases"
     
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     user_id = Column(String, index=True)
     receipt = Column(JSON)
     product_id = Column(String)
@@ -107,7 +108,7 @@ class Purchase(Base):
 class Enhancement(Base):
     __tablename__ = "enhancements"
     
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     user_id = Column(String, index=True)
     original_url = Column(String)
     enhanced_url = Column(String)
@@ -120,7 +121,7 @@ class Enhancement(Base):
 class AnalyticsEvent(Base):
     __tablename__ = "analytics"
     
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     user_id = Column(String, index=True)
     event_type = Column(String, index=True)
     event_data = Column(JSON)
@@ -131,7 +132,7 @@ class AnalyticsEvent(Base):
 class EmailVerification(Base):
     __tablename__ = "email_verifications"
     
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     email = Column(String, index=True)
     device_id = Column(String, index=True)
     device_name = Column(String)
@@ -143,7 +144,7 @@ class EmailVerification(Base):
 class LinkedDevice(Base):
     __tablename__ = "linked_devices"
     
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
     email = Column(String, index=True)
     device_id = Column(String, unique=True, index=True)
     device_name = Column(String)
