@@ -5,18 +5,16 @@ import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 
 interface UserData {
   userId: string;
-  standardCredits: number;
-  hdCredits: number;
+  credits: number;
   subscriptionType: string | null;
   subscriptionExpires: Date | null;
-  remainingTodayStandard: number;
-  remainingTodayHd: number;
+  remainingToday: number;
 }
 
 interface UserContextType {
   user: UserData | null;
   refreshUser: () => Promise<void>;
-  updateCredits: (standard: number, hd: number) => void;
+  updateCredits: (credits: number) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -40,12 +38,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setUser({
         userId,
-        standardCredits: response.data.standard_credits,
-        hdCredits: response.data.hd_credits,
+        credits: response.data.credits,
         subscriptionType: response.data.subscription_type,
         subscriptionExpires: response.data.subscription_expires ? new Date(response.data.subscription_expires) : null,
-        remainingTodayStandard: 0,
-        remainingTodayHd: 0,
+        remainingToday: 0,
       });
     } catch (error) {
       console.error('Error loading user:', error);
@@ -56,12 +52,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await loadUser();
   };
 
-  const updateCredits = (standard: number, hd: number) => {
+  const updateCredits = (credits: number) => {
     if (user) {
       setUser({
         ...user,
-        standardCredits: standard,
-        hdCredits: hd,
+        credits: credits,
       });
     }
   };

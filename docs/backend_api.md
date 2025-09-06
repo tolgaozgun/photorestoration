@@ -25,10 +25,8 @@ Processes an image with AI enhancement.
   "enhanced_url": "/api/image/enhanced/uuid.png",
   "watermark": true,
   "processing_time": 1.5,
-  "remaining_standard_credits": 10,
-  "remaining_hd_credits": 5,
-  "remaining_today_standard": 15,
-  "remaining_today_hd": 5
+  "remaining_credits": 15,
+  "remaining_today": 10
 }
 ```
 
@@ -56,8 +54,7 @@ Records an in-app purchase.
 {
   "success": true,
   "purchase_id": "uuid",
-  "standard_credits": 25,
-  "hd_credits": 0,
+  "credits": 25,
   "subscription_type": null,
   "subscription_expires": null
 }
@@ -80,14 +77,13 @@ Restores user's purchase history.
 ```json
 {
   "user_id": "uuid",
-  "standard_credits": 25,
-  "hd_credits": 10,
+  "credits": 35,
   "subscription_type": "premium_monthly",
   "subscription_expires": "2024-02-01T00:00:00",
   "purchases": [
     {
       "purchase_id": "uuid",
-      "product_id": "standard_25",
+      "product_id": "credits_25",
       "platform": "ios",
       "created_at": "2024-01-01T12:00:00"
     }

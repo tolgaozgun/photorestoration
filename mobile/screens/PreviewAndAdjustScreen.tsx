@@ -58,12 +58,12 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
 
     const resolution = 'standard'; // Always use standard resolution
 
-    const hasCredits = user.standardCredits > 0;
+    const hasCredits = user.credits > 0 || user.remainingToday > 0;
 
     if (!hasCredits) {
       Alert.alert(
         t('restoration.noCredits'),
-        t('restoration.noCreditsMessage', { resolution: 'STANDARD' }),
+        t('restoration.noCreditsMessage'),
         [
           { text: t('restoration.cancel'), style: 'cancel' },
           { text: t('restoration.purchase'), onPress: () => { /* Navigate to purchase screen */ } },
@@ -104,10 +104,7 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
       const enhancedUrl = `${API_BASE_URL}${enhanceResponse.data.enhanced_url}`;
       setEnhancedImage(enhancedUrl);
 
-      updateCredits(
-        enhanceResponse.data.remaining_standard_credits,
-        enhanceResponse.data.remaining_hd_credits
-      );
+      updateCredits(enhanceResponse.data.remaining_credits);
 
       trackEvent('restore_standard', { 
         completed: true, 

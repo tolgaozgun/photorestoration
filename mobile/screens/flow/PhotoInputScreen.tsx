@@ -103,10 +103,10 @@ export default function PhotoInputScreen({ navigation }: Props) {
   const getTotalCredits = () => {
     if (!user) return 0;
     
-    let total = user.standardCredits + user.hdCredits;
+    let total = user.credits;
 
     if (user.subscriptionType && user.subscriptionExpires && user.subscriptionExpires > new Date()) {
-      total += user.remainingTodayStandard + user.remainingTodayHd;
+      total += user.remainingToday;
     }
 
     return total;

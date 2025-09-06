@@ -42,6 +42,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [enhancedImage, setEnhancedImage] = useState<string | null>(null);
   const [selectedResolution, setSelectedResolution] = useState<'standard' | 'hd'>('standard');
+  // Note: Resolution selection is kept for UI purposes but credits are unified
   const [selectedMode, setSelectedMode] = useState<'enhance' | 'colorize' | 'de-scratch' | 'enlighten' | 'recreate' | 'combine'>('enhance');
   const [sliderValue, setSliderValue] = useState(0.5);
   const [watermark, setWatermark] = useState(false);
@@ -52,14 +53,12 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       return;
     }
 
-    const hasCredits = selectedResolution === 'hd' 
-      ? (user.hdCredits > 0 || user.remainingTodayHd > 0)
-      : (user.standardCredits > 0 || user.remainingTodayStandard > 0);
+    const hasCredits = user.credits > 0 || user.remainingToday > 0;
 
     if (!hasCredits) {
       Alert.alert(
         t('restoration.noCredits'),
-        t('restoration.noCreditsMessage', { resolution: selectedResolution.toUpperCase() }),
+        t('restoration.noCreditsMessage'),
         [
           { text: t('restoration.cancel'), style: 'cancel' },
           { text: t('restoration.purchase'), onPress: () => navigation.navigate('Home') },
@@ -101,10 +100,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       setEnhancedImage(enhancedUrl);
       setWatermark(enhanceResponse.data.watermark);
 
-      updateCredits(
-        enhanceResponse.data.remaining_standard_credits,
-        enhanceResponse.data.remaining_hd_credits
-      );
+      updateCredits(enhanceResponse.data.remaining_credits);
 
       trackEvent(`restore_${selectedResolution}`, { 
         completed: true, 

@@ -78,9 +78,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
   const canProcess = () => {
     if (!user) return false;
     
-    return selectedResolution === 'hd' 
-      ? (user.hdCredits > 0 || user.remainingTodayHd > 0)
-      : (user.standardCredits > 0 || user.remainingTodayStandard > 0);
+    return user.credits > 0 || user.remainingToday > 0;
   };
 
   const processImage = async () => {
@@ -92,7 +90,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
     if (!canProcess()) {
       Alert.alert(
         t('restoration.noCredits'),
-        t('restoration.noCreditsMessage', { resolution: selectedResolution.toUpperCase() }),
+        t('restoration.noCreditsMessage'),
         [
           { text: t('restoration.cancel'), style: 'cancel' },
           { text: t('restoration.purchase'), onPress: () => navigation.navigate('PhotoInput') },
@@ -143,10 +141,9 @@ export default function PreviewScreen({ navigation, route }: Props) {
       setEnhancedImage(enhancedUrl);
       setWatermark(enhanceResponse.data.watermark);
 
-      // Update credits using the new simplified response
+      // Update credits using the unified response
       if (user) {
-        user.standardCredits = enhanceResponse.data.remaining_credits;
-        user.remainingTodayStandard = enhanceResponse.data.remaining_today;
+        updateCredits(enhanceResponse.data.remaining_credits);
       }
 
       trackEvent(`restore_${selectedResolution}`, { 

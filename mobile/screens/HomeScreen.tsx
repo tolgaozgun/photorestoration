@@ -78,22 +78,19 @@ export default function HomeScreen() {
   };
 
   const getTotalCredits = () => {
-    if (!user) return { standard: 0, hd: 0 };
+    if (!user) return 0;
     
-    let standardTotal = user.standardCredits;
-    let hdTotal = user.hdCredits;
+    let totalCredits = user.credits;
 
     if (user.subscriptionType && user.subscriptionExpires && user.subscriptionExpires > new Date()) {
-      standardTotal += user.remainingTodayStandard;
-      hdTotal += user.remainingTodayHd;
+      totalCredits += user.remainingToday;
     }
 
-    return { standard: standardTotal, hd: hdTotal };
+    return totalCredits;
   };
 
-  const credits = getTotalCredits();
-  const hasCredits = credits.standard > 0 || credits.hd > 0;
-  const totalCredits = credits.standard + credits.hd;
+  const totalCredits = getTotalCredits();
+  const hasCredits = totalCredits > 0;
 
   return (
     <SafeAreaView style={styles.container}>
