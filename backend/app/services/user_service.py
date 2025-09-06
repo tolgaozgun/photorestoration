@@ -18,59 +18,47 @@ class UserService:
         from ..config.settings import settings
         
         if user.daily_reset_at < datetime.utcnow() - timedelta(days=1):
-            user.daily_standard_used = 0
-            user.daily_hd_used = 0
+            user.daily_credits_used = 0
             user.daily_reset_at = datetime.utcnow()
         
         if user.subscription_type and user.subscription_expires > datetime.utcnow():
-            limits = settings.SUBSCRIPTION_LIMITS.get(user.subscription_type, {"standard": 0, "hd": 0})
+            limit = settings.SUBSCRIPTION_LIMITS.get(user.subscription_type, {"credits": 0})
             return {
-                "remaining_today_standard": max(0, limits["standard"] - user.daily_standard_used),
-                "remaining_today_hd": max(0, limits["hd"] - user.daily_hd_used)
+                "remaining_today": max(0, limit["credits"] - user.daily_credits_used)
             }
         
         return {
-            "remaining_today_standard": 0,
-            "remaining_today_hd": 0
+            "remaining_today": 0
         }
     
     @staticmethod
-    def has_credits(user: User, resolution: str) -> bool:
+    def has_credits(user: User) -> bool:
         daily_limits = UserService.check_daily_limits(user)
-        is_hd = resolution.lower() == "hd"
         
-        return (
-            (user.hd_credits > 0 or daily_limits["remaining_today_hd"] > 0) if is_hd
-            else (user.standard_credits > 0 or daily_limits["remaining_today_standard"] > 0)
-        )
+        return user.credits > 0 or daily_limits["remaining_today"] > 0
     
     @staticmethod
-    def deduct_credits(user: User, resolution: str) -> None:
+    def deduct_credits(user: User) -> None:
         daily_limits = UserService.check_daily_limits(user)
-        is_hd = resolution.lower() == "hd"
         
-        if is_hd:
-            if user.hd_credits > 0:
-                user.hd_credits -= 1
-            elif daily_limits["remaining_today_hd"] > 0:
-                user.daily_hd_used += 1
-        else:
-            if user.standard_credits > 0:
-                user.standard_credits -= 1
-            elif daily_limits["remaining_today_standard"] > 0:
-                user.daily_standard_used += 1
+        if user.credits > 0:
+            user.credits -= 1
+        elif daily_limits["remaining_today"] > 0:
+            user.daily_credits_used += 1
     
     @staticmethod
-    def refund_credits(user: User, resolution: str) -> None:
-        is_hd = resolution.lower() == "hd"
-        
-        if is_hd:
-            if user.daily_hd_used > 0:
-                user.daily_hd_used -= 1
-            else:
-                user.hd_credits += 1
+    def refund_credits(user: User) -> None:
+        if user.daily_credits_used > 0:
+            user.daily_credits_used -= 1
         else:
-            if user.daily_standard_used > 0:
-                user.daily_standard_used -= 1
-            else:
-                user.standard_credits += 1
+            user.credits += 1
+    
+    @staticmethod
+    def get_credits_info(user: User) -> Dict[str, int]:
+        daily_limits = UserService.check_daily_limits(user)
+        
+        return {
+            "total_credits": user.credits,
+            "remaining_today": daily_limits["remaining_today"],
+            "has_credits": user.credits > 0 or daily_limits["remaining_today"] > 0
+        }

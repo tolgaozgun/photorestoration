@@ -13,15 +13,13 @@ class EnhancementResponse(BaseModel):
 class PurchaseResponse(BaseModel):
     success: bool
     purchase_id: str
-    standard_credits: int
-    hd_credits: int
+    credits: int
     subscription_type: Optional[str]
     subscription_expires: Optional[str]
 
 class RestoreResponse(BaseModel):
     user_id: str
-    standard_credits: int
-    hd_credits: int
+    credits: int
     subscription_type: Optional[str]
     subscription_expires: Optional[str]
     purchases: List[Dict]

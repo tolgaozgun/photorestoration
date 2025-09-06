@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from ..models import get_db, User, Purchase
@@ -25,10 +25,8 @@ async def record_purchase(request: PurchaseRequest, db: Session = Depends(get_db
     )
     db.add(purchase)
     
-    if "standard_credits" in product:
-        user.standard_credits += product["standard_credits"]
-    elif "hd_credits" in product:
-        user.hd_credits += product["hd_credits"]
+    if "credits" in product:
+        user.credits += product["credits"]
     elif "subscription_type" in product:
         user.subscription_type = product["subscription_type"]
         user.subscription_expires = datetime.utcnow() + timedelta(days=product["days"])
@@ -38,8 +36,7 @@ async def record_purchase(request: PurchaseRequest, db: Session = Depends(get_db
     return PurchaseResponse(
         success=True,
         purchase_id=purchase.id,
-        standard_credits=user.standard_credits,
-        hd_credits=user.hd_credits,
+        credits=user.credits,
         subscription_type=user.subscription_type,
         subscription_expires=user.subscription_expires.isoformat() if user.subscription_expires else None
     )
@@ -52,8 +49,7 @@ async def restore_purchases(request: RestoreRequest, db: Session = Depends(get_d
     
     return RestoreResponse(
         user_id=user.id,
-        standard_credits=user.standard_credits,
-        hd_credits=user.hd_credits,
+        credits=user.credits,
         subscription_type=user.subscription_type,
         subscription_expires=user.subscription_expires.isoformat() if user.subscription_expires else None,
         purchases=[

@@ -85,12 +85,10 @@ class User(Base):
     
     id = Column(String, primary_key=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    standard_credits = Column(Integer, default=0)
-    hd_credits = Column(Integer, default=0)
+    credits = Column(Integer, default=0)
     subscription_type = Column(String, nullable=True)
     subscription_expires = Column(DateTime, nullable=True)
-    daily_standard_used = Column(Integer, default=0)
-    daily_hd_used = Column(Integer, default=0)
+    daily_credits_used = Column(Integer, default=0)
     daily_reset_at = Column(DateTime, default=datetime.utcnow)
     user_metadata = Column(JSON, default={})
 

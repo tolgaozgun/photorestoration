@@ -2,7 +2,7 @@ from sqladmin import Admin, ModelView
 from ..models import User, Purchase, Enhancement, AnalyticsEvent, EmailVerification, LinkedDevice
 
 class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.created_at, User.standard_credits, User.hd_credits, User.subscription_type, User.subscription_expires, User.daily_standard_used, User.daily_hd_used, User.daily_reset_at, User.user_metadata]
+    column_list = [User.id, User.created_at, User.credits, User.subscription_type, User.subscription_expires, User.daily_credits_used, User.daily_reset_at, User.user_metadata]
 
 class PurchaseAdmin(ModelView, model=Purchase):
     column_list = [Purchase.id, Purchase.user_id, Purchase.receipt, Purchase.product_id, Purchase.platform, Purchase.created_at, Purchase.status]

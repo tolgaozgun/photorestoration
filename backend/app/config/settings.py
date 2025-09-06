@@ -39,12 +39,11 @@ class Settings:
     
     # Product mappings
     PRODUCT_MAPPING = {
-        "standard_25": {"standard_credits": 25},
-        "standard_70": {"standard_credits": 70},
-        "standard_150": {"standard_credits": 150},
-        "hd_10": {"hd_credits": 10},
-        "hd_30": {"hd_credits": 30},
-        "hd_70": {"hd_credits": 70},
+        "credits_10": {"credits": 10},
+        "credits_25": {"credits": 25},
+        "credits_50": {"credits": 50},
+        "credits_100": {"credits": 100},
+        "credits_200": {"credits": 200},
         "light_monthly": {"subscription_type": "light_monthly", "days": 30},
         "standard_monthly": {"subscription_type": "standard_monthly", "days": 30},
         "premium_monthly": {"subscription_type": "premium_monthly", "days": 30},
@@ -55,12 +54,12 @@ class Settings:
     
     # Subscription limits
     SUBSCRIPTION_LIMITS = {
-        "light_monthly": {"standard": 15, "hd": 5},
-        "light_yearly": {"standard": 15, "hd": 5},
-        "standard_monthly": {"standard": 30, "hd": 10},
-        "standard_yearly": {"standard": 30, "hd": 10},
-        "premium_monthly": {"standard": 60, "hd": 25},
-        "premium_yearly": {"standard": 60, "hd": 25},
+        "light_monthly": {"credits": 20},
+        "light_yearly": {"credits": 20},
+        "standard_monthly": {"credits": 40},
+        "standard_yearly": {"credits": 40},
+        "premium_monthly": {"credits": 85},
+        "premium_yearly": {"credits": 85},
     }
 
 settings = Settings()
