@@ -42,7 +42,7 @@ export default function SaveAndShareScreen({ navigation, route }: Props) {
         return;
       }
 
-      const filename = FileSystem.documentDirectory + 'restored_photo.jpg';
+      const filename = FileSystem.documentDirectory + 'restored_photo.png';
       await FileSystem.downloadAsync(enhancedImageUri, filename);
       await MediaLibrary.saveToLibraryAsync(filename);
       Alert.alert(t('result.saveSuccessTitle'), t('result.saveSuccessMessage'));
@@ -55,7 +55,7 @@ export default function SaveAndShareScreen({ navigation, route }: Props) {
   const handleShare = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      const filename = FileSystem.cacheDirectory + 'restored_photo_share.jpg';
+      const filename = FileSystem.cacheDirectory + 'restored_photo_share.png';
       await FileSystem.downloadAsync(enhancedImageUri, filename);
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert(t('result.shareErrorTitle'), t('result.shareNotAvailableMessage'));

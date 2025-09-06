@@ -22,6 +22,7 @@ interface Enhancement {
   enhanced_url: string;
   thumbnail_url: string;
   resolution: string;
+  mode: string;
   created_at: string;
   processing_time: number;
   watermark: boolean;
@@ -63,11 +64,13 @@ export default function EnhancementHistory() {
   };
 
   const handleEnhancementPress = (enhancement: Enhancement) => {
-    navigation.navigate('Export', {
+    navigation.navigate('Result', {
       originalUri: `${API_BASE_URL}${enhancement.original_url}`,
       enhancedUri: `${API_BASE_URL}${enhancement.enhanced_url}`,
       enhancementId: enhancement.id,
       watermark: enhancement.watermark,
+      mode: enhancement.mode,
+      processingTime: enhancement.processing_time,
     });
   };
 

@@ -22,7 +22,7 @@ Processes an image with AI enhancement.
 ```json
 {
   "enhancement_id": "uuid",
-  "enhanced_url": "/api/image/enhanced/uuid.jpg",
+  "enhanced_url": "/api/image/enhanced/uuid.png",
   "watermark": true,
   "processing_time": 1.5,
   "remaining_standard_credits": 10,
@@ -128,10 +128,10 @@ Records analytics events.
 Retrieves stored images.
 
 **Parameters:**
-- `key`: Image path (e.g., "enhanced/uuid.jpg")
+- `key`: Image path (e.g., "enhanced/uuid.png")
 
 **Response:**
-- Content-Type: `image/jpeg`
+- Content-Type: `image/png`
 - Binary image data
 
 ## Error Responses

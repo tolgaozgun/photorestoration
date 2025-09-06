@@ -83,8 +83,8 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
       const blob = await response.blob();
       formData.append('file', {
         uri: imageUri,
-        type: 'image/jpeg',
-        name: 'photo.jpg',
+        type: 'image/png',
+        name: 'photo.png',
       } as any);
 
       const enhanceResponse = await axios.post(

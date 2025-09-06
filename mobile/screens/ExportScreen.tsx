@@ -45,7 +45,7 @@ export default function ExportScreen({ navigation, route }: Props) {
         return;
       }
 
-      const fileUri = FileSystem.documentDirectory + `enhanced_${enhancementId}.jpg`;
+      const fileUri = FileSystem.documentDirectory + `enhanced_${enhancementId}.png`;
       await FileSystem.downloadAsync(enhancedUri, fileUri);
 
       const asset = await MediaLibrary.createAssetAsync(fileUri);
@@ -67,7 +67,7 @@ export default function ExportScreen({ navigation, route }: Props) {
     trackEvent('export_action', { type: 'share' });
 
     try {
-      const fileUri = FileSystem.documentDirectory + `enhanced_share_${enhancementId}.jpg`;
+      const fileUri = FileSystem.documentDirectory + `enhanced_share_${enhancementId}.png`;
       await FileSystem.downloadAsync(enhancedUri, fileUri);
 
       if (Platform.OS === 'ios') {

@@ -11,6 +11,7 @@ import {
   Dimensions,
   Share,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +50,12 @@ export default function ResultScreen({ navigation, route }: Props) {
   
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
+  const [showBefore, setShowBefore] = useState(false);
+
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.replace('PhotoInput');
+  };
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -91,7 +98,7 @@ export default function ResultScreen({ navigation, route }: Props) {
       }
 
       // Download and save the image
-      const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.jpg`;
+      const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.png`;
       await FileSystem.downloadAsync(enhancedUri, fileUri);
       
       await MediaLibrary.saveToLibraryAsync(fileUri);
@@ -131,7 +138,7 @@ export default function ResultScreen({ navigation, route }: Props) {
       }
 
       // Download image to temp location
-      const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.jpg`;
+      const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.png`;
       await FileSystem.downloadAsync(enhancedUri, fileUri);
 
       await Sharing.shareAsync(fileUri, {
@@ -178,10 +185,15 @@ export default function ResultScreen({ navigation, route }: Props) {
           { opacity: fadeAnim }
         ]}
       >
-        <Text style={styles.title}>{t('result.title')}</Text>
-        <Text style={styles.subtitle}>
-          {t('result.subtitle', { mode: t(`modes.${mode}.title`), time: formatProcessingTime(processingTime) })}
-        </Text>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Text style={styles.backButtonText}>‹</Text>
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.title}>{t('result.title')}</Text>
+          <Text style={styles.subtitle}>
+            {t('result.subtitle', { mode: t(`modes.${mode}.title`), time: formatProcessingTime(processingTime) })}
+          </Text>
+        </View>
       </Animated.View>
 
       {/* Result Image */}
@@ -195,10 +207,36 @@ export default function ResultScreen({ navigation, route }: Props) {
         ]}
       >
         <Image 
-          source={{ uri: enhancedUri }} 
+          source={{ uri: showBefore ? originalUri : enhancedUri }} 
           style={styles.resultImage} 
           resizeMode="contain"
         />
+        
+        {/* Before/After Toggle */}
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity 
+            style={[styles.toggleButton, showBefore && styles.toggleButtonActive]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowBefore(true);
+            }}
+          >
+            <Text style={[styles.toggleText, showBefore && styles.toggleTextActive]}>
+              {t('result.before')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.toggleButton, !showBefore && styles.toggleButtonActive]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowBefore(false);
+            }}
+          >
+            <Text style={[styles.toggleText, !showBefore && styles.toggleTextActive]}>
+              {t('result.after')}
+            </Text>
+          </TouchableOpacity>
+        </View>
         
         {/* Watermark indicator */}
         {watermark && (
@@ -338,10 +376,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a0a0a',
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 16,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  backButtonText: {
+    fontSize: 28,
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+  headerContent: {
+    flex: 1,
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
@@ -531,5 +583,34 @@ const styles = StyleSheet.create({
   statLabel: {
     color: 'rgba(255, 255, 255, 0.6)',
     fontSize: 12,
+  },
+  toggleContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(26, 26, 26, 0.9)',
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: 'rgba(26, 26, 26, 0.9)',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#007AFF',
+  },
+  toggleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  toggleTextActive: {
+    color: '#FFFFFF',
   },
 });

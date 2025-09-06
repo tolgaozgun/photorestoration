@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import EnhancementHistory from '../../components/EnhancementHistory';
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -59,29 +60,8 @@ export default function HistoryScreen({ navigation }: Props) {
         <View style={styles.placeholder} />
       </Animated.View>
 
-      {/* Empty State */}
-      <Animated.View 
-        style={[
-          styles.content,
-          { opacity: fadeAnim }
-        ]}
-      >
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>📋</Text>
-          <Text style={styles.emptyTitle}>No Restorations Yet</Text>
-          <Text style={styles.emptySubtitle}>
-            Your restored photos will appear here after you complete your first restoration.
-          </Text>
-          
-          <TouchableOpacity
-            style={styles.startButton}
-            onPress={startNewRestoration}
-            activeOpacity={0.9}
-          >
-            <Text style={styles.startButtonText}>Start Your First Restoration</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+      {/* Enhancement History */}
+      <EnhancementHistory />
     </SafeAreaView>
   );
 }

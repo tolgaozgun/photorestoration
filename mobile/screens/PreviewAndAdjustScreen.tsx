@@ -14,7 +14,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
 import { useTranslation } from 'react-i18next';
-import Slider from '@react-native-community/slider';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
@@ -45,7 +44,7 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
   const { trackEvent } = useAnalytics();
   const [isProcessing, setIsProcessing] = useState(false);
   const [enhancedImage, setEnhancedImage] = useState<string | null>(null);
-  const [quality, setQuality] = useState(0.5); // 0.0 for standard, 1.0 for HD
+  const [showBefore, setShowBefore] = useState(false); // true for before, false for after
 
   useEffect(() => {
     processImage();
@@ -57,16 +56,14 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
       return;
     }
 
-    const resolution = quality > 0.5 ? 'hd' : 'standard';
+    const resolution = 'standard'; // Always use standard resolution
 
-    const hasCredits = resolution === 'hd' 
-      ? (user.hdCredits > 0 || user.remainingTodayHd > 0)
-      : (user.standardCredits > 0 || user.remainingTodayStandard > 0);
+    const hasCredits = user.standardCredits > 0;
 
     if (!hasCredits) {
       Alert.alert(
         t('restoration.noCredits'),
-        t('restoration.noCreditsMessage', { resolution: resolution.toUpperCase() }),
+        t('restoration.noCreditsMessage', { resolution: 'STANDARD' }),
         [
           { text: t('restoration.cancel'), style: 'cancel' },
           { text: t('restoration.purchase'), onPress: () => { /* Navigate to purchase screen */ } },
@@ -76,7 +73,7 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
     }
 
     setIsProcessing(true);
-    trackEvent(`restore_${resolution}`, { started: true, mode });
+    trackEvent('restore_standard', { started: true, mode });
 
     try {
       const userId = await SecureStore.getItemAsync('userId');
@@ -90,8 +87,8 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
       const blob = await response.blob();
       formData.append('file', {
         uri: imageUri,
-        type: 'image/jpeg',
-        name: 'photo.jpg',
+        type: 'image/png',
+        name: 'photo.png',
       } as any);
 
       const enhanceResponse = await axios.post(
@@ -112,7 +109,7 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
         enhanceResponse.data.remaining_hd_credits
       );
 
-      trackEvent(`restore_${resolution}`, { 
+      trackEvent('restore_standard', { 
         completed: true, 
         processing_time: enhanceResponse.data.processing_time,
         mode 
@@ -121,7 +118,7 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
     } catch (error) {
       console.error('Enhancement error:', error);
       Alert.alert(t('restoration.error'), t('restoration.enhanceFailed'));
-      trackEvent(`restore_${resolution}`, { failed: true, error: error.message });
+      trackEvent('restore_standard', { failed: true, error: error.message });
     } finally {
       setIsProcessing(false);
     }
@@ -130,16 +127,28 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
   const handleApplyEnhancement = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!enhancedImage) return;
-    navigation.navigate('SaveAndShare', { imageUri, enhancedImageUri: enhancedImage });
+    
+    // Navigate to Result screen with proper parameters
+    navigation.navigate('Result', { 
+      originalUri: imageUri, 
+      enhancedUri: enhancedImage,
+      enhancementId: Date.now().toString(), // Use timestamp as ID
+      watermark: false,
+      mode: mode,
+      processingTime: 30 // Approximate time
+    });
+  };
+
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Go back to home screen instead of previous step
+    navigation.replace('PhotoInput');
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          navigation.goBack();
-        }}>
+        <TouchableOpacity onPress={handleBack}>
           <Text style={styles.backButton}>‹ {t('navigation.back')}</Text>
         </TouchableOpacity>
         <Text style={styles.title}>{t('preview.title')}</Text>
@@ -148,25 +157,36 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
         {isProcessing ? (
           <ActivityIndicator size="large" color="#FF6B6B" />
         ) : (
-          <Image source={{ uri: enhancedImage || imageUri }} style={styles.previewImage} />
+          <Image source={{ uri: showBefore ? imageUri : enhancedImage || imageUri }} style={styles.previewImage} />
         )}
       </View>
       <View style={styles.footer}>
-        <View style={styles.sliderContainer}>
-          <Text style={styles.sliderLabel}>{t('preview.quality.fast')}</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={1}
-            value={quality}
-            onValueChange={setQuality}
-            minimumTrackTintColor="#007AFF"
-            maximumTrackTintColor="#3A3A3C"
-            thumbTintColor="#007AFF"
-          />
-          <Text style={styles.sliderLabel}>{t('preview.quality.best')}</Text>
+        {/* Before/After Toggle Buttons */}
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity 
+            style={[styles.toggleButton, showBefore && styles.toggleButtonActive]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowBefore(true);
+            }}
+          >
+            <Text style={[styles.toggleText, showBefore && styles.toggleTextActive]}>
+              {t('preview.before')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.toggleButton, !showBefore && styles.toggleButtonActive]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowBefore(false);
+            }}
+          >
+            <Text style={[styles.toggleText, !showBefore && styles.toggleTextActive]}>
+              {t('preview.after')}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.timeIndicator}>{t('preview.timeIndicator', { time: quality > 0.5 ? 90 : 30 })}</Text>
+        
         <TouchableOpacity style={styles.button} onPress={handleApplyEnhancement}>
           <Text style={styles.buttonText}>{t('preview.apply')}</Text>
         </TouchableOpacity>
@@ -210,27 +230,29 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
   },
-  sliderContainer: {
+  toggleContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  sliderLabel: {
-    fontFamily: 'SF Pro Text',
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  slider: {
-    flex: 1,
-    height: 40,
-    marginHorizontal: 10,
-  },
-  timeIndicator: {
-    fontFamily: 'SF Pro Text',
-    fontSize: 12,
-    color: '#8E8E93',
-    textAlign: 'center',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
     marginBottom: 16,
+    overflow: 'hidden',
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#007AFF',
+  },
+  toggleText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#8E8E93',
+  },
+  toggleTextActive: {
+    color: '#FFFFFF',
   },
   button: {
     backgroundColor: '#007AFF',

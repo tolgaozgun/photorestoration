@@ -649,6 +649,22 @@ async def enhance_image(
         # Read the uploaded image
         image_data = await file.read()
         
+        # Convert to PNG if not already PNG
+        try:
+            img = Image.open(io.BytesIO(image_data))
+            if img.format != 'PNG':
+                # Convert to PNG
+                img_buffer = io.BytesIO()
+                img.save(img_buffer, format='PNG')
+                image_data = img_buffer.getvalue()
+                logger.info(f"Converted image to PNG - New size: {len(image_data)/1024:.1f}KB")
+        except Exception as e:
+            logger.warning(f"Could not convert image to PNG: {e}")
+        
+        # Log enhancement start
+        logger.info(f"Starting enhancement - User: {user_id}, Mode: {mode}, Resolution: {'HD' if is_hd else 'Standard'}, "
+                   f"File Size: {len(image_data)/1024:.1f}KB")
+        
         try:
             # Try to enhance the image
             enhanced_data = await enhance_image_with_gemini(image_data, resolution, mode)
@@ -667,8 +683,8 @@ async def enhance_image(
             
             # Save to storage
             file_id = str(uuid.uuid4())
-            original_key = f"original/{file_id}.jpg"
-            enhanced_key = f"enhanced/{file_id}.jpg"
+            original_key = f"original/{file_id}.png"
+            enhanced_key = f"enhanced/{file_id}.png"
             
             try:
                 minio_client.put_object(
@@ -713,7 +729,12 @@ async def enhance_image(
             )
             db.add(enhancement)
             db.commit()
-            logger.info(f"Enhancement record created for user {user_id}, enhancement_id={enhancement.id}")
+            
+            # Log successful enhancement with details
+            logger.info(f"Enhancement completed successfully - User: {user_id}, Enhancement ID: {enhancement.id}, "
+                       f"Mode: {mode}, Resolution: {'HD' if is_hd else 'Standard'}, "
+                       f"Processing Time: {processing_time:.2f}s, Watermark: {watermark}, "
+                       f"File Size: {len(image_data)/1024:.1f}KB -> {len(enhanced_data)/1024:.1f}KB")
             
             daily_limits = check_daily_limits(user)
             
@@ -757,12 +778,12 @@ async def get_image(key: str, thumbnail: bool = False):
             
             # Save thumbnail to bytes
             thumb_io = io.BytesIO()
-            img.save(thumb_io, format='JPEG', quality=85)
+            img.save(thumb_io, format='PNG')
             thumb_io.seek(0)
             
-            return StreamingResponse(thumb_io, media_type="image/jpeg")
+            return StreamingResponse(thumb_io, media_type="image/png")
         else:
-            return StreamingResponse(io.BytesIO(image_data), media_type="image/jpeg")
+            return StreamingResponse(io.BytesIO(image_data), media_type="image/png")
     except S3Error:
         raise HTTPException(status_code=404, detail="Image not found")
 
