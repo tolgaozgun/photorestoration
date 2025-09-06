@@ -1,4 +1,4 @@
-from .database import User, Purchase, Enhancement, AnalyticsEvent, EmailVerification, LinkedDevice, SessionLocal, engine, Base
+from .database import User, Purchase, Enhancement, AnalyticsEvent, EmailVerification, LinkedDevice, SessionLocal, engine, Base, get_db
 
 __all__ = [
     "User",
@@ -9,5 +9,6 @@ __all__ = [
     "LinkedDevice",
     "SessionLocal",
     "engine",
-    "Base"
+    "Base",
+    "get_db"
 ]
