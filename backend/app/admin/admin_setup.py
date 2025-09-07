@@ -23,13 +23,13 @@ class MenuSectionAdmin(ModelView, model=MenuSection):
     column_list = [MenuSection.id, MenuSection.name, MenuSection.title, MenuSection.description, MenuSection.icon, MenuSection.layout, MenuSection.sort_order, MenuSection.is_active, MenuSection.created_at, MenuSection.updated_at]
     column_searchable_list = [MenuSection.name, MenuSection.title, MenuSection.description]
     column_sortable_list = [MenuSection.name, MenuSection.title, MenuSection.sort_order, MenuSection.created_at]
-    form_columns = [MenuSection.name, MenuSection.title, MenuSection.description, MenuSection.icon, MenuSection.layout, MenuSection.sort_order, MenuSection.is_active, MenuSection.metadata]
+    form_columns = [MenuSection.name, MenuSection.title, MenuSection.description, MenuSection.icon, MenuSection.layout, MenuSection.sort_order, MenuSection.is_active, MenuSection.meta_data]
 
 class MenuItemAdmin(ModelView, model=MenuItem):
     column_list = [MenuItem.id, MenuItem.title, MenuItem.description, MenuItem.icon, MenuItem.action_type, MenuItem.action_value, MenuItem.section_id, MenuItem.parent_id, MenuItem.sort_order, MenuItem.is_active, MenuItem.is_premium, MenuItem.requires_auth, MenuItem.created_at, MenuItem.updated_at]
     column_searchable_list = [MenuItem.title, MenuItem.description, MenuItem.action_value]
     column_sortable_list = [MenuItem.title, MenuItem.sort_order, MenuItem.created_at]
-    form_columns = [MenuItem.title, MenuItem.description, MenuItem.icon, MenuItem.action_type, MenuItem.action_value, MenuItem.section_id, MenuItem.parent_id, MenuItem.sort_order, MenuItem.is_active, MenuItem.is_premium, MenuItem.requires_auth, MenuItem.metadata]
+    form_columns = [MenuItem.title, MenuItem.description, MenuItem.icon, MenuItem.action_type, MenuItem.action_value, MenuItem.section_id, MenuItem.parent_id, MenuItem.sort_order, MenuItem.is_active, MenuItem.is_premium, MenuItem.requires_auth, MenuItem.meta_data]
 
 def setup_admin(app, engine):
     admin = Admin(

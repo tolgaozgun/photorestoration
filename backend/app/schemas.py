@@ -10,7 +10,7 @@ class MenuSectionBase(BaseModel):
     layout: str = "grid"
     sort_order: int = 0
     is_active: bool = True
-    metadata: Dict[str, Any] = {}
+    meta_data: Dict[str, Any] = {}
 
 class MenuSection(MenuSectionBase):
     id: str
@@ -32,7 +32,7 @@ class MenuItemBase(BaseModel):
     is_active: bool = True
     is_premium: bool = False
     requires_auth: bool = False
-    metadata: Dict[str, Any] = {}
+    meta_data: Dict[str, Any] = {}
 
 class MenuItem(MenuItemBase):
     id: str

@@ -165,7 +165,7 @@ class MenuItem(Base):
     is_active = Column(Boolean, default=True)
     is_premium = Column(Boolean, default=False)
     requires_auth = Column(Boolean, default=False)
-    metadata = Column(JSON, default={})  # additional configuration
+    meta_data = Column(JSON, default={})  # additional configuration (renamed from metadata)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -180,7 +180,7 @@ class MenuSection(Base):
     layout = Column(String, default='grid')  # 'grid', 'list', 'horizontal'
     sort_order = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
-    metadata = Column(JSON, default={})  # additional configuration
+    meta_data = Column(JSON, default={})  # additional configuration (renamed from metadata)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

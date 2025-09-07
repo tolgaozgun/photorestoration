@@ -20,7 +20,7 @@ class MenuSectionCreate(BaseModel):
     layout: str = Field(default="grid", regex="^(grid|list|horizontal)$")
     sort_order: int = Field(default=0)
     is_active: bool = Field(default=True)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    meta_data: Dict[str, Any] = Field(default_factory=dict)
 
 class MenuSectionUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=50)
@@ -30,7 +30,7 @@ class MenuSectionUpdate(BaseModel):
     layout: Optional[str] = Field(None, regex="^(grid|list|horizontal)$")
     sort_order: Optional[int] = Field(None)
     is_active: Optional[bool] = Field(None)
-    metadata: Optional[Dict[str, Any]] = Field(None)
+    meta_data: Optional[Dict[str, Any]] = Field(None)
 
 class MenuItemCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=100)
@@ -44,7 +44,7 @@ class MenuItemCreate(BaseModel):
     is_active: bool = Field(default=True)
     is_premium: bool = Field(default=False)
     requires_auth: bool = Field(default=False)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    meta_data: Dict[str, Any] = Field(default_factory=dict)
 
 class MenuItemUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=100)
@@ -58,7 +58,7 @@ class MenuItemUpdate(BaseModel):
     is_active: Optional[bool] = Field(None)
     is_premium: Optional[bool] = Field(None)
     requires_auth: Optional[bool] = Field(None)
-    metadata: Optional[Dict[str, Any]] = Field(None)
+    meta_data: Optional[Dict[str, Any]] = Field(None)
 
 class MenuResponse(BaseModel):
     sections: List[MenuSectionSchema]

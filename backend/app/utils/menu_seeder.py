@@ -42,7 +42,7 @@ def seed_menu_data_if_needed():
                         "icon": "✨",
                         "layout": "grid",
                         "sort_order": 1,
-                        "metadata": {"category": "primary"}
+                        "meta_data": {"category": "primary"}
                     },
                     {
                         "name": "creative_tools",
@@ -51,7 +51,7 @@ def seed_menu_data_if_needed():
                         "icon": "🎨",
                         "layout": "horizontal",
                         "sort_order": 2,
-                        "metadata": {"category": "secondary"}
+                        "meta_data": {"category": "secondary"}
                     },
                     {
                         "name": "ai_features",
@@ -60,7 +60,7 @@ def seed_menu_data_if_needed():
                         "icon": "🤖",
                         "layout": "grid",
                         "sort_order": 3,
-                        "metadata": {"category": "premium"}
+                        "meta_data": {"category": "premium"}
                     }
                 ]
                 

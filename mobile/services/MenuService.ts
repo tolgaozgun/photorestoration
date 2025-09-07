@@ -10,7 +10,7 @@ export interface MenuSection {
   icon?: string;
   layout: 'grid' | 'list' | 'horizontal';
   is_active: boolean;
-  metadata: any;
+  meta_data: any;
   created_at: string;
   updated_at: string;
 }
@@ -28,7 +28,7 @@ export interface MenuItem {
   is_active: boolean;
   is_premium: boolean;
   requires_auth: boolean;
-  metadata: any;
+  meta_data: any;
   created_at: string;
   updated_at: string;
 }
@@ -149,7 +149,7 @@ class MenuService {
       layout: 'grid' | 'list' | 'horizontal';
       sort_order: number;
       is_active: boolean;
-      metadata: any;
+      meta_data: any;
     }>
   ): Promise<MenuSection> {
     try {
@@ -223,7 +223,7 @@ class MenuService {
       is_active: boolean;
       is_premium: boolean;
       requires_auth: boolean;
-      metadata: any;
+      meta_data: any;
     }>
   ): Promise<MenuItem> {
     try {
