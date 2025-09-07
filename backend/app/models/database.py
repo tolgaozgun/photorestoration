@@ -150,6 +150,40 @@ class LinkedDevice(Base):
     linked_at = Column(DateTime, default=datetime.utcnow)
     last_active = Column(DateTime, default=datetime.utcnow)
 
+class MenuItem(Base):
+    __tablename__ = "menu_items"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    icon = Column(String, nullable=True)  # emoji or icon identifier
+    action_type = Column(String, nullable=False)  # 'screen', 'url', 'action', 'section'
+    action_value = Column(String, nullable=True)  # screen name, URL, action identifier
+    parent_id = Column(String, nullable=True, index=True)  # for nested menus
+    section_id = Column(String, nullable=True, index=True)  # for grouping
+    sort_order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    is_premium = Column(Boolean, default=False)
+    requires_auth = Column(Boolean, default=False)
+    metadata = Column(JSON, default={})  # additional configuration
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class MenuSection(Base):
+    __tablename__ = "menu_sections"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    name = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    icon = Column(String, nullable=True)  # emoji or icon identifier
+    layout = Column(String, default='grid')  # 'grid', 'list', 'horizontal'
+    sort_order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    metadata = Column(JSON, default={})  # additional configuration
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 # Create all tables
 Base.metadata.create_all(bind=engine)
 

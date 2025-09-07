@@ -16,7 +16,7 @@ from email_service import EmailService
 
 from .models import engine
 from .config import settings
-from .routes import enhancement_router, purchase_router, analytics_router, user_router
+from .routes import enhancement_router, purchase_router, analytics_router, user_router, email_router, menu_router
 from .services import StorageService, EnhancementService
 from .admin import setup_admin
 
@@ -104,6 +104,8 @@ def create_app() -> FastAPI:
     app.include_router(purchase_router, prefix="/api")
     app.include_router(analytics_router, prefix="/api")
     app.include_router(user_router, prefix="/api")
+    app.include_router(email_router, prefix="/api")
+    app.include_router(menu_router, prefix="/api")
     
     @app.get("/health")
     async def health_check():

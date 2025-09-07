@@ -3,6 +3,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
@@ -11,17 +12,21 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Onboarding screens
 import OnboardingFlow from './screens/onboarding/OnboardingFlow';
 
-// Flow screens
+// New Discovery Hub Screens
+import HomeScreen from './screens/HomeScreen';
+import ModeSelectionScreen from './screens/ModeSelectionScreen';
+import AIGenerationScreen from './screens/AIGenerationScreen';
+import VideoGenerationScreen from './screens/VideoGenerationScreen';
+import MenuScreen from './screens/MenuScreen';
+
+// Essential legacy screens (keeping only what's necessary)
+import ProfileScreen from './screens/ProfileScreen';
+import PurchaseScreen from './screens/PurchaseScreen';
+
+// Flow screens (keeping essential flow)
 import PhotoInputScreen from './screens/flow/PhotoInputScreen';
-import ModeSelectionScreen from './screens/flow/ModeSelectionScreen';
 import PreviewScreen from './screens/flow/PreviewScreen';
 import ResultScreen from './screens/flow/ResultScreen';
-import HistoryScreen from './screens/flow/HistoryScreen';
-
-// Legacy screens (for backward compatibility)
-import SettingsScreen from './screens/SettingsScreen';
-import EmailSyncScreen from './screens/EmailSyncScreen';
-import VerificationCodeScreen from './screens/VerificationCodeScreen';
 
 // Contexts
 import { UserProvider } from './contexts/UserContext';
@@ -29,8 +34,15 @@ import { AnalyticsProvider } from './contexts/AnalyticsContext';
 import { FlowProvider } from './contexts/FlowContext';
 import { generateUUID } from './utils/uuid';
 
+// Import our custom components
+import { CustomTabBar } from './components/Navigation';
+import { Text } from './components/Text';
+import { colors } from './theme';
+
+// Types for navigation
 export type RootStackParamList = {
   Onboarding: undefined;
+  MainTabs: undefined;
   PhotoInput: undefined;
   ModeSelection: { imageUri: string };
   Preview: { 
@@ -45,22 +57,88 @@ export type RootStackParamList = {
     mode: string;
     processingTime: number;
   };
-  History: undefined;
-  Settings: undefined;
-  EmailSync: undefined;
-  VerificationCode: {
-    email: string;
-    deviceId: string;
-    deviceName: string;
-    deviceType: string;
-  };
+  Profile: undefined;
+  Purchase: undefined;
+  AIGeneration: { featureId?: string };
+  VideoGeneration: { featureId?: string };
+  Menu: undefined;
+};
+
+export type MainTabParamList = {
+  Home: undefined;
+  Enhance: undefined;
+  Create: undefined;
+  Videos: undefined;
+  Profile: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<MainTabParamList>();
+
+// Main Tab Navigator with Discovery Hub
+function MainTabNavigator() {
+  return (
+    <Tab.Navigator
+      tabBar={props => <CustomTabBar {...props} tabs={[
+        {
+          name: 'Home',
+          label: 'Home',
+          icon: <Text style={styles.tabIcon}>🏠</Text>,
+          focusedIcon: <Text style={styles.tabIconFocused}>🏠</Text>,
+        },
+        {
+          name: 'Enhance', 
+          label: 'Enhance',
+          icon: <Text style={styles.tabIcon}>✨</Text>,
+          focusedIcon: <Text style={styles.tabIconFocused}>✨</Text>,
+        },
+        {
+          name: 'Create',
+          label: 'Create', 
+          icon: <Text style={styles.tabIcon}>🤖</Text>,
+          focusedIcon: <Text style={styles.tabIconFocused}>🤖</Text>,
+        },
+        {
+          name: 'Videos',
+          label: 'Videos',
+          icon: <Text style={styles.tabIcon}>🎬</Text>,
+          focusedIcon: <Text style={styles.tabIconFocused}>🎬</Text>,
+        },
+        {
+          name: 'Profile',
+          label: 'Profile',
+          icon: <Text style={styles.tabIcon}>👤</Text>,
+          focusedIcon: <Text style={styles.tabIconFocused}>👤</Text>,
+        },
+      ]} />}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
+      }}
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen 
+        name="Enhance" 
+        component={PhotoInputScreen}
+        options={{ title: 'Enhance Photos' }}
+      />
+      <Tab.Screen 
+        name="Create" 
+        component={AIGenerationScreen}
+        options={{ title: 'AI Creation' }}
+      />
+      <Tab.Screen 
+        name="Videos" 
+        component={VideoGenerationScreen}
+        options={{ title: 'Video Generation' }}
+      />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
 
 export default function App() {
   const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
-  // Make i18n readiness resilient to initialization timing.
   const [i18nReady, setI18nReady] = useState<boolean>(i18n.isInitialized ?? false);
 
   useEffect(() => {
@@ -105,7 +183,6 @@ export default function App() {
   };
 
   const handlePhotoSelected = (imageUri: string) => {
-    // This will be handled by the navigation after onboarding
     handleOnboardingComplete();
   };
 
@@ -121,85 +198,133 @@ export default function App() {
             <FlowProvider>
               <View style={styles.container}>
                 <NavigationContainer>
-                <Stack.Navigator
-                  initialRouteName={isFirstLaunch ? 'Onboarding' : 'PhotoInput'}
-                  screenOptions={{
-                    headerShown: false,
-                    cardStyle: { backgroundColor: '#0a0a0a' },
-                  }}
-                >
-                  {/* Onboarding Flow */}
-                  <Stack.Screen name="Onboarding">
-                    {(props) => (
-                      <OnboardingFlow
-                        {...props}
-                        onComplete={handleOnboardingComplete}
-                        onPhotoSelected={handlePhotoSelected}
-                      />
-                    )}
-                  </Stack.Screen>
+                  <Stack.Navigator
+                    initialRouteName={isFirstLaunch ? 'Onboarding' : 'MainTabs'}
+                    screenOptions={{
+                      headerShown: false,
+                      cardStyle: { backgroundColor: colors.background.primary },
+                    }}
+                  >
+                    {/* Onboarding Flow */}
+                    <Stack.Screen name="Onboarding">
+                      {(props) => (
+                        <OnboardingFlow
+                          {...props}
+                          onComplete={handleOnboardingComplete}
+                          onPhotoSelected={handlePhotoSelected}
+                        />
+                      )}
+                    </Stack.Screen>
 
-                  {/* Main Flow */}
-                  <Stack.Screen 
-                    name="PhotoInput" 
-                    component={PhotoInputScreen}
-                  />
-                  <Stack.Screen 
-                    name="ModeSelection" 
-                    component={ModeSelectionScreen}
-                  />
-                  <Stack.Screen 
-                    name="Preview" 
-                    component={PreviewScreen}
-                  />
-                  <Stack.Screen 
-                    name="Result" 
-                    component={ResultScreen}
-                  />
-                  <Stack.Screen 
-                    name="History" 
-                    component={HistoryScreen}
-                  />
+                    {/* Main App with Discovery Hub */}
+                    <Stack.Screen name="MainTabs" component={MainTabNavigator} />
 
-                  {/* Settings & Other Screens */}
-                  <Stack.Screen 
-                    name="Settings" 
-                    component={SettingsScreen}
-                    options={{ 
-                      headerShown: true,
-                      title: 'Settings',
-                      headerStyle: { backgroundColor: '#1a1a1a' },
-                      headerTintColor: '#fff',
-                    }}
-                  />
-                  <Stack.Screen 
-                    name="EmailSync" 
-                    component={EmailSyncScreen}
-                    options={{ 
-                      headerShown: true,
-                      title: 'History Sync',
-                      headerStyle: { backgroundColor: '#1a1a1a' },
-                      headerTintColor: '#fff',
-                    }}
-                  />
-                  <Stack.Screen 
-                    name="VerificationCode" 
-                    component={VerificationCodeScreen}
-                    options={{ 
-                      headerShown: true,
-                      title: 'Verify Email',
-                      headerStyle: { backgroundColor: '#1a1a1a' },
-                      headerTintColor: '#fff',
-                    }}
-                  />
-                </Stack.Navigator>
-              </NavigationContainer>
-              <StatusBar style="light" />
-            </View>
-          </FlowProvider>
-        </AnalyticsProvider>
-      </UserProvider>
-    </I18nextProvider>
+                    {/* Enhancement Flow */}
+                    <Stack.Screen 
+                      name="PhotoInput" 
+                      component={PhotoInputScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Select Photo',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="ModeSelection" 
+                      component={ModeSelectionScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Choose Enhancement',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="Preview" 
+                      component={PreviewScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Preview',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="Result" 
+                      component={ResultScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Result',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* AI Generation Features */}
+                    <Stack.Screen 
+                      name="AIGeneration" 
+                      component={AIGenerationScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'AI Generation',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* Video Generation Features */}
+                    <Stack.Screen 
+                      name="VideoGeneration" 
+                      component={VideoGenerationScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Video Generation',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* Profile */}
+                    <Stack.Screen 
+                      name="Profile" 
+                      component={ProfileScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Profile',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* Purchase Screen */}
+                    <Stack.Screen 
+                      name="Purchase" 
+                      component={PurchaseScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Get Credits',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* Menu Screen */}
+                    <Stack.Screen 
+                      name="Menu" 
+                      component={MenuScreen}
+                      options={{ 
+                        headerShown: false,
+                      }}
+                    />
+                  </Stack.Navigator>
+                </NavigationContainer>
+                <StatusBar style="light" />
+              </View>
+            </FlowProvider>
+          </AnalyticsProvider>
+        </UserProvider>
+      </I18nextProvider>
     </GestureHandlerRootView>
   );
 }
@@ -207,6 +332,21 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: colors.background.primary,
+  },
+  tabBar: {
+    backgroundColor: colors.background.primary,
+    borderTopWidth: 1,
+    borderTopColor: colors.background.tertiary,
+    height: 80,
+    paddingBottom: 20, // Safe area for iOS
+  },
+  tabIcon: {
+    fontSize: 24,
+    color: colors.text.secondary,
+  },
+  tabIconFocused: {
+    fontSize: 24,
+    color: colors.text.primary,
   },
 });
