@@ -19,6 +19,7 @@ from .config import settings
 from .routes import enhancement_router, purchase_router, analytics_router, user_router, email_router, menu_router
 from .services import StorageService, EnhancementService
 from .admin import setup_admin
+from .utils import seed_menu_data_if_needed
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,6 +58,12 @@ async def lifespan(app: FastAPI):
     app.state.storage_service = storage_service
     app.state.enhancement_service = enhancement_service
     app.state.email_service = email_service
+    
+    # Seed menu data if needed
+    try:
+        seed_menu_data_if_needed()
+    except Exception as e:
+        logger.warning(f"Failed to seed menu data: {e}")
     
     yield
     
