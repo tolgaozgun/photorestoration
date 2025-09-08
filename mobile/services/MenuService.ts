@@ -39,6 +39,38 @@ export interface MenuData {
   success: boolean;
 }
 
+export interface SupportedFormat {
+  extensions: string[];
+  mimeTypes: string[];
+  maxFileSize?: number; // in bytes
+}
+
+export interface ProcessingContext {
+  supported_formats: string[];
+  processing_type?: string;
+  enhancement_type?: string;
+  generation_type?: string;
+  content_type?: string;
+}
+
+export const SUPPORTED_FORMATS: Record<string, SupportedFormat> = {
+  image: {
+    extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+    maxFileSize: 50 * 1024 * 1024, // 50MB
+  },
+  video: {
+    extensions: ['mp4', 'mov', 'avi', 'mkv', 'webm'],
+    mimeTypes: ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska', 'video/webm'],
+    maxFileSize: 500 * 1024 * 1024, // 500MB
+  },
+  animated: {
+    extensions: ['gif', 'webp'],
+    mimeTypes: ['image/gif', 'image/webp'],
+    maxFileSize: 100 * 1024 * 1024, // 100MB
+  }
+};
+
 class MenuService {
   private async getAuthHeaders() {
     // Add your authentication logic here
@@ -53,6 +85,82 @@ class MenuService {
     // }
     
     return headers;
+  }
+
+  // Get screen-specific menu items
+  getScreenItems(screenName: string, menuData: MenuData): MenuItem[] {
+    const screenSection = menuData.sections.find(section => 
+      section.meta_data?.screen === screenName
+    );
+    
+    if (!screenSection) return [];
+    
+    return menuData.items
+      .filter(item => item.section_id === screenSection.id && item.is_active)
+      .sort((a, b) => a.sort_order - b.sort_order);
+  }
+
+  // Get supported formats for a menu item
+  getSupportedFormatsForItem(item: MenuItem): string[] {
+    return item.meta_data?.supported_formats || [];
+  }
+
+  // Validate file format for a menu item
+  isFileSupportedForItem(fileName: string, item: MenuItem): boolean {
+    const supportedFormats = this.getSupportedFormatsForItem(item);
+    const fileExtension = fileName.split('.').pop()?.toLowerCase();
+    return supportedFormats.includes(fileExtension || '');
+  }
+
+  // Get processing context for a menu item
+  getProcessingContext(item: MenuItem): ProcessingContext {
+    return {
+      supported_formats: this.getSupportedFormatsForItem(item),
+      processing_type: item.meta_data?.processing_type,
+      enhancement_type: item.meta_data?.enhancement_type,
+      generation_type: item.meta_data?.generation_type,
+      content_type: item.meta_data?.content_type,
+    };
+  }
+
+  // Get file type category (image, video, animated)
+  getFileTypeCategory(fileName: string): string {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    
+    if (SUPPORTED_FORMATS.video.extensions.includes(extension || '')) {
+      return 'video';
+    } else if (SUPPORTED_FORMATS.animated.extensions.includes(extension || '')) {
+      return 'animated';
+    } else {
+      return 'image';
+    }
+  }
+
+  // Validate file against size and format constraints
+  validateFile(file: File, item: MenuItem): { valid: boolean; error?: string } {
+    const supportedFormats = this.getSupportedFormatsForItem(item);
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const fileType = this.getFileTypeCategory(file.name);
+    
+    // Check format support
+    if (!supportedFormats.includes(fileExtension || '')) {
+      return {
+        valid: false,
+        error: `File format .${fileExtension} is not supported for this feature`
+      };
+    }
+    
+    // Check file size
+    const maxFileSize = SUPPORTED_FORMATS[fileType].maxFileSize;
+    if (maxFileSize && file.size > maxFileSize) {
+      const maxSizeMB = Math.round(maxFileSize / (1024 * 1024));
+      return {
+        valid: false,
+        error: `File size exceeds ${maxSizeMB}MB limit for ${fileType} files`
+      };
+    }
+    
+    return { valid: true };
   }
 
   async getMenu(activeOnly: boolean = true): Promise<MenuData> {

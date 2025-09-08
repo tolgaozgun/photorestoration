@@ -30,31 +30,40 @@ def seed_menu_data_if_needed():
                 # Create menu sections
                 sections = [
                     {
-                        "name": "photo_enhancement",
-                        "title": "Photo Enhancement",
+                        "name": "home_screen",
+                        "title": "Home",
+                        "description": "Main dashboard with recent activity and quick actions",
+                        "icon": "🏠",
+                        "layout": "grid",
+                        "sort_order": 1,
+                        "meta_data": {"screen": "home", "supports_all_formats": true}
+                    },
+                    {
+                        "name": "create_screen",
+                        "title": "Create",
+                        "description": "Create new content with AI-powered tools",
+                        "icon": "➕",
+                        "layout": "grid",
+                        "sort_order": 2,
+                        "meta_data": {"screen": "create", "supports_all_formats": true}
+                    },
+                    {
+                        "name": "enhance_screen",
+                        "title": "Enhance",
                         "description": "Enhance and restore your photos with AI",
                         "icon": "✨",
                         "layout": "grid",
-                        "sort_order": 1,
-                        "meta_data": {"category": "primary"}
-                    },
-                    {
-                        "name": "creative_tools",
-                        "title": "Creative Tools",
-                        "description": "Transform your photos with creative effects",
-                        "icon": "🎨",
-                        "layout": "horizontal",
-                        "sort_order": 2,
-                        "meta_data": {"category": "secondary"}
-                    },
-                    {
-                        "name": "ai_features",
-                        "title": "AI Features",
-                        "description": "Advanced AI-powered features",
-                        "icon": "🤖",
-                        "layout": "grid",
                         "sort_order": 3,
-                        "meta_data": {"category": "premium"}
+                        "meta_data": {"screen": "enhance", "supports_all_formats": true}
+                    },
+                    {
+                        "name": "video_screen",
+                        "title": "Video",
+                        "description": "Video enhancement and creation tools",
+                        "icon": "🎥",
+                        "layout": "grid",
+                        "sort_order": 4,
+                        "meta_data": {"screen": "video", "supports_all_formats": true}
                     }
                 ]
                 
@@ -69,17 +78,130 @@ def seed_menu_data_if_needed():
                 
                 # Create menu items
                 items = [
-                    # Photo Enhancement Section
+                    # Home Screen Items
                     {
-                        "title": "Enhance Photo",
+                        "title": "Recent Projects",
+                        "description": "View and continue your recent work",
+                        "icon": "📁",
+                        "action_type": "screen",
+                        "action_value": "RecentProjects",
+                        "section_id": created_sections[0].id,
+                        "sort_order": 1,
+                        "is_premium": False,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp", "mp4", "mov"],
+                            "content_type": "recent"
+                        }
+                    },
+                    {
+                        "title": "Quick Enhance",
+                        "description": "Fast photo enhancement with AI",
+                        "icon": "⚡",
+                        "action_type": "screen",
+                        "action_value": "QuickEnhance",
+                        "section_id": created_sections[0].id,
+                        "sort_order": 2,
+                        "is_premium": False,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "processing_type": "enhance"
+                        }
+                    },
+                    {
+                        "title": "Templates",
+                        "description": "Use pre-made templates and styles",
+                        "icon": "📋",
+                        "action_type": "screen",
+                        "action_value": "Templates",
+                        "section_id": created_sections[0].id,
+                        "sort_order": 3,
+                        "is_premium": True,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "content_type": "templates"
+                        }
+                    },
+                    
+                    # Create Screen Items
+                    {
+                        "title": "AI Generation",
+                        "description": "Generate images from text prompts",
+                        "icon": "🎨",
+                        "action_type": "screen",
+                        "action_value": "AIGeneration",
+                        "section_id": created_sections[1].id,
+                        "sort_order": 1,
+                        "is_premium": False,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "generation_type": "text_to_image"
+                        }
+                    },
+                    {
+                        "title": "Image to Image",
+                        "description": "Transform images with AI",
+                        "icon": "🖼️",
+                        "action_type": "screen",
+                        "action_value": "ImageToImage",
+                        "section_id": created_sections[1].id,
+                        "sort_order": 2,
+                        "is_premium": False,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "generation_type": "image_to_image"
+                        }
+                    },
+                    {
+                        "title": "Background Generator",
+                        "description": "Generate custom backgrounds",
+                        "icon": "🌅",
+                        "action_type": "screen",
+                        "action_value": "BackgroundGenerator",
+                        "section_id": created_sections[1].id,
+                        "sort_order": 3,
+                        "is_premium": True,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "generation_type": "background"
+                        }
+                    },
+                    {
+                        "title": "Logo Generator",
+                        "description": "Create logos with AI",
+                        "icon": "🎯",
+                        "action_type": "screen",
+                        "action_value": "LogoGenerator",
+                        "section_id": created_sections[1].id,
+                        "sort_order": 4,
+                        "is_premium": True,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "generation_type": "logo"
+                        }
+                    },
+                    
+                    # Enhance Screen Items
+                    {
+                        "title": "Photo Enhancement",
                         "description": "Improve photo quality and resolution",
                         "icon": "✨",
                         "action_type": "screen",
                         "action_value": "PhotoEnhancement",
-                        "section_id": created_sections[0].id,
+                        "section_id": created_sections[2].id,
                         "sort_order": 1,
                         "is_premium": False,
-                        "requires_auth": False
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "enhancement_type": "quality"
+                        }
                     },
                     {
                         "title": "Colorize B&W",
@@ -87,10 +209,14 @@ def seed_menu_data_if_needed():
                         "icon": "🎨",
                         "action_type": "screen",
                         "action_value": "ColorizePhoto",
-                        "section_id": created_sections[0].id,
+                        "section_id": created_sections[2].id,
                         "sort_order": 2,
                         "is_premium": False,
-                        "requires_auth": False
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "enhancement_type": "colorize"
+                        }
                     },
                     {
                         "title": "Remove Scratches",
@@ -98,10 +224,14 @@ def seed_menu_data_if_needed():
                         "icon": "🔧",
                         "action_type": "screen",
                         "action_value": "RemoveScratches",
-                        "section_id": created_sections[0].id,
+                        "section_id": created_sections[2].id,
                         "sort_order": 3,
                         "is_premium": True,
-                        "requires_auth": False
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "enhancement_type": "restoration"
+                        }
                     },
                     {
                         "title": "Face Enhancement",
@@ -109,91 +239,106 @@ def seed_menu_data_if_needed():
                         "icon": "👤",
                         "action_type": "screen",
                         "action_value": "FaceEnhancement",
-                        "section_id": created_sections[0].id,
+                        "section_id": created_sections[2].id,
                         "sort_order": 4,
                         "is_premium": True,
-                        "requires_auth": False
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "enhancement_type": "face"
+                        }
+                    },
+                    {
+                        "title": "AI Upscale",
+                        "description": "Increase image resolution with AI",
+                        "icon": "📈",
+                        "action_type": "screen",
+                        "action_value": "AIUpscale",
+                        "section_id": created_sections[2].id,
+                        "sort_order": 5,
+                        "is_premium": True,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp"],
+                            "enhancement_type": "upscale"
+                        }
                     },
                     
-                    # Creative Tools Section
+                    # Video Screen Items
                     {
-                        "title": "Artistic Filters",
-                        "description": "Apply artistic filters and effects",
-                        "icon": "🖼️",
+                        "title": "Video Enhancement",
+                        "description": "Enhance video quality and resolution",
+                        "icon": "🎥",
                         "action_type": "screen",
-                        "action_value": "ArtisticFilters",
-                        "section_id": created_sections[1].id,
+                        "action_value": "VideoEnhancement",
+                        "section_id": created_sections[3].id,
                         "sort_order": 1,
                         "is_premium": False,
-                        "requires_auth": False
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["mp4", "mov", "avi", "mkv", "webm", "gif"],
+                            "processing_type": "video_enhance"
+                        }
                     },
                     {
-                        "title": "Background Change",
-                        "description": "Change or remove backgrounds",
-                        "icon": "🌅",
+                        "title": "Video Colorize",
+                        "description": "Add color to black and white videos",
+                        "icon": "🎨",
                         "action_type": "screen",
-                        "action_value": "BackgroundChange",
-                        "section_id": created_sections[1].id,
+                        "action_value": "VideoColorize",
+                        "section_id": created_sections[3].id,
                         "sort_order": 2,
                         "is_premium": True,
-                        "requires_auth": False
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["mp4", "mov", "avi", "mkv", "webm"],
+                            "processing_type": "video_colorize"
+                        }
                     },
                     {
-                        "title": "Style Transfer",
-                        "description": "Transfer artistic styles to photos",
-                        "icon": "🎭",
+                        "title": "Video Upscale",
+                        "description": "Increase video resolution with AI",
+                        "icon": "📈",
                         "action_type": "screen",
-                        "action_value": "StyleTransfer",
-                        "section_id": created_sections[1].id,
+                        "action_value": "VideoUpscale",
+                        "section_id": created_sections[3].id,
                         "sort_order": 3,
                         "is_premium": True,
-                        "requires_auth": False
-                    },
-                    
-                    # AI Features Section
-                    {
-                        "title": "Future Baby",
-                        "description": "See what your future baby might look like",
-                        "icon": "🍼",
-                        "action_type": "screen",
-                        "action_value": "FutureBaby",
-                        "section_id": created_sections[2].id,
-                        "sort_order": 1,
-                        "is_premium": True,
-                        "requires_auth": True
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["mp4", "mov", "avi", "mkv", "webm"],
+                            "processing_type": "video_upscale"
+                        }
                     },
                     {
-                        "title": "Age Progression",
-                        "description": "See how someone might look in the future",
-                        "icon": "👴",
+                        "title": "GIF Creator",
+                        "description": "Create GIFs from images or videos",
+                        "icon": "🎞️",
                         "action_type": "screen",
-                        "action_value": "AgeProgression",
-                        "section_id": created_sections[2].id,
-                        "sort_order": 2,
-                        "is_premium": True,
-                        "requires_auth": True
-                    },
-                    {
-                        "title": "Digital Twin",
-                        "description": "Create your digital avatar",
-                        "icon": "🎭",
-                        "action_type": "screen",
-                        "action_value": "DigitalTwin",
-                        "section_id": created_sections[2].id,
-                        "sort_order": 3,
-                        "is_premium": True,
-                        "requires_auth": True
-                    },
-                    {
-                        "title": "Outfit Try-On",
-                        "description": "Try different outfits on your photos",
-                        "icon": "👕",
-                        "action_type": "screen",
-                        "action_value": "OutfitTryOn",
-                        "section_id": created_sections[2].id,
+                        "action_value": "GIFCreator",
+                        "section_id": created_sections[3].id,
                         "sort_order": 4,
+                        "is_premium": False,
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["jpg", "jpeg", "png", "gif", "webp", "mp4", "mov"],
+                            "processing_type": "gif_creation"
+                        }
+                    },
+                    {
+                        "title": "Video Stabilization",
+                        "description": "Stabilize shaky videos",
+                        "icon": "🎯",
+                        "action_type": "screen",
+                        "action_value": "VideoStabilization",
+                        "section_id": created_sections[3].id,
+                        "sort_order": 5,
                         "is_premium": True,
-                        "requires_auth": True
+                        "requires_auth": False,
+                        "meta_data": {
+                            "supported_formats": ["mp4", "mov", "avi", "mkv", "webm"],
+                            "processing_type": "video_stabilize"
+                        }
                     }
                 ]
                 
