@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 from ..models import get_db, MenuItem, MenuSection
-from ..schemas import MenuSection as MenuSectionSchema, MenuItem as MenuItemSchema
+from ..schemas import MenuSection, MenuItem
 
 router = APIRouter()
 
@@ -61,12 +61,12 @@ class MenuItemUpdate(BaseModel):
     meta_data: Optional[Dict[str, Any]] = Field(None)
 
 class MenuResponse(BaseModel):
-    sections: List[MenuSectionSchema]
-    items: List[MenuItemSchema]
+    sections: List[MenuSection]
+    items: List[MenuItem]
     success: bool = True
 
 # Menu Sections Endpoints
-@router.post("/menu/sections", response_model=MenuSectionSchema)
+@router.post("/menu/sections", response_model=MenuSection)
 async def create_menu_section(
     section: MenuSectionCreate,
     db: Session = Depends(get_db)
@@ -81,7 +81,7 @@ async def create_menu_section(
     db.refresh(db_section)
     return db_section
 
-@router.get("/menu/sections", response_model=List[MenuSectionSchema])
+@router.get("/menu/sections", response_model=List[MenuSection])
 async def get_menu_sections(
     active_only: bool = Query(default=True),
     db: Session = Depends(get_db)
@@ -93,7 +93,7 @@ async def get_menu_sections(
     
     return query.order_by(MenuSection.sort_order, MenuSection.created_at).all()
 
-@router.get("/menu/sections/{section_id}", response_model=MenuSectionSchema)
+@router.get("/menu/sections/{section_id}", response_model=MenuSection)
 async def get_menu_section(
     section_id: str,
     db: Session = Depends(get_db)
@@ -104,7 +104,7 @@ async def get_menu_section(
         raise HTTPException(status_code=404, detail="Menu section not found")
     return section
 
-@router.put("/menu/sections/{section_id}", response_model=MenuSectionSchema)
+@router.put("/menu/sections/{section_id}", response_model=MenuSection)
 async def update_menu_section(
     section_id: str,
     section_update: MenuSectionUpdate,
@@ -143,7 +143,7 @@ async def delete_menu_section(
     return {"message": "Menu section deleted successfully"}
 
 # Menu Items Endpoints
-@router.post("/menu/items", response_model=MenuItemSchema)
+@router.post("/menu/items", response_model=MenuItem)
 async def create_menu_item(
     item: MenuItemCreate,
     db: Session = Depends(get_db)
@@ -158,7 +158,7 @@ async def create_menu_item(
     db.refresh(db_item)
     return db_item
 
-@router.get("/menu/items", response_model=List[MenuItemSchema])
+@router.get("/menu/items", response_model=List[MenuItem])
 async def get_menu_items(
     section_id: Optional[str] = Query(None),
     parent_id: Optional[str] = Query(None),
@@ -177,7 +177,7 @@ async def get_menu_items(
     
     return query.order_by(MenuItem.sort_order, MenuItem.created_at).all()
 
-@router.get("/menu/items/{item_id}", response_model=MenuItemSchema)
+@router.get("/menu/items/{item_id}", response_model=MenuItem)
 async def get_menu_item(
     item_id: str,
     db: Session = Depends(get_db)
@@ -188,7 +188,7 @@ async def get_menu_item(
         raise HTTPException(status_code=404, detail="Menu item not found")
     return item
 
-@router.put("/menu/items/{item_id}", response_model=MenuItemSchema)
+@router.put("/menu/items/{item_id}", response_model=MenuItem)
 async def update_menu_item(
     item_id: str,
     item_update: MenuItemUpdate,

@@ -22,7 +22,7 @@ from .responses import (
     UserEnhancementsResponse
 )
 
-from .schemas import (
+from ..schemas import (
     MenuSection,
     MenuItem
 )
