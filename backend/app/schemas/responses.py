@@ -35,6 +35,7 @@ class HealthResponse(BaseModel):
 class EmailVerificationResponse(BaseModel):
     success: bool
     message: str
+    verification_code: Optional[str] = None
     expires_in_minutes: Optional[int] = None
     linked_email: Optional[str] = None
 
@@ -66,3 +67,18 @@ class UserEnhancementsResponse(BaseModel):
     total: int
     limit: int
     offset: int
+
+class DeviceResponse(BaseModel):
+    id: str
+    name: str
+    type: str
+    last_active: str
+    isCurrent: bool
+    deviceId: str
+
+class DeviceListResponse(BaseModel):
+    devices: List[DeviceResponse]
+    success: bool
+
+class DeviceRemoveRequest(BaseModel):
+    device_id: str
