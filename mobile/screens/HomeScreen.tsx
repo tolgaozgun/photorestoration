@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -17,111 +18,16 @@ import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
 
-// Import our new components
+// Import our new components and services
 import { Container, Section, Row, Spacer } from '../components/Layout';
 import { Text, SectionHeader } from '../components/Text';
 import { Button, IconButton } from '../components/Button';
 import { Card, GalleryCard, ModeCard } from '../components/Card';
 import { Header, NavigationButton, FloatingActionButton } from '../components/Navigation';
 import { Modal, LoadingModal } from '../components/Modal';
+import { NavigationService, NavigationItem } from '../services/NavigationService';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PhotoInput'>;
-
-// Mock data for content galleries
-const mockContentSections = [
-  {
-    id: 'future-baby',
-    title: 'Future Baby with AI',
-    emoji: '🍼',
-    description: 'See what your future baby might look like',
-    items: [
-      { id: '1', title: 'Baby Prediction', category: 'AI', isPremium: true },
-      { id: '2', title: 'Family Preview', category: 'AI', isPremium: true },
-      { id: '3', title: 'Child Generator', category: 'AI', isPremium: true },
-    ],
-  },
-  {
-    id: 'remove-elements',
-    title: 'Remove Extra Elements',
-    emoji: '🎭',
-    description: 'Clean up your photos by removing unwanted objects',
-    items: [
-      { id: '1', title: 'Background Remove', category: 'Tool' },
-      { id: '2', title: 'Object Removal', category: 'Tool' },
-      { id: '3', title: 'People Remover', category: 'Tool', isPremium: true },
-    ],
-  },
-  {
-    id: 'outfit-tryon',
-    title: 'Choose Your Outfit',
-    emoji: '👕',
-    description: 'Try different outfits on your photos',
-    items: [
-      { id: '1', title: 'Casual Wear', category: 'Fashion' },
-      { id: '2', title: 'Business Attire', category: 'Fashion', isPremium: true },
-      { id: '3', title: 'Evening Dress', category: 'Fashion', isPremium: true },
-    ],
-  },
-  {
-    id: 'digital-twin',
-    title: 'Digital Twin',
-    emoji: '🎭',
-    description: 'Create your digital avatar',
-    items: [
-      { id: '1', title: '3D Avatar', category: 'AI', isPremium: true },
-      { id: '2', title: 'Virtual Clone', category: 'AI', isPremium: true },
-      { id: '3', title: 'Digital Persona', category: 'AI', isPremium: true },
-    ],
-  },
-  {
-    id: 'pixel-trend',
-    title: 'Pixel Trend',
-    emoji: '🎮',
-    description: 'Transform your photos into pixel art',
-    items: [
-      { id: '1', title: '8-bit Style', category: 'Filter' },
-      { id: '2', title: '16-bit Art', category: 'Filter' },
-      { id: '3', title: 'Retro Gaming', category: 'Filter', isPremium: true },
-    ],
-  },
-  {
-    id: 'chibi-stickers',
-    title: 'Chibi Stickers',
-    emoji: '🎨',
-    description: 'Create cute chibi versions of yourself',
-    items: [
-      { id: '1', title: 'Chibi Avatar', category: 'Cartoon' },
-      { id: '2', title: 'Kawaii Style', category: 'Cartoon', isPremium: true },
-      { id: '3', title: 'Anime Character', category: 'Cartoon', isPremium: true },
-    ],
-  },
-];
-
-const mockVideoContent = [
-  {
-    id: 'animate-old-photos',
-    title: 'Animate Old Photos',
-    emoji: '📹',
-    description: 'Bring your old photos to life',
-    duration: '0:30',
-    isPremium: true,
-  },
-  {
-    id: 'face-animation',
-    title: 'Face Animation',
-    emoji: '😊',
-    description: 'Add natural animations to portraits',
-    duration: '0:15',
-  },
-  {
-    id: 'photo-to-video',
-    title: 'Photo to Video',
-    emoji: '🎬',
-    description: 'Transform photos into videos',
-    duration: '1:00',
-    isPremium: true,
-  },
-];
 
 export default function HomeScreenNew() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
@@ -131,6 +37,9 @@ export default function HomeScreenNew() {
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [contentSections, setContentSections] = useState<NavigationItem[]>([]);
+  const [videoContent, setVideoContent] = useState<NavigationItem[]>([]);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -140,6 +49,7 @@ export default function HomeScreenNew() {
     trackEvent('screen_view', { screen: 'home' });
     refreshUser();
     requestPermissions();
+    loadMenuData();
     
     // Entry animation
     Animated.timing(fadeAnim, {
@@ -148,6 +58,24 @@ export default function HomeScreenNew() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  const loadMenuData = async () => {
+    try {
+      setMenuLoading(true);
+      const navigationService = NavigationService.getInstance();
+      await navigationService.loadMenuData();
+      
+      const homeSections = navigationService.getScreenItems('home');
+      const videoSections = navigationService.getScreenItems('video');
+      
+      setContentSections(homeSections);
+      setVideoContent(videoSections);
+    } catch (error) {
+      console.error('Failed to load menu data:', error);
+    } finally {
+      setMenuLoading(false);
+    }
+  };
 
   const requestPermissions = async () => {
     const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -186,29 +114,41 @@ export default function HomeScreenNew() {
     return totalCredits;
   };
 
-  const handleSectionPress = (sectionId: string) => {
+  const handleSectionPress = async (sectionId: string) => {
     trackEvent('action', { type: 'section_tap', section: sectionId });
     setSelectedSection(sectionId);
-    // Navigate to category screen
-    // navigation.navigate('CategoryScreen', { sectionId });
+    
+    const navigationService = NavigationService.getInstance();
+    const item = navigationService.getNavigationItemById(sectionId);
+    if (item) {
+      await navigationService.navigateToItem(item, navigation);
+    }
   };
 
-  const handleSeeAllPress = (sectionId: string) => {
+  const handleSeeAllPress = async (sectionId: string) => {
     trackEvent('action', { type: 'see_all_tap', section: sectionId });
-    // Navigate to category screen
-    // navigation.navigate('CategoryScreen', { sectionId });
+    
+    const navigationService = NavigationService.getInstance();
+    const item = navigationService.getNavigationItemById(sectionId);
+    if (item) {
+      await navigationService.navigateToItem(item, navigation);
+    }
   };
 
-  const handleVideoPress = (videoId: string) => {
+  const handleVideoPress = async (videoId: string) => {
     trackEvent('action', { type: 'video_tap', video: videoId });
-    // Navigate to video creation screen
-    // navigation.navigate('VideoCreation', { videoId });
+    
+    const navigationService = NavigationService.getInstance();
+    const item = navigationService.getNavigationItemById(videoId);
+    if (item) {
+      await navigationService.navigateToItem(item, navigation);
+    }
   };
 
-  const renderContentSection = ({ item }: { item: typeof mockContentSections[0] }) => (
+  const renderContentSection = (item: NavigationItem) => (
     <Section key={item.id} style={styles.section}>
       <View style={styles.sectionHeader}>
-        <SectionHeader emoji={item.emoji}>{item.title}</SectionHeader>
+        <SectionHeader emoji={item.icon}>{item.title}</SectionHeader>
         <Button
           variant="tertiary"
           onPress={() => handleSeeAllPress(item.id)}
@@ -223,7 +163,7 @@ export default function HomeScreenNew() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.horizontalScroll}
       >
-        {item.items.map((contentItem) => (
+        {item.meta_data?.items?.map((contentItem: any) => (
           <GalleryCard
             key={contentItem.id}
             variant="photo"
@@ -246,14 +186,14 @@ export default function HomeScreenNew() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.horizontalScroll}
       >
-        {mockVideoContent.map((video) => (
+        {videoContent.map((video) => (
           <Card
             key={video.id}
             variant="video"
             size="medium"
             title={video.title}
-            metadata={video.duration}
-            isPremium={video.isPremium}
+            metadata={video.meta_data?.duration}
+            isPremium={video.is_premium}
             onPress={() => handleVideoPress(video.id)}
             style={styles.galleryCard}
           />
@@ -331,13 +271,17 @@ export default function HomeScreenNew() {
         </Section>
 
         {/* Content Discovery Sections */}
-        <FlatList
-          data={mockContentSections}
-          renderItem={renderContentSection}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-          ListFooterComponent={renderVideoSection()}
-        />
+        {menuLoading ? (
+          <ActivityIndicator size="large" color="#FF3B30" />
+        ) : (
+          <FlatList
+            data={contentSections}
+            renderItem={({ item }) => renderContentSection(item)}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+            ListFooterComponent={renderVideoSection()}
+          />
+        )}
 
         <Spacer size="large" />
       </Animated.ScrollView>
