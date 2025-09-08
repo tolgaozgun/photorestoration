@@ -15,7 +15,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application
+# Build the application with environment variable
+ARG VITE_BACKEND_API
+ENV VITE_BACKEND_API=${VITE_BACKEND_API:-http://localhost:8000/api}
 RUN npm run build
 
 # Production image, copy all the files and run nginx
