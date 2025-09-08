@@ -45,10 +45,14 @@ export function AnalyticsDashboard() {
   const loadAnalytics = async () => {
     try {
       setLoading(true)
+      // Note: GET /api/analytics endpoint doesn't exist in backend yet
+      // This will show a message until the backend endpoint is implemented
       const data = await api.getAnalytics(dateRange.start, dateRange.end)
       setAnalytics(data)
     } catch (error) {
       console.error("Error loading analytics:", error)
+      // Set analytics to null to show the "not available" message
+      setAnalytics(null)
     } finally {
       setLoading(false)
     }
@@ -93,7 +97,11 @@ export function AnalyticsDashboard() {
   if (!analytics) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">No analytics data available</p>
+        <p className="text-muted-foreground mb-2">Analytics endpoint not implemented</p>
+        <p className="text-sm text-muted-foreground">
+          The backend GET /api/analytics endpoint needs to be implemented to retrieve analytics data.
+          Currently only POST /api/analytics exists for event tracking.
+        </p>
       </div>
     )
   }
