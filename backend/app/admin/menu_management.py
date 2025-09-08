@@ -32,9 +32,11 @@ class MenuManagementView(BaseView):
             menu_data = []
             for section in sections:
                 items = db.query(MenuItemModel).filter(MenuItemModel.section_id == section.id, MenuItemModel.is_active == True).order_by(MenuItemModel.sort_order).all()
+                # Ensure items is a list and convert to dict if needed
+                items_list = list(items) if items else []
                 menu_data.append({
                     'section': section,
-                    'items': items
+                    'items': items_list
                 })
             
             # Get statistics
@@ -55,6 +57,12 @@ class MenuManagementView(BaseView):
                 'active_items': active_items,
                 'premium_items': premium_items
             }
+            
+            # Debug: log what we're passing to template
+            logger.info(f"menu_data type: {type(menu_data)}, length: {len(menu_data)}")
+            logger.info(f"stats type: {type(stats)}, content: {stats}")
+            for i, data in enumerate(menu_data):
+                logger.info(f"menu_data[{i}]: section={type(data['section'])}, items={type(data['items'])}, items_len={len(data['items'])}")
             
             return self._render_template("menu_management.html", {
                 "menu_data": menu_data,
