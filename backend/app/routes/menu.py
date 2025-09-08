@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import uuid
 
-from ..models import get_db, MenuItem, MenuSection
+from ..models import get_db, MenuItem as MenuItemModel, MenuSection as MenuSectionModel
 from ..schemas import MenuSection, MenuItem
 
 router = APIRouter()
@@ -87,11 +87,11 @@ async def get_menu_sections(
     db: Session = Depends(get_db)
 ):
     """Get all menu sections"""
-    query = db.query(MenuSection)
+    query = db.query(MenuSectionModel)
     if active_only:
-        query = query.filter(MenuSection.is_active == True)
+        query = query.filter(MenuSectionModel.is_active == True)
     
-    return query.order_by(MenuSection.sort_order, MenuSection.created_at).all()
+    return query.order_by(MenuSectionModel.sort_order, MenuSectionModel.created_at).all()
 
 @router.get("/menu/sections/{section_id}", response_model=MenuSection)
 async def get_menu_section(
@@ -99,7 +99,7 @@ async def get_menu_section(
     db: Session = Depends(get_db)
 ):
     """Get a specific menu section"""
-    section = db.query(MenuSection).filter(MenuSection.id == section_id).first()
+    section = db.query(MenuSection).filter(MenuSectionModel.id == section_id).first()
     if not section:
         raise HTTPException(status_code=404, detail="Menu section not found")
     return section
@@ -111,7 +111,7 @@ async def update_menu_section(
     db: Session = Depends(get_db)
 ):
     """Update a menu section"""
-    section = db.query(MenuSection).filter(MenuSection.id == section_id).first()
+    section = db.query(MenuSection).filter(MenuSectionModel.id == section_id).first()
     if not section:
         raise HTTPException(status_code=404, detail="Menu section not found")
     
@@ -131,12 +131,12 @@ async def delete_menu_section(
     db: Session = Depends(get_db)
 ):
     """Delete a menu section"""
-    section = db.query(MenuSection).filter(MenuSection.id == section_id).first()
+    section = db.query(MenuSection).filter(MenuSectionModel.id == section_id).first()
     if not section:
         raise HTTPException(status_code=404, detail="Menu section not found")
     
     # Also delete associated menu items
-    db.query(MenuItem).filter(MenuItem.section_id == section_id).delete()
+    db.query(MenuItemModel).filter(MenuItemModel.section_id == section_id).delete()
     
     db.delete(section)
     db.commit()
@@ -166,16 +166,16 @@ async def get_menu_items(
     db: Session = Depends(get_db)
 ):
     """Get menu items with optional filtering"""
-    query = db.query(MenuItem)
+    query = db.query(MenuItemModel)
     
     if section_id:
-        query = query.filter(MenuItem.section_id == section_id)
+        query = query.filter(MenuItemModel.section_id == section_id)
     if parent_id:
-        query = query.filter(MenuItem.parent_id == parent_id)
+        query = query.filter(MenuItemModel.parent_id == parent_id)
     if active_only:
-        query = query.filter(MenuItem.is_active == True)
+        query = query.filter(MenuItemModel.is_active == True)
     
-    return query.order_by(MenuItem.sort_order, MenuItem.created_at).all()
+    return query.order_by(MenuItemModel.sort_order, MenuItemModel.created_at).all()
 
 @router.get("/menu/items/{item_id}", response_model=MenuItem)
 async def get_menu_item(
@@ -183,7 +183,7 @@ async def get_menu_item(
     db: Session = Depends(get_db)
 ):
     """Get a specific menu item"""
-    item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
+    item = db.query(MenuItemModel).filter(MenuItemModel.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Menu item not found")
     return item
@@ -195,7 +195,7 @@ async def update_menu_item(
     db: Session = Depends(get_db)
 ):
     """Update a menu item"""
-    item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
+    item = db.query(MenuItemModel).filter(MenuItemModel.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Menu item not found")
     
@@ -215,12 +215,12 @@ async def delete_menu_item(
     db: Session = Depends(get_db)
 ):
     """Delete a menu item"""
-    item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
+    item = db.query(MenuItemModel).filter(MenuItemModel.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Menu item not found")
     
     # Also delete child items
-    db.query(MenuItem).filter(MenuItem.parent_id == item_id).delete()
+    db.query(MenuItemModel).filter(MenuItemModel.parent_id == item_id).delete()
     
     db.delete(item)
     db.commit()
@@ -234,18 +234,18 @@ async def get_complete_menu(
 ):
     """Get complete menu structure for mobile app"""
     # Get sections
-    sections_query = db.query(MenuSection)
+    sections_query = db.query(MenuSectionModel)
     if active_only:
-        sections_query = sections_query.filter(MenuSection.is_active == True)
+        sections_query = sections_query.filter(MenuSectionModel.is_active == True)
     
-    sections = sections_query.order_by(MenuSection.sort_order, MenuSection.created_at).all()
+    sections = sections_query.order_by(MenuSectionModel.sort_order, MenuSectionModel.created_at).all()
     
     # Get items
-    items_query = db.query(MenuItem)
+    items_query = db.query(MenuItemModel)
     if active_only:
-        items_query = items_query.filter(MenuItem.is_active == True)
+        items_query = items_query.filter(MenuItemModel.is_active == True)
     
-    items = items_query.order_by(MenuItem.sort_order, MenuItem.created_at).all()
+    items = items_query.order_by(MenuItemModel.sort_order, MenuItemModel.created_at).all()
     
     return {
         "sections": sections,
@@ -266,7 +266,7 @@ async def reorder_menu_sections(
         
         if section_id is not None and sort_order is not None:
             db.query(MenuSection).filter(
-                MenuSection.id == section_id
+                MenuSectionModel.id == section_id
             ).update({"sort_order": sort_order})
     
     db.commit()
@@ -283,8 +283,8 @@ async def reorder_menu_items(
         sort_order = order.get("sort_order")
         
         if item_id is not None and sort_order is not None:
-            db.query(MenuItem).filter(
-                MenuItem.id == item_id
+            db.query(MenuItemModel).filter(
+                MenuItemModel.id == item_id
             ).update({"sort_order": sort_order})
     
     db.commit()
