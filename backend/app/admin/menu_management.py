@@ -191,15 +191,17 @@ class MenuManagementView(BaseView):
             db.close()
     
     def _render_template(self, template_name: str, context: dict) -> HTMLResponse:
-        """Render HTML template using SQLAdmin layout"""
-        from sqladmin import templates
-        
-        # Use SQLAdmin's template environment
+        """Render HTML template"""
+        # Simple HTML template for menu management
         template_str = """
-{% extends "admin/base.html" %}
-{% block body %}
-<div class="content">
-    <div class="container-fluid">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Management - Photo Restoration Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .menu-section {
             border: 1px solid #ddd;
@@ -378,12 +380,9 @@ class MenuManagementView(BaseView):
         </div>
     </div>
     
-    </div>
-</div>
-{% endblock %}
-{% block extrajs %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
         """
         
         template = Template(template_str)
