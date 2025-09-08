@@ -22,6 +22,11 @@ from .responses import (
     UserEnhancementsResponse
 )
 
+from .schemas import (
+    MenuSection,
+    MenuItem
+)
+
 __all__ = [
     "EnhanceRequest",
     "PurchaseRequest", 
@@ -40,5 +45,7 @@ __all__ = [
     "LinkedDevicesResponse",
     "RemoveDeviceResponse",
     "SyncHistoryResponse",
-    "UserEnhancementsResponse"
+    "UserEnhancementsResponse",
+    "MenuSection",
+    "MenuItem"
 ]
