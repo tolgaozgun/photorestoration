@@ -12,7 +12,12 @@ from starlette.responses import Response
 
 # Import from backend root directory
 sys.path.append('/app')
-from email_service import EmailService
+try:
+    from email_service import EmailService
+except ImportError:
+    # Fallback if email service is not available
+    EmailService = None
+    print("Warning: Email service not available (boto3 not installed)")
 
 from .models import engine
 from .config import settings

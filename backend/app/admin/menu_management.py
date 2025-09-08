@@ -20,6 +20,11 @@ class MenuManagementView(BaseView):
     def __init__(self):
         super().__init__()
         
+    @expose("/", methods=["GET"])
+    async def index(self, request: Request) -> Response:
+        """Redirect to main menu management dashboard"""
+        return RedirectResponse(url="/admin/menu-management/menu-management", status_code=302)
+    
     @expose("/menu-management", methods=["GET"])
     async def menu_management(self, request: Request) -> Response:
         """Main menu management dashboard"""
@@ -36,7 +41,7 @@ class MenuManagementView(BaseView):
                 items_list = list(items) if items else []
                 menu_data.append({
                     'section': section,
-                    'items': items_list
+                    'section_items': items_list
                 })
             
             # Get statistics
@@ -62,7 +67,20 @@ class MenuManagementView(BaseView):
             logger.info(f"menu_data type: {type(menu_data)}, length: {len(menu_data)}")
             logger.info(f"stats type: {type(stats)}, content: {stats}")
             for i, data in enumerate(menu_data):
-                logger.info(f"menu_data[{i}]: section={type(data['section'])}, items={type(data['items'])}, items_len={len(data['items'])}")
+                logger.info(f"menu_data[{i}]: section={type(data['section'])}, section_items={type(data['section_items'])}, section_items_len={len(data['section_items'])}")
+                # Verify section_items is actually a list
+                if not isinstance(data['section_items'], list):
+                    logger.error(f"menu_data[{i}] section_items is not a list: {type(data['section_items'])}")
+                    # Force conversion to list
+                    data['section_items'] = list(data['section_items']) if data['section_items'] else []
+                
+                # Check if section has any properties that might conflict
+                section = data['section']
+                logger.info(f"section attributes: {dir(section)}")
+                if hasattr(section, 'items'):
+                    logger.info(f"section.items is: {type(section.items)}, value: {section.items}")
+                    if callable(section.items):
+                        logger.error(f"section.items is callable! This might be the issue.")
             
             return self._render_template("menu_management.html", {
                 "menu_data": menu_data,
@@ -87,13 +105,13 @@ class MenuManagementView(BaseView):
             seed_menu_data_if_needed()
             
             return RedirectResponse(
-                url="/admin/menu-management/menu-management?message=Demo data loaded successfully",
+                url="/admin/menu-management?message=Demo data loaded successfully",
                 status_code=303
             )
         except Exception as e:
             logger.error(f"Error loading demo data: {e}")
             return RedirectResponse(
-                url=f"/admin/menu-management/menu-management?error=Failed to load demo data: {str(e)}",
+                url=f"/admin/menu-management?error=Failed to load demo data: {str(e)}",
                 status_code=303
             )
     
@@ -104,13 +122,13 @@ class MenuManagementView(BaseView):
             clear_all_menu_data()
             
             return RedirectResponse(
-                url="/admin/menu-management/menu-management?message=All menu data cleared successfully",
+                url="/admin/menu-management?message=All menu data cleared successfully",
                 status_code=303
             )
         except Exception as e:
             logger.error(f"Error clearing menu data: {e}")
             return RedirectResponse(
-                url=f"/admin/menu-management/menu-management?error=Failed to clear menu data: {str(e)}",
+                url=f"/admin/menu-management?error=Failed to clear menu data: {str(e)}",
                 status_code=303
             )
     
@@ -313,7 +331,7 @@ class MenuManagementView(BaseView):
                                         <small class="text-muted">
                                             Order: {{ section_data.section.sort_order }} | 
                                             Layout: {{ section_data.section.layout }} |
-                                            Items: {{ section_data.items|length }}
+                                            Items: {{ section_data.section_items.__class__.__name__ }}
                                         </small>
                                     </div>
                                     <div>
@@ -324,7 +342,7 @@ class MenuManagementView(BaseView):
                                 </div>
                             </div>
                             <div class="section-items">
-                                {% for item in section_data.items %}
+                                {% for item in section_data.section_items %}
                                 <div class="menu-item">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
@@ -348,7 +366,7 @@ class MenuManagementView(BaseView):
                                     </div>
                                 </div>
                                 {% endfor %}
-                                {% if section_data.items|length == 0 %}
+                                {% if not section_data.section_items %}
                                 <div class="menu-item text-muted text-center">
                                     <em>No items in this section</em>
                                 </div>
