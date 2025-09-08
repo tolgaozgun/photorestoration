@@ -15,6 +15,7 @@ class MenuManagementView(BaseView):
     name = "Menu Management"
     icon = "fa-solid fa-sitemap"
     category = "Management"
+    identity = "menu-management"
     
     def __init__(self):
         super().__init__()
@@ -41,6 +42,12 @@ class MenuManagementView(BaseView):
             total_items = db.query(MenuItemModel).count()
             active_items = db.query(MenuItemModel).filter(MenuItemModel.is_active == True).count()
             premium_items = db.query(MenuItemModel).filter(MenuItemModel.is_premium == True).count()
+            
+            # Ensure all values are integers
+            total_sections = int(total_sections) if total_sections is not None else 0
+            total_items = int(total_items) if total_items is not None else 0
+            active_items = int(active_items) if active_items is not None else 0
+            premium_items = int(premium_items) if premium_items is not None else 0
             
             stats = {
                 'total_sections': total_sections,
