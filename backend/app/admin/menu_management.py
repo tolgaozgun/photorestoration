@@ -3,7 +3,7 @@ from fastapi import Request, Response
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from ..models.database import get_db, MenuSection, MenuItem
+from ..models.database import get_db, MenuSection as MenuSectionModel, MenuItem as MenuItemModel
 from ..utils.menu_seeder import seed_menu_data_if_needed, clear_all_menu_data
 from jinja2 import Template
 import json
@@ -25,22 +25,22 @@ class MenuManagementView(BaseView):
         db = next(get_db())
         try:
             # Get all menu sections with their items
-            sections = db.query(MenuSection).filter(MenuSection.is_active == True).order_by(MenuSection.sort_order).all()
+            sections = db.query(MenuSectionModel).filter(MenuSectionModel.is_active == True).order_by(MenuSectionModel.sort_order).all()
             
             # Get menu items for each section
             menu_data = []
             for section in sections:
-                items = db.query(MenuItem).filter(MenuItem.section_id == section.id, MenuItem.is_active == True).order_by(MenuItem.sort_order).all()
+                items = db.query(MenuItemModel).filter(MenuItemModel.section_id == section.id, MenuItemModel.is_active == True).order_by(MenuItemModel.sort_order).all()
                 menu_data.append({
                     'section': section,
                     'items': items
                 })
             
             # Get statistics
-            total_sections = db.query(MenuSection).count()
-            total_items = db.query(MenuItem).count()
-            active_items = db.query(MenuItem).filter(MenuItem.is_active == True).count()
-            premium_items = db.query(MenuItem).filter(MenuItem.is_premium == True).count()
+            total_sections = db.query(MenuSectionModel).count()
+            total_items = db.query(MenuItemModel).count()
+            active_items = db.query(MenuItemModel).filter(MenuItemModel.is_active == True).count()
+            premium_items = db.query(MenuItemModel).filter(MenuItemModel.is_premium == True).count()
             
             stats = {
                 'total_sections': total_sections,
@@ -104,11 +104,11 @@ class MenuManagementView(BaseView):
         """Preview menu as JSON"""
         db = next(get_db())
         try:
-            sections = db.query(MenuSection).filter(MenuSection.is_active == True).order_by(MenuSection.sort_order).all()
+            sections = db.query(MenuSectionModel).filter(MenuSectionModel.is_active == True).order_by(MenuSectionModel.sort_order).all()
             
             menu_data = []
             for section in sections:
-                items = db.query(MenuItem).filter(MenuItem.section_id == section.id, MenuItem.is_active == True).order_by(MenuItem.sort_order).all()
+                items = db.query(MenuItemModel).filter(MenuItemModel.section_id == section.id, MenuItemModel.is_active == True).order_by(MenuItemModel.sort_order).all()
                 
                 section_data = {
                     'id': section.id,
