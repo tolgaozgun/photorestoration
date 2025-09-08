@@ -36,6 +36,9 @@ function App() {
   const loadData = async () => {
     try {
       setLoading(true)
+      console.log("🚀 Loading data from API...")
+      console.log("📍 API Base URL:", import.meta.env.VITE_BACKEND_API || "http://localhost:8000/api")
+      
       const [sectionsData, itemsData] = await Promise.all([
         api.getSections(),
         api.getItems()

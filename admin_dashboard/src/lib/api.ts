@@ -11,6 +11,8 @@ class ApiClient {
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
+    console.log(`🔍 API Request: ${options.method || 'GET'} ${url}`)
+    
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
@@ -20,10 +22,13 @@ class ApiClient {
     })
 
     if (!response.ok) {
+      console.error(`❌ API Error: ${response.status} ${response.statusText} for ${url}`)
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
-    return response.json()
+    const data = await response.json()
+    console.log(`✅ API Success: ${options.method || 'GET'} ${url}`)
+    return data
   }
 
   // Menu Sections
