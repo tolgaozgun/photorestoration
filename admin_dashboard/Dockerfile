@@ -23,8 +23,8 @@ RUN npm run build
 # Production image, copy all the files and run nginx
 FROM nginx:alpine AS runner
 
-# Install nginx and envsubst
-RUN apk add --no-cache nginx gettext-envsubst
+# Install nginx
+RUN apk add --no-cache nginx
 
 # Create nginx user and set permissions
 RUN addgroup -g 1001 -S nodejs && \
@@ -36,10 +36,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Create environment variable substitution script
-COPY env-subst.sh /usr/local/bin/env-subst.sh
-RUN chmod +x /usr/local/bin/env-subst.sh
-
 # Create directories and set permissions
 RUN touch /var/run/nginx.pid && \
     chown -R nextjs:nodejs /var/cache/nginx && \
@@ -50,5 +46,5 @@ RUN touch /var/run/nginx.pid && \
 # Expose port 80 for nginx
 EXPOSE 80
 
-# Start nginx with environment variable substitution
-CMD ["/usr/local/bin/env-subst.sh"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

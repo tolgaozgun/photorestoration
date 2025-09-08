@@ -376,7 +376,7 @@ function App() {
                               Backend API URL
                             </label>
                             <Input
-                              value={import.meta.env.VITE_BACKEND_API === "__VITE_BACKEND_API_PLACEHOLDER__" ? "Configured via environment variable" : import.meta.env.VITE_BACKEND_API || "Not configured"}
+                              value={import.meta.env.VITE_BACKEND_API || "Not configured"}
                               readOnly
                               className="bg-muted"
                             />
