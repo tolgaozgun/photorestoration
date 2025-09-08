@@ -49,6 +49,6 @@ def setup_admin(app, engine):
     admin.add_view(LinkedDeviceAdmin)
     admin.add_view(MenuSectionAdmin)
     admin.add_view(MenuItemAdmin)
-    admin.add_view(MenuManagementView())
+    admin.add_view(MenuManagementView)
     
     return admin
