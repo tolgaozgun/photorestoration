@@ -36,7 +36,7 @@ def seed_menu_data_if_needed():
                         "icon": "🏠",
                         "layout": "grid",
                         "sort_order": 1,
-                        "meta_data": {"screen": "home", "supports_all_formats": true}
+                        "meta_data": {"screen": "home", "supports_all_formats": True}
                     },
                     {
                         "name": "create_screen",
@@ -45,7 +45,7 @@ def seed_menu_data_if_needed():
                         "icon": "➕",
                         "layout": "grid",
                         "sort_order": 2,
-                        "meta_data": {"screen": "create", "supports_all_formats": true}
+                        "meta_data": {"screen": "create", "supports_all_formats": True}
                     },
                     {
                         "name": "enhance_screen",
@@ -54,7 +54,7 @@ def seed_menu_data_if_needed():
                         "icon": "✨",
                         "layout": "grid",
                         "sort_order": 3,
-                        "meta_data": {"screen": "enhance", "supports_all_formats": true}
+                        "meta_data": {"screen": "enhance", "supports_all_formats": True}
                     },
                     {
                         "name": "video_screen",
@@ -63,7 +63,7 @@ def seed_menu_data_if_needed():
                         "icon": "🎥",
                         "layout": "grid",
                         "sort_order": 4,
-                        "meta_data": {"screen": "video", "supports_all_formats": true}
+                        "meta_data": {"screen": "video", "supports_all_formats": True}
                     }
                 ]
                 
@@ -87,6 +87,7 @@ def seed_menu_data_if_needed():
                         "action_value": "RecentProjects",
                         "section_id": created_sections[0].id,
                         "sort_order": 1,
+                        "is_active": True,
                         "is_premium": False,
                         "requires_auth": False,
                         "meta_data": {
@@ -559,6 +560,9 @@ def seed_menu_data_if_needed():
                 
                 # Create items
                 for item_data in items:
+                    # Ensure is_active field is set
+                    if 'is_active' not in item_data:
+                        item_data['is_active'] = True
                     item = MenuItem(**item_data)
                     db.add(item)
                 
