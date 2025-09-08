@@ -82,3 +82,50 @@ class DeviceListResponse(BaseModel):
 
 class DeviceRemoveRequest(BaseModel):
     device_id: str
+
+# Analytics Response Schemas
+class AnalyticsSummaryResponse(BaseModel):
+    total_users: int
+    active_users: int
+    total_enhancements: int
+    total_purchases: int
+    total_revenue: float
+    popular_features: List[Dict]
+    platform_breakdown: Dict[str, int]
+    daily_stats: List[Dict]
+
+class AnalyticsEventsResponse(BaseModel):
+    events: List[Dict]
+    total: int
+    page: int
+    limit: int
+    has_more: bool
+
+class AnalyticsUserResponse(BaseModel):
+    user_id: str
+    enhancements_count: int
+    purchases_count: int
+    total_spent: float
+    created_at: datetime
+    last_active: datetime
+    popular_features: List[str]
+
+class AnalyticsFeatureUsageResponse(BaseModel):
+    feature_name: str
+    usage_count: int
+    unique_users: int
+    avg_processing_time: float
+    revenue_generated: float
+
+class AnalyticsTimeSeriesResponse(BaseModel):
+    date: str
+    users: int
+    enhancements: int
+    purchases: int
+    revenue: float
+
+class AnalyticsExportResponse(BaseModel):
+    data: List[Dict]
+    format: str
+    filename: str
+    exported_at: datetime
