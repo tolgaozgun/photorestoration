@@ -11,7 +11,6 @@ class ApiClient {
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`
-    console.log(`🔍 API Request: ${options.method || 'GET'} ${url}`)
     
     const response = await fetch(url, {
       headers: {
@@ -22,13 +21,10 @@ class ApiClient {
     })
 
     if (!response.ok) {
-      console.error(`❌ API Error: ${response.status} ${response.statusText} for ${url}`)
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
-    const data = await response.json()
-    console.log(`✅ API Success: ${options.method || 'GET'} ${url}`)
-    return data
+    return response.json()
   }
 
   // Menu Sections
@@ -140,6 +136,49 @@ class ApiClient {
     if (endDate) params.append("end_date", endDate)
     
     return this.request<any>(`/analytics?${params}`)
+  }
+
+  async getAnalyticsEvents(params?: {
+    page?: number
+    limit?: number
+    event_type?: string
+    user_id?: string
+    start_date?: string
+    end_date?: string
+  }): Promise<any> {
+    const queryParams = new URLSearchParams()
+    if (params?.page) queryParams.append("page", params.page.toString())
+    if (params?.limit) queryParams.append("limit", params.limit.toString())
+    if (params?.event_type) queryParams.append("event_type", params.event_type)
+    if (params?.user_id) queryParams.append("user_id", params.user_id)
+    if (params?.start_date) queryParams.append("start_date", params.start_date)
+    if (params?.end_date) queryParams.append("end_date", params.end_date)
+    
+    return this.request<any>(`/analytics/events?${queryParams}`)
+  }
+
+  async getUserAnalytics(userId: string, days?: number): Promise<any> {
+    const queryParams = new URLSearchParams()
+    if (days) queryParams.append("days", days.toString())
+    
+    return this.request<any>(`/analytics/users/${userId}?${queryParams}`)
+  }
+
+  async getFeatureUsage(startDate?: string, endDate?: string): Promise<any> {
+    const params = new URLSearchParams()
+    if (startDate) params.append("start_date", startDate)
+    if (endDate) params.append("end_date", endDate)
+    
+    return this.request<any>(`/analytics/features?${params}`)
+  }
+
+  async exportAnalytics(format: 'json' | 'csv' = 'json', startDate?: string, endDate?: string): Promise<any> {
+    const params = new URLSearchParams()
+    params.append("format", format)
+    if (startDate) params.append("start_date", startDate)
+    if (endDate) params.append("end_date", endDate)
+    
+    return this.request<any>(`/analytics/export?${params}`)
   }
 
   // Health Check

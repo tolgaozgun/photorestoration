@@ -14,19 +14,19 @@ import {
 import { api } from "@/lib/api"
 
 interface AnalyticsData {
-  totalUsers: number
-  activeUsers: number
-  totalEnhancements: number
-  totalRevenue: number
-  recentActivity: Array<{
+  total_users: number
+  active_users: number
+  total_enhancements: number
+  total_purchases: number
+  total_revenue: number
+  popular_features: Array<[string, number]>
+  platform_breakdown: Record<string, number>
+  daily_stats: Array<{
     date: string
     users: number
     enhancements: number
+    purchases: number
     revenue: number
-  }>
-  topFeatures: Array<{
-    name: string
-    usage: number
   }>
 }
 
@@ -45,45 +45,30 @@ export function AnalyticsDashboard() {
   const loadAnalytics = async () => {
     try {
       setLoading(true)
-      // Note: GET /api/analytics endpoint doesn't exist in backend yet
-      // This will show a message until the backend endpoint is implemented
       const data = await api.getAnalytics(dateRange.start, dateRange.end)
       setAnalytics(data)
     } catch (error) {
       console.error("Error loading analytics:", error)
-      // Set analytics to null to show the "not available" message
       setAnalytics(null)
     } finally {
       setLoading(false)
     }
   }
 
-  const exportData = () => {
-    if (!analytics) return
-    
-    const csvContent = [
-      ["Metric", "Value"],
-      ["Total Users", analytics.totalUsers],
-      ["Active Users", analytics.activeUsers],
-      ["Total Enhancements", analytics.totalEnhancements],
-      ["Total Revenue", analytics.totalRevenue],
-      [],
-      ["Date", "Users", "Enhancements", "Revenue"],
-      ...analytics.recentActivity.map(activity => [
-        activity.date,
-        activity.users,
-        activity.enhancements,
-        activity.revenue
-      ])
-    ].map(row => row.join(",")).join("\n")
-
-    const blob = new Blob([csvContent], { type: "text/csv" })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `analytics-${new Date().toISOString().split("T")[0]}.csv`
-    a.click()
-    window.URL.revokeObjectURL(url)
+  const exportData = async () => {
+    try {
+      const data = await api.exportAnalytics('csv', dateRange.start, dateRange.end)
+      
+      const blob = new Blob([data.data], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = data.filename || `analytics-${new Date().toISOString().split("T")[0]}.csv`
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error exporting analytics:", error)
+    }
   }
 
   if (loading) {
@@ -97,10 +82,9 @@ export function AnalyticsDashboard() {
   if (!analytics) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground mb-2">Analytics endpoint not implemented</p>
+        <p className="text-muted-foreground mb-2">No analytics data available</p>
         <p className="text-sm text-muted-foreground">
-          The backend GET /api/analytics endpoint needs to be implemented to retrieve analytics data.
-          Currently only POST /api/analytics exists for event tracking.
+          There might be no data in the system or the backend is not responding.
         </p>
       </div>
     )
@@ -148,9 +132,9 @@ export function AnalyticsDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.totalUsers.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{analytics.total_users.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              +{Math.round(analytics.totalUsers * 0.12)}% from last month
+              {analytics.active_users > 0 ? Math.round((analytics.active_users / analytics.total_users) * 100) : 0}% active
             </p>
           </CardContent>
         </Card>
@@ -161,22 +145,22 @@ export function AnalyticsDashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.activeUsers.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{analytics.active_users.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((analytics.activeUsers / analytics.totalUsers) * 100)}% engagement rate
+              Recent activity
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Enhancements</CardTitle>
+            <CardTitle className="text-sm font-medium">Enhancements</CardTitle>
             <ImageIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.totalEnhancements.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{analytics.total_enhancements.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              +{Math.round(analytics.totalEnhancements * 0.08)}% from last month
+              {analytics.total_purchases} purchases
             </p>
           </CardContent>
         </Card>
@@ -187,9 +171,9 @@ export function AnalyticsDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${analytics.totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">${analytics.total_revenue.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              +{Math.round(analytics.totalRevenue * 0.15)}% from last month
+              Lifetime value
             </p>
           </CardContent>
         </Card>
@@ -198,18 +182,18 @@ export function AnalyticsDashboard() {
       {/* Activity Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
+          <CardTitle>Daily Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {analytics.recentActivity.map((activity, index) => (
+            {analytics.daily_stats.slice(0, 7).map((activity, index) => (
               <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
                   <Calendar className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <p className="font-medium">{activity.date}</p>
                     <p className="text-sm text-muted-foreground">
-                      {activity.users} users • {activity.enhancements} enhancements
+                      {activity.users} users • {activity.enhancements} enhancements • {activity.purchases} purchases
                     </p>
                   </div>
                 </div>
@@ -226,22 +210,49 @@ export function AnalyticsDashboard() {
       {/* Top Features */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Features</CardTitle>
+          <CardTitle>Popular Features</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {analytics.topFeatures.map((feature, index) => (
+            {analytics.popular_features.map(([featureName, usageCount], index) => (
               <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
-                  <p className="font-medium">{feature.name}</p>
+                  <p className="font-medium">{featureName}</p>
                   <p className="text-sm text-muted-foreground">
-                    {feature.usage.toLocaleString()} uses
+                    {usageCount.toLocaleString()} uses
                   </p>
                 </div>
                 <div className="w-24 bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-primary h-2 rounded-full" 
-                    style={{ width: `${(feature.usage / Math.max(...analytics.topFeatures.map(f => f.usage))) * 100}%` }}
+                    style={{ width: `${(usageCount / Math.max(...analytics.popular_features.map(f => f[1]))) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Platform Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Platform Breakdown</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {Object.entries(analytics.platform_breakdown).map(([platform, count], index) => (
+              <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <p className="font-medium">{platform}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {count.toLocaleString()} events
+                  </p>
+                </div>
+                <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full" 
+                    style={{ width: `${(count / Math.max(...Object.values(analytics.platform_breakdown))) * 100}%` }}
                   />
                 </div>
               </div>
