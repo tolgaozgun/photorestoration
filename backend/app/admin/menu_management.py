@@ -61,7 +61,7 @@ class MenuManagementView(BaseView):
         finally:
             db.close()
     
-    @expose("/load-demo-data", methods=["POST"])
+    @expose("/menu-management/load-demo-data", methods=["POST"])
     async def load_demo_data(self, request: Request) -> Response:
         """Load demo menu data"""
         try:
@@ -82,7 +82,7 @@ class MenuManagementView(BaseView):
                 status_code=303
             )
     
-    @expose("/clear-menu-data", methods=["POST"])
+    @expose("/menu-management/clear-menu-data", methods=["POST"])
     async def clear_menu_data(self, request: Request) -> Response:
         """Clear all menu data"""
         try:
@@ -99,7 +99,7 @@ class MenuManagementView(BaseView):
                 status_code=303
             )
     
-    @expose("/preview-menu", methods=["GET"])
+    @expose("/menu-management/preview-menu", methods=["GET"])
     async def preview_menu(self, request: Request) -> Response:
         """Preview menu as JSON"""
         db = next(get_db())
