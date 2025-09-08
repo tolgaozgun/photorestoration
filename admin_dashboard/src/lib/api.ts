@@ -1,6 +1,6 @@
 import type { MenuItem, MenuSection } from "./schemas"
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API || "http://localhost:8000/api"
+const API_BASE_URL = import.meta.env.VITE_BACKEND_API || "__VITE_BACKEND_API_PLACEHOLDER__"
 
 class ApiClient {
   private baseUrl: string
