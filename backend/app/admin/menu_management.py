@@ -335,7 +335,7 @@ class MenuManagementView(BaseView):
                                         </small>
                                     </div>
                                     <div>
-                                        <a href="/admin/menuitem/list?filters=section_id_eq_{{ section_data.section.id }}" class="btn btn-sm btn-outline-primary">
+                                        <a href="/admin/menu-item/list?filters=section_id_eq_{{ section_data.section.id }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit"></i> Edit Items
                                         </a>
                                     </div>
