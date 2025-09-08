@@ -297,7 +297,7 @@ class MenuItemCRUDView(BaseView):
             db.close()
     
     def _render_template(self, template_name: str, context: dict) -> HTMLResponse:
-        """Render HTML template"""
+        """Render HTML template using SQLAdmin layout"""
         if template_name == "menu_items_crud.html":
             template_str = self._get_crud_template()
         elif template_name == "menu_item_form.html":
@@ -313,14 +313,10 @@ class MenuItemCRUDView(BaseView):
     def _get_crud_template(self) -> str:
         """Get CRUD template HTML"""
         return """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Items CRUD - Photo Restoration Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% extends "admin/base.html" %}
+{% block body %}
+<div class="content">
+    <div class="container-fluid">
     <link href="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.css" rel="stylesheet">
     <style>
         .stats-card {
@@ -619,21 +615,22 @@ class MenuItemCRUDView(BaseView):
             });
         }
     </script>
-</body>
-</html>
+</div>
+</div>
+{% endblock %}
+{% block extrajs %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+{% endblock %}
         """
     
     def _get_form_template(self) -> str:
         """Get form template HTML"""
         return """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ "Edit" if is_edit else "Create" }} Menu Item - Photo Restoration Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% extends "admin/base.html" %}
+{% block body %}
+<div class="content">
+    <div class="container-fluid">
     <style>
         .form-section {
             background: #fff;
@@ -907,6 +904,10 @@ class MenuItemCRUDView(BaseView):
         // Initialize action value placeholder
         updateActionValuePlaceholder();
     </script>
-</body>
-</html>
+</div>
+</div>
+{% endblock %}
+{% block extrajs %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
         """
