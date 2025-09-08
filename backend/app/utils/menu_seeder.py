@@ -6,24 +6,18 @@ if the menu tables are empty.
 """
 
 import logging
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from ..models import MenuItem, MenuSection, Base
-from ..config import settings
+from ..models import MenuItem, MenuSection, Base, SessionLocal, engine
 
 logger = logging.getLogger(__name__)
 
 def seed_menu_data_if_needed():
     """Seed menu data if tables are empty"""
     try:
-        # Create database connection
-        engine = create_engine(settings.DATABASE_URL)
-        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        # Use existing database connection
+        db = SessionLocal()
         
         # Create tables if they don't exist
         Base.metadata.create_all(bind=engine)
-        
-        db = SessionLocal()
         
         try:
             # Check if menu sections exist
