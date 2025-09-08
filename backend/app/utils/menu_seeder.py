@@ -579,3 +579,28 @@ def seed_menu_data_if_needed():
     except Exception as e:
         logger.error(f"❌ Error connecting to database for menu seeding: {e}")
         # Don't raise here - we don't want to prevent app startup if seeding fails
+
+
+def clear_all_menu_data():
+    """Clear all menu data from the database"""
+    from ..models.database import MenuSection, MenuItem
+    
+    db = SessionLocal()
+    try:
+        logger.info("Clearing all menu data...")
+        
+        # Delete all menu items first
+        db.query(MenuItem).delete()
+        
+        # Delete all menu sections
+        db.query(MenuSection).delete()
+        
+        db.commit()
+        logger.info("✅ All menu data cleared successfully")
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"❌ Error clearing menu data: {e}")
+        raise
+    finally:
+        db.close()

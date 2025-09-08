@@ -1,5 +1,6 @@
 from sqladmin import Admin, ModelView
 from ..models import User, Purchase, Enhancement, AnalyticsEvent, EmailVerification, LinkedDevice, MenuItem, MenuSection
+from .menu_management import MenuManagementView
 
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.created_at, User.credits, User.subscription_type, User.subscription_expires, User.daily_credits_used, User.daily_reset_at, User.user_metadata]
@@ -48,5 +49,6 @@ def setup_admin(app, engine):
     admin.add_view(LinkedDeviceAdmin)
     admin.add_view(MenuSectionAdmin)
     admin.add_view(MenuItemAdmin)
+    admin.add_view(MenuManagementView())
     
     return admin
