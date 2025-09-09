@@ -1,6 +1,7 @@
-import { menuService, MenuItem, MenuSection } from './MenuService';
+import { menuService, MenuItem, MenuSection, MenuData } from './MenuService';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, MainTabParamList } from '../App';
+import { useMenuVersion } from '../contexts/MenuVersionContext';
 
 export interface NavigationItem {
   id: string;
@@ -18,7 +19,7 @@ export interface NavigationItem {
 
 export class NavigationService {
   private static instance: NavigationService;
-  private menuData: any = null;
+  private menuData: MenuData | null = null;
   private isLoading = false;
 
   static getInstance(): NavigationService {
@@ -28,17 +29,32 @@ export class NavigationService {
     return NavigationService.instance;
   }
 
-  async loadMenuData(): Promise<void> {
-    if (this.menuData || this.isLoading) return;
+  async loadMenuData(forceRefresh = false): Promise<void> {
+    if (this.menuData && !forceRefresh) return;
     
     this.isLoading = true;
     try {
-      this.menuData = await menuService.getMenu();
+      const result = await menuService.getMenuConfig('production', false, forceRefresh);
+      this.menuData = result.menuData;
     } catch (error) {
       console.error('Failed to load menu data:', error);
+      // Fallback to legacy method
+      try {
+        this.menuData = await menuService.getMenu();
+      } catch (fallbackError) {
+        console.error('Failed to load menu data with fallback:', fallbackError);
+      }
     } finally {
       this.isLoading = false;
     }
+  }
+
+  setMenuData(menuData: MenuData): void {
+    this.menuData = menuData;
+  }
+
+  getMenuData(): MenuData | null {
+    return this.menuData;
   }
 
   getTabNavigationItems(): NavigationItem[] {

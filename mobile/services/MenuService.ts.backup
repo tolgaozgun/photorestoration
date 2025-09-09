@@ -39,31 +39,6 @@ export interface MenuData {
   success: boolean;
 }
 
-export interface MenuConfigResult {
-  menuData: MenuData;
-  version: string;
-  fromCache: boolean;
-}
-
-export interface VersionInfo {
-  currentVersion: string | null;
-  environment: string;
-  isDevelopment: boolean;
-  hasUpdate: boolean;
-  latestVersion?: string;
-}
-
-export interface UpdateInfo {
-  hasUpdate: boolean;
-  latestVersion?: string;
-  changelog?: string;
-}
-
-export interface FetchConfigResult {
-  menuData: MenuData;
-  version: string;
-}
-
 export interface SupportedFormat {
   extensions: string[];
   mimeTypes: string[];
@@ -212,7 +187,7 @@ class MenuService {
     environment: string = 'production',
     developmentMode: boolean = false,
     forceRefresh: boolean = false
-  ): Promise<MenuConfigResult> {
+  ): Promise<{ menuData: MenuData; version: string; fromCache: boolean }> {
     try {
       // Check development mode first
       if (developmentMode || await menuStorageService.getDevelopmentMode()) {
@@ -257,7 +232,7 @@ class MenuService {
     }
   }
 
-  async getDevelopmentMenuConfig(environment: string = 'production'): Promise<MenuConfigResult | null> {
+  async getDevelopmentMenuConfig(environment: string = 'production'): Promise<{ menuData: MenuData; version: string; fromCache: boolean } | null> {
     try {
       const headers = await this.getAuthHeaders();
       const response = await axios.get(
@@ -289,7 +264,7 @@ class MenuService {
   private async fetchMenuConfigFromServer(
     environment: string = 'production',
     developmentMode: boolean = false
-  ): Promise<FetchConfigResult> {
+  ): Promise<{ menuData: MenuData; version: string }> {
     try {
       const headers = await this.getAuthHeaders();
       const response = await axios.get(
@@ -328,7 +303,7 @@ class MenuService {
     }
   }
 
-  async checkForUpdates(currentVersion: string, environment: string = 'production'): Promise<UpdateInfo> {
+  async checkForUpdates(currentVersion: string, environment: string = 'production'): Promise<{ hasUpdate: boolean; latestVersion?: string; changelog?: string }> {
     try {
       const headers = await this.getAuthHeaders();
       const response = await axios.get(
@@ -413,7 +388,13 @@ class MenuService {
     }
   }
 
-  async getCurrentVersionInfo(): Promise<VersionInfo> {
+  async getCurrentVersionInfo(): Promise<{
+    currentVersion: string | null;
+    environment: string;
+    isDevelopment: boolean;
+    hasUpdate: boolean;
+    latestVersion?: string;
+  }> {
     try {
       const versionInfo = await menuStorageService.getVersionInfo();
       const isDevelopment = await menuStorageService.getDevelopmentMode();

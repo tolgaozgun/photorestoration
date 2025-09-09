@@ -428,9 +428,6 @@ export default function VideoGenerationScreen() {
   if (currentStep === 'browse') {
     return (
       <Container>
-        <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">AI Video Generation</Text>
-        </View>
 
         <Animated.ScrollView
           style={[styles.container, { opacity: fadeAnim }]}
@@ -482,9 +479,6 @@ export default function VideoGenerationScreen() {
   if (currentStep === 'create') {
     return (
       <Container>
-        <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">Create Video</Text>
-        </View>
 
         <ScrollView style={styles.container}>
           {renderCreateStep()}
@@ -496,9 +490,6 @@ export default function VideoGenerationScreen() {
   if (currentStep === 'processing') {
     return (
       <Container>
-        <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">Processing</Text>
-        </View>
 
         <View style={styles.container}>
           {renderProcessingStep()}
@@ -516,9 +507,6 @@ export default function VideoGenerationScreen() {
   // Preview step would go here
   return (
     <Container>
-      <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">Video Preview</Text>
-        </View>
       <View style={styles.container}>
         <Text variant="title">Video preview would be displayed here</Text>
       </View>
@@ -537,8 +525,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.medium,
     paddingHorizontal: spacing.large,
     backgroundColor: colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.background.tertiary,
   },
   
   contentContainer: {
@@ -546,8 +532,8 @@ const styles = StyleSheet.create({
   },
   
   featuredSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: spacing.large,
+    marginBottom: spacing.extraLarge,
   },
   
   featuredCard: {
@@ -555,8 +541,8 @@ const styles = StyleSheet.create({
   },
   
   allFeaturesSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: spacing.large,
+    marginBottom: spacing.extraLarge,
   },
   
   featureCard: {
@@ -632,16 +618,16 @@ const styles = StyleSheet.create({
   },
   
   createSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: spacing.large,
+    marginBottom: spacing.extraLarge,
   },
   
   photoSection: {
-    marginBottom: 32,
+    marginBottom: spacing.extraLarge,
   },
   
   sectionTitle: {
-    marginBottom: 24,
+    marginBottom: spacing.large,
   },
   
   selectedPhotoContainer: {
@@ -658,11 +644,11 @@ const styles = StyleSheet.create({
   
   changePhotoButton: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: spacing.medium,
+    right: spacing.medium,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.medium,
+    paddingVertical: spacing.small,
     borderRadius: 12,
   },
   
@@ -681,14 +667,14 @@ const styles = StyleSheet.create({
   },
   
   qualitySection: {
-    marginBottom: 24,
+    marginBottom: spacing.large,
   },
   
   qualityOption: {
     backgroundColor: '#2C2C2E',
     borderRadius: 12,
-    padding: 16,
-    marginRight: 12,
+    padding: spacing.medium,
+    marginRight: spacing.medium,
     minWidth: 120,
     alignItems: 'center',
   },
@@ -704,14 +690,14 @@ const styles = StyleSheet.create({
   },
   
   styleSection: {
-    marginBottom: 24,
+    marginBottom: spacing.large,
   },
   
   styleOption: {
     backgroundColor: '#2C2C2E',
     borderRadius: 12,
-    padding: 16,
-    marginRight: 12,
+    padding: spacing.medium,
+    marginRight: spacing.medium,
     minWidth: 140,
     alignItems: 'center',
   },
@@ -727,7 +713,7 @@ const styles = StyleSheet.create({
   },
   
   featureDetails: {
-    marginBottom: 24,
+    marginBottom: spacing.large,
   },
   
   techniqueItem: {
@@ -742,7 +728,7 @@ const styles = StyleSheet.create({
   },
   
   createButton: {
-    marginBottom: 16,
+    marginBottom: spacing.medium,
   },
   
   processingContainer: {

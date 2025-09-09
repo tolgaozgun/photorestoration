@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,75 +10,30 @@ import { colors, spacing } from '../../theme';
 import { Text } from '../Text';
 import { MenuSection } from './MenuSection';
 import { LoadingModal } from '../Modal';
-
-interface MenuData {
-  sections: Array<{
-    id: string;
-    name: string;
-    title: string;
-    description?: string;
-    icon?: string;
-    layout: 'grid' | 'list' | 'horizontal';
-    is_active: boolean;
-    metadata: any;
-  }>;
-  items: Array<{
-    id: string;
-    title: string;
-    description?: string;
-    icon?: string;
-    action_type: 'screen' | 'url' | 'action' | 'section';
-    action_value?: string;
-    is_premium: boolean;
-    requires_auth: boolean;
-    metadata: any;
-    section_id?: string;
-  }>;
-  success: boolean;
-}
+import { MenuData } from '../../services/MenuService';
 
 interface DynamicMenuProps {
+  menuData?: MenuData | null;
   onItemPress?: (item: any) => void;
   style?: any;
   showRefresh?: boolean;
+  isLoading?: boolean;
+  onRefresh?: () => void;
 }
 
 export const DynamicMenu: React.FC<DynamicMenuProps> = ({
+  menuData,
   onItemPress,
   style,
   showRefresh = true,
+  isLoading = false,
+  onRefresh,
 }) => {
-  const [menuData, setMenuData] = useState<MenuData | null>(null);
-  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
-  const fetchMenuData = async () => {
-    try {
-      setLoading(true);
-      // Replace with your actual API call
-      const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/menu`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setMenuData(data);
-      } else {
-        Alert.alert('Error', 'Failed to load menu');
-      }
-    } catch (error) {
-      console.error('Error fetching menu:', error);
-      Alert.alert('Error', 'Failed to load menu');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMenuData();
-  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await fetchMenuData();
+    await onRefresh?.();
     setRefreshing(false);
   };
 
@@ -112,7 +67,7 @@ export const DynamicMenu: React.FC<DynamicMenuProps> = ({
     return menuData?.items.filter(item => item.section_id === sectionId) || [];
   };
 
-  if (loading && !menuData) {
+  if (isLoading && !menuData) {
     return (
       <View style={[styles.container, style]}>
         <LoadingModal visible={true} message="Loading menu..." />

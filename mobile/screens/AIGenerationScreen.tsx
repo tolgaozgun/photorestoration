@@ -8,6 +8,7 @@ import {
   Animated,
   Image,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -420,9 +421,6 @@ export default function AIGenerationScreen() {
   if (currentStep === 'intro') {
     return (
       <Container>
-        <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">AI Generation</Text>
-        </View>
 
         <Animated.ScrollView
           style={[styles.container, { opacity: fadeAnim }]}
@@ -477,9 +475,6 @@ export default function AIGenerationScreen() {
   if (currentStep === 'upload') {
     return (
       <Container>
-        <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">Upload Photos</Text>
-        </View>
 
         <ScrollView style={styles.container}>
           {renderUploadStep()}
@@ -491,9 +486,6 @@ export default function AIGenerationScreen() {
   if (currentStep === 'processing') {
     return (
       <Container>
-        <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">Processing</Text>
-        </View>
 
         <View style={styles.container}>
           {renderProcessingStep()}
@@ -511,9 +503,6 @@ export default function AIGenerationScreen() {
   // Results step would go here
   return (
     <Container>
-      <View style={styles.simpleHeader}>
-          <Text variant="title" weight="semibold">Results</Text>
-        </View>
       <View style={styles.container}>
         <Text variant="title">Results would be displayed here</Text>
       </View>
@@ -532,8 +521,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.medium,
     paddingHorizontal: spacing.large,
     backgroundColor: colors.background.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.background.tertiary,
   },
   
   contentContainer: {
@@ -541,8 +528,8 @@ const styles = StyleSheet.create({
   },
   
   introSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: spacing.large,
+    marginBottom: spacing.extraLarge,
   },
   
   introTitle: {
@@ -556,8 +543,8 @@ const styles = StyleSheet.create({
   },
   
   featuresSection: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+    paddingHorizontal: spacing.large,
+    marginBottom: spacing.extraLarge,
   },
   
   featureCard: {
@@ -618,25 +605,25 @@ const styles = StyleSheet.create({
   },
   
   uploadSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.large,
   },
   
   uploadInstructions: {
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: spacing.large,
     lineHeight: 22,
   },
   
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: -4,
-    marginBottom: 24,
+    marginHorizontal: -spacing.small,
+    marginBottom: spacing.large,
   },
   
   photoItem: {
     width: '33.33%',
-    padding: 4,
+    padding: spacing.small,
     position: 'relative',
   },
   
@@ -666,7 +653,7 @@ const styles = StyleSheet.create({
   
   addPhotoButton: {
     width: '33.33%',
-    padding: 4,
+    padding: spacing.small,
   },
   
   addPhotoIcon: {
@@ -681,11 +668,11 @@ const styles = StyleSheet.create({
   },
   
   uploadActions: {
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.large,
   },
   
   progressSection: {
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.large,
   },
   
   progressContainer: {
@@ -710,8 +697,8 @@ const styles = StyleSheet.create({
   },
   
   startButton: {
-    marginHorizontal: 16,
-    marginBottom: 16,
+    marginHorizontal: spacing.medium,
+    marginBottom: spacing.medium,
   },
   
   processingContainer: {

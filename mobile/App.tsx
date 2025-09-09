@@ -32,6 +32,7 @@ import ResultScreen from './screens/flow/ResultScreen';
 import { UserProvider } from './contexts/UserContext';
 import { AnalyticsProvider } from './contexts/AnalyticsContext';
 import { FlowProvider } from './contexts/FlowContext';
+import { MenuVersionProvider } from './contexts/MenuVersionContext';
 import { generateUUID } from './utils/uuid';
 
 // Import our custom components
@@ -196,8 +197,9 @@ export default function App() {
         <UserProvider>
           <AnalyticsProvider>
             <FlowProvider>
-              <View style={styles.container}>
-                <NavigationContainer>
+              <MenuVersionProvider>
+                <View style={styles.container}>
+                  <NavigationContainer>
                   <Stack.Navigator
                     initialRouteName={isFirstLaunch ? 'Onboarding' : 'MainTabs'}
                     screenOptions={{
@@ -321,6 +323,7 @@ export default function App() {
                 </NavigationContainer>
                 <StatusBar style="light" />
               </View>
+              </MenuVersionProvider>
             </FlowProvider>
           </AnalyticsProvider>
         </UserProvider>
