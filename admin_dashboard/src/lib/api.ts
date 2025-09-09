@@ -209,6 +209,13 @@ class ApiClient {
     return this.request<any>(`/menu/versions?${params}`)
   }
 
+  async updateMenuVersion(versionId: string, versionData: { version?: string; environment?: string; changelog?: string }): Promise<any> {
+    return this.request<any>(`/menu/versions/${versionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(versionData)
+    })
+  }
+
   async deployMenuVersion(versionId: string, environment: string): Promise<any> {
     return this.request<any>('/menu/deploy', {
       method: 'POST',

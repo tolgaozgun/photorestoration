@@ -8,7 +8,10 @@ import {
   Settings, 
   CheckCircle,
   AlertCircle,
-  Plus
+  Plus,
+  Edit,
+  Save,
+  X
 } from "lucide-react"
 import { api } from "@/lib/api"
 
@@ -39,6 +42,12 @@ export function MenuDeploymentManager() {
   const [loading, setLoading] = useState(true)
   const [deploying, setDeploying] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
+  const [editing, setEditing] = useState<string | null>(null)
+  const [editingVersion, setEditingVersion] = useState<{
+    version: string
+    environment: string
+    changelog: string
+  }>({ version: "", environment: "production", changelog: "" })
   const [newVersion, setNewVersion] = useState({ 
     version: "", 
     environment: "production", 
@@ -114,6 +123,36 @@ export function MenuDeploymentManager() {
       console.error("Error creating version:", error)
     } finally {
       setCreating(false)
+    }
+  }
+
+  const handleStartEdit = (version: MenuVersion) => {
+    setEditing(version.id)
+    setEditingVersion({
+      version: version.version,
+      environment: version.environment,
+      changelog: version.changelog || ""
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setEditing(null)
+    setEditingVersion({ version: "", environment: "production", changelog: "" })
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editing) return
+    
+    try {
+      setDeploying(editing)
+      await api.updateMenuVersion(editing, editingVersion)
+      await loadData()
+      setEditing(null)
+      setEditingVersion({ version: "", environment: "production", changelog: "" })
+    } catch (error) {
+      console.error("Error updating version:", error)
+    } finally {
+      setDeploying(null)
     }
   }
 
@@ -275,57 +314,122 @@ export function MenuDeploymentManager() {
             {versions.map((version) => (
               <div key={version.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-medium">{version.version}</h3>
-                      <span className={`px-2 py-1 rounded text-xs ${getEnvironmentColor(version.environment)}`}>
-                        {version.environment}
-                      </span>
-                      {version.is_active && (
-                        <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800">
-                          <CheckCircle className="h-3 w-3 mr-1 inline" />
-                          Active
-                        </span>
-                      )}
-                      {version.is_development && (
-                        <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
-                          <GitBranch className="h-3 w-3 mr-1 inline" />
-                          Dev
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {version.changelog || "No changelog"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Created {formatDate(version.created_at)} by {version.created_by || "Unknown"}
-                    </p>
+                  <div className="flex-1">
+                    {editing === version.id ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            value={editingVersion.version}
+                            onChange={(e) => setEditingVersion(prev => ({ ...prev, version: e.target.value }))}
+                            className="w-32"
+                            placeholder="Version"
+                          />
+                          <select
+                            value={editingVersion.environment}
+                            onChange={(e) => setEditingVersion(prev => ({ ...prev, environment: e.target.value }))}
+                            className="px-3 py-2 border rounded-md"
+                          >
+                            <option value="development">Development</option>
+                            <option value="staging">Staging</option>
+                            <option value="production">Production</option>
+                          </select>
+                        </div>
+                        <Input
+                          value={editingVersion.changelog}
+                          onChange={(e) => setEditingVersion(prev => ({ ...prev, changelog: e.target.value }))}
+                          placeholder="Changelog"
+                          className="w-full"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-medium">{version.version}</h3>
+                          <span className={`px-2 py-1 rounded text-xs ${getEnvironmentColor(version.environment)}`}>
+                            {version.environment}
+                          </span>
+                          {version.is_active && (
+                            <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                              <CheckCircle className="h-3 w-3 mr-1 inline" />
+                              Active
+                            </span>
+                          )}
+                          {version.is_development && (
+                            <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                              <GitBranch className="h-3 w-3 mr-1 inline" />
+                              Dev
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {version.changelog || "No changelog"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Created {formatDate(version.created_at)} by {version.created_by || "Unknown"}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {version.environment !== "development" && !version.is_development && (
-                    <Button
-                      onClick={() => handleSetDevelopment(version.id)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <GitBranch className="h-4 w-4 mr-1" />
-                      Set Dev
-                    </Button>
+                  {editing === version.id ? (
+                    <>
+                      <Button
+                        onClick={handleSaveEdit}
+                        disabled={deploying === version.id || !editingVersion.version}
+                        size="sm"
+                      >
+                        {deploying === version.id ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
+                        ) : (
+                          <Save className="h-4 w-4 mr-1" />
+                        )}
+                        Save
+                      </Button>
+                      <Button
+                        onClick={handleCancelEdit}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        onClick={() => handleStartEdit(version)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                      {version.environment !== "development" && !version.is_development && (
+                        <Button
+                          onClick={() => handleSetDevelopment(version.id)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <GitBranch className="h-4 w-4 mr-1" />
+                          Set Dev
+                        </Button>
+                      )}
+                      <Button
+                        onClick={() => handleDeploy(version.id, version.environment)}
+                        disabled={deploying === version.id || version.is_active}
+                        variant={version.is_active ? "outline" : "default"}
+                        size="sm"
+                      >
+                        {deploying === version.id ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
+                        ) : (
+                          <Rocket className="h-4 w-4 mr-1" />
+                        )}
+                        Deploy
+                      </Button>
+                    </>
                   )}
-                  <Button
-                    onClick={() => handleDeploy(version.id, version.environment)}
-                    disabled={deploying === version.id || version.is_active}
-                    variant={version.is_active ? "outline" : "default"}
-                    size="sm"
-                  >
-                    {deploying === version.id ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
-                    ) : (
-                      <Rocket className="h-4 w-4 mr-1" />
-                    )}
-                    Deploy
-                  </Button>
                 </div>
               </div>
             ))}
