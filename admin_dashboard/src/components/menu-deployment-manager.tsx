@@ -51,6 +51,11 @@ export function MenuDeploymentManager({ onEditVersion }: MenuDeploymentManagerPr
   })
 
   useEffect(() => {
+    console.log("🚀 MenuDeploymentManager component mounted")
+    console.log("🔧 Props received:", { 
+      onEditVersion: typeof onEditVersion,
+      hasOnEditVersion: !!onEditVersion 
+    })
     loadData()
   }, [])
 
@@ -123,8 +128,27 @@ export function MenuDeploymentManager({ onEditVersion }: MenuDeploymentManagerPr
   }
 
   const handleEditVersion = (version: MenuVersion) => {
+    console.log("🚀 MenuDeploymentManager: handleEditVersion called")
+    console.log("📋 Version details:", {
+      id: version.id,
+      version: version.version,
+      environment: version.environment,
+      changelog: version.changelog,
+      is_active: version.is_active,
+      is_development: version.is_development,
+      created_at: version.created_at,
+      created_by: version.created_by
+    })
+    
+    console.log("🔍 Checking if onEditVersion callback exists:", !!onEditVersion)
+    
     if (onEditVersion) {
+      console.log("✅ Calling onEditVersion callback with version")
       onEditVersion(version)
+      console.log("📞 onEditVersion callback completed")
+    } else {
+      console.error("❌ onEditVersion callback is not available!")
+      console.log("🛠️  Available props:", { onEditVersion: typeof onEditVersion })
     }
   }
 
@@ -315,7 +339,17 @@ export function MenuDeploymentManager({ onEditVersion }: MenuDeploymentManagerPr
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
-                    onClick={() => handleEditVersion(version)}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log("🖱️  Edit Menu button clicked for version:", version.version)
+                      console.log("🎯 Button event details:", {
+                        type: e.type,
+                        target: e.target,
+                        currentTarget: e.currentTarget
+                      })
+                      handleEditVersion(version)
+                    }}
                     variant="outline"
                     size="sm"
                   >

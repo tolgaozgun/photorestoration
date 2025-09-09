@@ -25,6 +25,13 @@ type Tab = "dashboard" | "menu" | "deployment" | "analytics" | "settings"
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard")
+  
+  // Add debugging for tab changes
+  const debugSetActiveTab = (tab: Tab) => {
+    console.log("🔄 Tab change requested:", { from: activeTab, to: tab })
+    setActiveTab(tab)
+    console.log("✅ Tab change completed:", { currentTab: tab })
+  }
   const [sections, setSections] = useState<MenuSection[]>([])
   const [items, setItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,8 +39,21 @@ function App() {
   const [showItemForm, setShowItemForm] = useState(false)
 
   useEffect(() => {
+    console.log("🚀 App component mounted")
+    console.log("📱 Initial activeTab:", activeTab)
     loadData()
   }, [])
+
+  useEffect(() => {
+    console.log("🔄 activeTab changed to:", activeTab)
+    console.log("🎯 Current tab content:", {
+      isDashboard: activeTab === "dashboard",
+      isMenu: activeTab === "menu",
+      isDeployment: activeTab === "deployment",
+      isAnalytics: activeTab === "analytics",
+      isSettings: activeTab === "settings"
+    })
+  }, [activeTab])
 
   const loadData = async () => {
     try {
@@ -87,6 +107,7 @@ function App() {
   }
 
   const handleItemCreate = () => {
+    console.log("➕ handleItemCreate called")
     setEditingItem(null)
     setShowItemForm(true)
   }
@@ -336,19 +357,22 @@ function App() {
                 )}
 
                 {activeTab === "menu" && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-3xl font-bold tracking-tight">Menu Management</h2>
-                        <p className="text-muted-foreground">
-                          Manage your app's menu structure and items
-                        </p>
-                      </div>
-                      <Button onClick={handleItemCreate}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Menu Item
-                      </Button>
-                    </div>
+                  (() => {
+                    console.log("🍎 Menu tab is now active! Rendering menu management interface")
+                    return (
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h2 className="text-3xl font-bold tracking-tight">Menu Management</h2>
+                            <p className="text-muted-foreground">
+                              Manage your app's menu structure and items
+                            </p>
+                          </div>
+                          <Button onClick={handleItemCreate}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Menu Item
+                          </Button>
+                        </div>
 
                     <div className="space-y-8">
                       {sections.map(section => (
@@ -364,14 +388,38 @@ function App() {
                       ))}
                     </div>
                   </div>
+                    )
+                  })()
                 )}
 
                 {activeTab === "deployment" && (
                   <MenuDeploymentManager 
                     onEditVersion={(version) => {
-                      setActiveTab("menu")
+                      console.log("🏠 App.tsx: onEditVersion callback triggered")
+                      console.log("📊 Current activeTab before change:", activeTab)
+                      console.log("🔄 Switching to menu tab for version:", version)
+                      
+                      // Store version context for potential future use
+                      console.log("💾 Storing version context (could be used for filtering menu items)")
+                      
+                      // Switch to menu tab
+                      console.log("🎯 Calling debugSetActiveTab('menu')")
+                      debugSetActiveTab("menu")
+                      
+                      console.log("✅ Tab switch completed")
+                      console.log("📱 New activeTab should be: menu")
+                      
                       // TODO: You could store the version context in state if needed
-                      console.log("Editing version:", version)
+                      console.log("📋 Version details received:", {
+                        id: version.id,
+                        version: version.version,
+                        environment: version.environment,
+                        changelog: version.changelog,
+                        is_active: version.is_active,
+                        is_development: version.is_development,
+                        created_at: version.created_at,
+                        created_by: version.created_by
+                      })
                     }} 
                   />
                 )}
