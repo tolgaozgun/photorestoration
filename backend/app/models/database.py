@@ -184,6 +184,31 @@ class MenuSection(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class MenuVersion(Base):
+    __tablename__ = "menu_versions"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    version = Column(String, nullable=False, unique=True)  # semantic version (e.g., "1.0.0")
+    environment = Column(String, nullable=False)  # 'development', 'staging', 'production'
+    menu_config = Column(JSON, nullable=False)  # complete menu configuration
+    changelog = Column(String, nullable=True)  # description of changes
+    is_active = Column(Boolean, default=False)  # currently deployed version
+    is_development = Column(Boolean, default=False)  # development version
+    created_at = Column(DateTime, default=datetime.utcnow)
+    created_by = Column(String, nullable=True)  # admin user who created it
+    deployed_at = Column(DateTime, nullable=True)  # when this version was deployed
+
+class MenuDeployment(Base):
+    __tablename__ = "menu_deployments"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    version_id = Column(String, nullable=False)  # reference to MenuVersion
+    environment = Column(String, nullable=False)  # 'development', 'staging', 'production'
+    deployed_at = Column(DateTime, default=datetime.utcnow)
+    deployed_by = Column(String, nullable=True)  # admin user who deployed it
+    status = Column(String, default="success")  # 'success', 'failed', 'rolled_back'
+    rollback_version_id = Column(String, nullable=True)  # if rolled back, reference to previous version
+
 # Create all tables
 Base.metadata.create_all(bind=engine)
 

@@ -181,6 +181,79 @@ class ApiClient {
     return this.request<any>(`/analytics/export?${params}`)
   }
 
+  // Menu Configuration Management
+  async getMenuConfig(environment: string = 'production', developmentMode: boolean = false): Promise<any> {
+    const params = new URLSearchParams()
+    params.append("environment", environment)
+    if (developmentMode) params.append("development_mode", "true")
+    
+    return this.request<any>(`/menu/config?${params}`)
+  }
+
+  async createMenuVersion(version: string, environment: string, changelog?: string, isDevelopment?: boolean): Promise<any> {
+    return this.request<any>('/menu/versions', {
+      method: 'POST',
+      body: JSON.stringify({
+        version,
+        environment,
+        changelog,
+        is_development: isDevelopment
+      })
+    })
+  }
+
+  async getMenuVersions(environment?: string): Promise<any> {
+    const params = new URLSearchParams()
+    if (environment) params.append("environment", environment)
+    
+    return this.request<any>(`/menu/versions?${params}`)
+  }
+
+  async deployMenuVersion(versionId: string, environment: string): Promise<any> {
+    return this.request<any>('/menu/deploy', {
+      method: 'POST',
+      body: JSON.stringify({
+        version_id: versionId,
+        environment
+      })
+    })
+  }
+
+  async getMenuDeployments(environment?: string): Promise<any> {
+    const params = new URLSearchParams()
+    if (environment) params.append("environment", environment)
+    
+    return this.request<any>(`/menu/deployments?${params}`)
+  }
+
+  async setDevelopmentVersion(versionId: string): Promise<any> {
+    return this.request<any>('/menu/development/set', {
+      method: 'POST',
+      body: JSON.stringify({
+        version_id: versionId
+      })
+    })
+  }
+
+  async autoCreateMenuVersion(environment: string = 'production', versionIncrement: string = 'patch', changelog?: string): Promise<any> {
+    return this.request<any>('/menu/versions/auto-create', {
+      method: 'POST',
+      body: JSON.stringify({
+        environment,
+        version_increment: versionIncrement,
+        changelog
+      })
+    })
+  }
+
+  async checkMenuVersion(currentVersion: string, environment: string = 'production'): Promise<any> {
+    const params = new URLSearchParams()
+    params.append("current_version", currentVersion)
+    params.append("environment", environment)
+    
+    return this.request<any>(`/menu/config/check-version?${params}`)
+  }
+
   // Health Check
   async healthCheck(): Promise<{ status: string; timestamp: string }> {
     return this.request<{ status: string; timestamp: string }>("/health")

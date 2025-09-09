@@ -188,24 +188,7 @@ class MenuService {
     return { valid: true };
   }
 
-  async getMenu(activeOnly: boolean = true): Promise<MenuData> {
-    try {
-      const headers = await this.getAuthHeaders();
-      const response = await axios.get<MenuData>(
-        `${API_BASE_URL}/api/menu?active_only=${activeOnly}`,
-        { headers }
-      );
-      
-      if (response.data.success) {
-        return response.data;
-      }
-      
-      throw new Error('Failed to fetch menu');
-    } catch (error) {
-      console.error('Error fetching menu:', error);
-      throw error;
-    }
-  }
+  // Legacy getMenu method removed - use getMenuConfig instead
 
   // Versioned menu methods
   async getMenuConfig(

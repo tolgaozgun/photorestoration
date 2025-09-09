@@ -129,3 +129,28 @@ class AnalyticsExportResponse(BaseModel):
     format: str
     filename: str
     exported_at: datetime
+
+class MenuConfigurationResponse(BaseModel):
+    version: str
+    config: Dict
+    created_at: str
+    changelog: Optional[str]
+
+class MenuVersionResponse(BaseModel):
+    id: str
+    version: str
+    environment: str
+    changelog: Optional[str]
+    is_active: bool
+    is_development: bool
+    created_at: str
+    deployed_at: Optional[str]
+    created_by: Optional[str]
+
+class MenuDeploymentResponse(BaseModel):
+    id: str
+    version_id: str
+    environment: str
+    status: str
+    deployed_at: str
+    deployed_by: Optional[str]

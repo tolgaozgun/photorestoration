@@ -38,12 +38,7 @@ export class NavigationService {
       this.menuData = result.menuData;
     } catch (error) {
       console.error('Failed to load menu data:', error);
-      // Fallback to legacy method
-      try {
-        this.menuData = await menuService.getMenu();
-      } catch (fallbackError) {
-        console.error('Failed to load menu data with fallback:', fallbackError);
-      }
+      throw error;
     } finally {
       this.isLoading = false;
     }

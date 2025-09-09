@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MenuItemManager } from "./components/menu-item-manager"
 import { MenuItemForm } from "./components/menu-item-form"
 import { AnalyticsDashboard } from "./components/analytics-dashboard"
+import { MenuDeploymentManager } from "./components/menu-deployment-manager"
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
 import { Button } from "./components/ui/button"
 import { Input } from "./components/ui/input"
@@ -12,14 +13,15 @@ import {
   Settings, 
   Plus,
   LayoutDashboard,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Rocket
 } from "lucide-react"
 import type { MenuItem, MenuSection } from "./lib/schemas"
 import { api } from "./lib/api"
 
 const queryClient = new QueryClient()
 
-type Tab = "dashboard" | "menu" | "analytics" | "settings"
+type Tab = "dashboard" | "menu" | "deployment" | "analytics" | "settings"
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard")
@@ -157,6 +159,18 @@ function App() {
               >
                 <Menu className="h-4 w-4" />
                 <span>Menu Management</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("deployment")}
+                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === "deployment"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                }`}
+              >
+                <Rocket className="h-4 w-4" />
+                <span>Menu Deployment</span>
               </button>
 
               <button
@@ -350,6 +364,10 @@ function App() {
                       ))}
                     </div>
                   </div>
+                )}
+
+                {activeTab === "deployment" && (
+                  <MenuDeploymentManager />
                 )}
 
                 {activeTab === "analytics" && (
