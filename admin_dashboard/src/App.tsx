@@ -367,7 +367,13 @@ function App() {
                 )}
 
                 {activeTab === "deployment" && (
-                  <MenuDeploymentManager />
+                  <MenuDeploymentManager 
+                    onEditVersion={(version) => {
+                      setActiveTab("menu")
+                      // TODO: You could store the version context in state if needed
+                      console.log("Editing version:", version)
+                    }} 
+                  />
                 )}
 
                 {activeTab === "analytics" && (

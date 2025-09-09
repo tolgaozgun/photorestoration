@@ -143,47 +143,6 @@ async def get_menu_versions(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching menu versions: {str(e)}")
 
-@router.put("/menu/versions/{version_id}", response_model=MenuVersionResponse)
-async def update_menu_version(
-    version_id: str,
-    version_data: dict = Body(...),
-    db: Session = Depends(get_db)
-):
-    """Update a menu version"""
-    try:
-        from ..models import MenuVersion
-        from sqlalchemy import and_
-        
-        # Get the version
-        version = db.query(MenuVersion).filter(MenuVersion.id == version_id).first()
-        if not version:
-            raise HTTPException(status_code=404, detail="Version not found")
-        
-        # Update allowed fields
-        allowed_fields = ["changelog", "version", "environment"]
-        for field, value in version_data.items():
-            if field in allowed_fields and hasattr(version, field):
-                setattr(version, field, value)
-        
-        db.commit()
-        db.refresh(version)
-        
-        return MenuVersionResponse(
-            id=version.id,
-            version=version.version,
-            environment=version.environment,
-            changelog=version.changelog,
-            is_active=version.is_active,
-            is_development=version.is_development,
-            created_at=version.created_at.isoformat(),
-            deployed_at=version.deployed_at.isoformat() if version.deployed_at else None,
-            created_by=version.created_by
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating menu version: {str(e)}")
-
 @router.post("/menu/deploy", response_model=MenuDeploymentResponse)
 async def deploy_menu_version(
     request: MenuDeployRequest,
