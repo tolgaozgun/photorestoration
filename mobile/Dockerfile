@@ -33,8 +33,7 @@ EXPOSE 19002
 # Set environment variables for Expo
 ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
 ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
-ENV CI=1
 
 # Start Expo development server
 # Using LAN mode for better reverse proxy compatibility
-CMD ["npx", "expo", "start", "--host", "lan", "--port", "19000"]
+CMD ["npx", "expo", "start", "--tunnel"]
