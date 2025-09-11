@@ -1,39 +1,26 @@
-# Use Node.js LTS as base image
-FROM node:18-alpine
+FROM node:20-bullseye
 
-# Install system dependencies required by Expo
-RUN apk add --no-cache \
-    bash \
-    git \
-    python3 \
-    make \
-    g++
+# Install deps for native builds if needed
+RUN apt-get update && apt-get install -y git python3 build-essential \
+  && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
-WORKDIR /app
+WORKDIR /usr/src/app
+USER node
 
-# Copy package files
-COPY package*.json ./
+# Copy package files first for caching
+COPY --chown=node:node package*.json ./
 
-# Install dependencies
 RUN npm ci
 
-# Copy the rest of the application
-COPY . .
+# Copy the rest
+COPY --chown=node:node . .
 
-# Expose the Expo dev server port
-EXPOSE 8081
+# Env vars to make it work inside Docker
+ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 \
+    REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0 \
+    CHOKIDAR_USEPOLLING=1 \
+    CI=1
 
-# Expose the Metro bundler port
-EXPOSE 19000
+EXPOSE 8081 19000 19001 19002 19006
 
-# Expose the Expo DevTools port
-EXPOSE 19002
-
-# Set environment variables for Expo
-ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
-ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
-
-# Start Expo development server
-# Using LAN mode for better reverse proxy compatibility
-CMD ["npx", "expo", "start", "--tunnel"]
+CMD ["npx", "expo", "start", "--tunnel", "--non-interactive"]
