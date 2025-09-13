@@ -18,6 +18,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 import * as Haptics from 'expo-haptics';
+import emptyHistoryImage from '../assets/empty-history.png';
 
 type HistoryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -109,7 +110,7 @@ export default function HistoryScreen({ navigation }: Props) {
       ) : enhancements.length === 0 ? (
         <View style={styles.content}>
           <Image 
-            source={require('../assets/empty-history.png')} 
+            source={emptyHistoryImage} 
             style={styles.illustration}
           />
           <Text style={styles.emptyPrimaryText}>{t('history.emptyPrimary')}</Text>

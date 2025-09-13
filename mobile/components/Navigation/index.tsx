@@ -150,7 +150,7 @@ interface NavigationButtonProps {
 export const NavigationButton: React.FC<NavigationButtonProps> = ({
   icon,
   onPress,
-  variant = 'back',
+  _variant = 'back',
   badge,
 }) => {
   return (

@@ -18,6 +18,7 @@ import { RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { colors } from '../theme';
+import sliderGif from '../assets/slider.gif';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -199,7 +200,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
       onPress={() => handleItemPress(item)}
       activeOpacity={0.9}
     >
-      <Image source={require('../assets/slider.gif')} style={styles.categoryItemBackground} />
+      <Image source={sliderGif} style={styles.categoryItemBackground} />
       <Image source={{ uri: item.imageUrl }} style={styles.categoryItemImage} />
       <View style={styles.categoryItemOverlay}>
         <Text style={styles.categoryItemTitle}>{item.title}</Text>

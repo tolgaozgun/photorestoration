@@ -7,7 +7,6 @@ import {
   Alert,
   Animated,
   Image,
-  FlatList,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -18,36 +17,46 @@ import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
 
 // Import our new components
-import { Container, Section, Row, Column, Spacer } from '../components/Layout';
-import { Text, SectionHeader } from '../components/Text';
-import { Button, IconButton } from '../components/Button';
+import { Container, Section, Column, Spacer } from '../components/Layout';
+import { Text } from '../components/Text';
+import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { Header, NavigationButton } from '../components/Navigation';
-import { Modal, LoadingModal, PremiumModal } from '../components/Modal';
+import { LoadingModal, PremiumModal } from '../components/Modal';
 import { spacing, colors } from '../theme';
 import { NavigationService, NavigationItem } from '../services/NavigationService';
 
-type VideoGenerationScreenNavigationProp = StackNavigationProp<RootStackParamList, any>;
+interface QualityOption {
+  id: string;
+  name: string;
+  resolution: string;
+  credits: number;
+}
+
+interface StyleOption {
+  id: string;
+  name: string;
+  description: string;
+}
+
+type VideoGenerationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'VideoGeneration'>;
 
 
 export default function VideoGenerationScreen() {
-  const navigation = useNavigation<VideoGenerationScreenNavigationProp>();
   const route = useRoute();
-  const { t } = useTranslation();
   const { user } = useUser();
   const { trackEvent } = useAnalytics();
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const [selectedQuality, setSelectedQuality] = useState<any>(null);
-  const [selectedStyle, setSelectedStyle] = useState<any>(null);
+  const [selectedQuality, setSelectedQuality] = useState<QualityOption | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<StyleOption | null>(null);
   const [currentStep, setCurrentStep] = useState<'browse' | 'create' | 'processing' | 'preview'>('browse');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [menuLoading, setMenuLoading] = useState(true);
   const [videoFeatures, setVideoFeatures] = useState<NavigationItem[]>([]);
-  const [qualityOptions, setQualityOptions] = useState<any[]>([]);
-  const [styleOptions, setStyleOptions] = useState<any[]>([]);
+  const [qualityOptions] = useState<QualityOption[]>([]);
+  const [styleOptions] = useState<StyleOption[]>([]);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -75,27 +84,24 @@ export default function VideoGenerationScreen() {
 
   const loadMenuData = async () => {
     try {
-      setMenuLoading(true);
       const navigationService = NavigationService.getInstance();
       await navigationService.loadMenuData();
-      
+
       const videoSections = navigationService.getScreenItems('video');
       setVideoFeatures(videoSections);
-      
+
       // Get feature from route params
       const featureId = route.params?.featureId;
       if (featureId) {
         setSelectedFeature(featureId);
         setCurrentStep('create');
       }
-      
+
       // Set default quality and style from backend data or use defaults
       setSelectedQuality({ id: 'hd', name: 'HD', resolution: '720p', credits: 2 });
       setSelectedStyle({ id: 'cinematic', name: 'Cinematic', description: 'Movie-style effects' });
     } catch (error) {
       console.error('Failed to load menu data:', error);
-    } finally {
-      setMenuLoading(false);
     }
   };
 

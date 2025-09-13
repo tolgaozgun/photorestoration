@@ -18,6 +18,7 @@ import { RootStackParamList } from '../App';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../theme';
+import sliderGif from '../assets/slider.gif';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -227,7 +228,7 @@ export default function VideoGalleryScreen() {
       onPress={() => handleVideoPress(item)}
       activeOpacity={0.9}
     >
-      <Image source={require('../assets/slider.gif')} style={styles.videoItemBackground} />
+      <Image source={sliderGif} style={styles.videoItemBackground} />
       <Image source={{ uri: item.thumbnail }} style={styles.videoThumbnail} />
       
       {/* Duration Badge */}

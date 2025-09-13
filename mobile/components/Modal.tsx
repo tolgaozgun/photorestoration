@@ -3,7 +3,7 @@ import { View, Modal as NativeModal, StyleSheet, ActivityIndicator, Text, ViewSt
 import { Text as CustomText } from './Text';
 import { colors, spacing, borderRadius, shadows } from '../theme';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 interface ModalProps {
   visible: boolean;

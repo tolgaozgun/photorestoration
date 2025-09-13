@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   Platform,
   TextStyle,
+  StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -22,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 import * as Device from 'expo-device';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 import { useAnalytics } from '../contexts/AnalyticsContext';
-import { colors, spacing, borderRadius, typography } from '../theme';
 
 type EmailSyncScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EmailSync'>;
 
@@ -179,6 +179,10 @@ export default function EmailSyncScreen() {
     );
   };
 
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
   if (isCheckingStatus) {
     return (
       <SafeAreaView style={styles.container}>
@@ -190,15 +194,23 @@ export default function EmailSyncScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('emailSync.title')}</Text>
-          <Text style={styles.subtitle}>
-            {t('emailSync.subtitle')}
-          </Text>
-        </View>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
 
+      {/* Screen Title */}
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.screenTitle}>Email Sync</Text>
+            <Text style={styles.screenSubtitle}>Manage your connected devices</Text>
+          </View>
+        </View>
+      </View>
+
+      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         <View style={styles.infoCard}>
           <Text style={styles.infoIcon}>ℹ️</Text>
           <Text style={styles.infoText}>
@@ -293,159 +305,192 @@ export default function EmailSyncScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#000000',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  // Title Section Styles
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  backIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
+  },
+  titleTextContainer: {
+    flex: 1,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  screenSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
+  },
+
+  // Content Styles
   content: {
-    padding: spacing.xlLegacy,
+    flex: 1,
+    backgroundColor: '#000000',
   },
-  header: {
-    marginBottom: spacing.xlLegacy,
-  },
-  title: {
-    fontSize: typography.fontSize['6xl'],
-    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
-    color: colors.text.primary,
-    marginBottom: spacing.lg,
-  },
-  subtitle: {
-    fontSize: typography.fontSize.xl,
-    color: colors.text.secondary,
+  scrollContent: {
+    padding: 16,
   },
   infoCard: {
-    backgroundColor: `${colors.primary}33`,
-    borderRadius: borderRadius.largeLegacy,
-    padding: spacing.xlLegacy,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 24,
     flexDirection: 'row',
-    marginBottom: spacing['5xl'],
+    marginBottom: 32,
     borderWidth: 1,
-    borderColor: `${colors.primary}33`,
+    borderColor: '#3A3A3C',
   },
   infoIcon: {
-    fontSize: typography.fontSize['5xl'],
-    marginRight: spacing.lg,
+    fontSize: 24,
+    marginRight: 16,
   },
   infoText: {
     flex: 1,
-    fontSize: typography.fontSize.lg,
-    color: colors.text.primary,
-    lineHeight: typography.lineHeight.normal,
+    fontSize: 16,
+    color: '#FFFFFF',
+    lineHeight: 24,
   },
   linkSection: {
-    marginBottom: spacing['5xl'],
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: typography.fontSize['5xl'],
-    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
-    color: colors.text.primary,
-    marginBottom: spacing.lg,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 16,
   },
   description: {
-    fontSize: typography.fontSize.lg,
-    color: colors.text.secondary,
-    marginBottom: spacing.xlLegacy,
-    lineHeight: typography.lineHeight.normal,
+    fontSize: 16,
+    color: '#8E8E93',
+    marginBottom: 24,
+    lineHeight: 24,
   },
   input: {
-    backgroundColor: colors.background.tertiary,
-    borderRadius: borderRadius.largeLegacy,
-    padding: spacing.xlLegacy,
-    fontSize: typography.fontSize.xl,
-    color: colors.text.primary,
-    marginBottom: spacing.xlLegacy,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    padding: 24,
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 24,
     borderWidth: 1,
-    borderColor: colors.border.primary,
+    borderColor: '#3A3A3C',
   },
   button: {
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.largeLegacy,
-    padding: spacing.xlLegacy,
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    padding: 24,
     alignItems: 'center',
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
-    color: colors.text.primary,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   linkedSection: {
-    marginBottom: spacing['5xl'],
+    marginBottom: 32,
   },
   linkedHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.xlLegacy,
+    marginBottom: 24,
   },
   unlinkText: {
-    fontSize: typography.fontSize.xl,
-    color: colors.text.error,
-    fontWeight: typography.fontWeight.medium as TextStyle['fontWeight'],
+    fontSize: 16,
+    color: '#FF6B6B',
+    fontWeight: '500',
   },
   emailCard: {
-    backgroundColor: colors.background.tertiary,
-    borderRadius: borderRadius.largeLegacy,
-    padding: spacing.xlLegacy,
-    marginBottom: spacing['5xl'],
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
   },
   linkedEmail: {
-    fontSize: typography.fontSize.xl,
-    color: colors.text.primary,
-    fontWeight: typography.fontWeight.medium as TextStyle['fontWeight'],
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: '500',
   },
   devicesTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
-    color: colors.text.primary,
-    marginBottom: spacing.xlLegacy,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 16,
   },
   deviceCard: {
-    backgroundColor: colors.background.tertiary,
-    borderRadius: borderRadius.largeLegacy,
-    padding: spacing.xlLegacy,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
   },
   deviceInfo: {
     flex: 1,
   },
   deviceName: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.medium as TextStyle['fontWeight'],
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
   deviceDetails: {
-    fontSize: typography.fontSize.lg,
-    color: colors.text.secondary,
+    fontSize: 14,
+    color: '#8E8E93',
   },
   removeButton: {
-    paddingHorizontal: spacing.xlLegacy,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: 24,
+    paddingVertical: 8,
   },
   removeButtonText: {
-    fontSize: typography.fontSize.lg,
-    color: colors.text.error,
-    fontWeight: typography.fontWeight.medium as TextStyle['fontWeight'],
+    fontSize: 14,
+    color: '#FF6B6B',
+    fontWeight: '500',
   },
   footer: {
-    marginTop: spacing.xlLegacy,
-    paddingTop: spacing.xlLegacy,
+    marginTop: 24,
+    paddingTop: 24,
     borderTopWidth: 1,
-    borderTopColor: colors.border.borderSecondary,
+    borderTopColor: '#3A3A3C',
   },
   footerText: {
-    fontSize: typography.fontSize.base,
-    color: colors.text.tertiary,
+    fontSize: 12,
+    color: '#666666',
     textAlign: 'center',
-    lineHeight: typography.lineHeight.normal,
+    lineHeight: 18,
   },
 });

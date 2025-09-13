@@ -8,8 +8,9 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
+  ViewStyle,
 } from 'react-native';
-import { colors, borderRadius } from '../../theme';
+import { colors, borderRadius, spacing } from '../../theme';
 
 interface BeforeAfterProps {
   beforeImage: string;
@@ -18,7 +19,7 @@ interface BeforeAfterProps {
   height?: number;
   autoPlay?: boolean;
   loopDuration?: number; // in milliseconds
-  style?: any;
+  style?: ViewStyle;
 }
 
 export const BeforeAfterSlider: React.FC<BeforeAfterProps> = ({
@@ -168,7 +169,7 @@ interface BeforeAfterToggleProps {
   height?: number;
   autoPlay?: boolean;
   toggleDuration?: number; // in milliseconds
-  style?: any;
+  style?: ViewStyle;
 }
 
 export const BeforeAfterToggle: React.FC<BeforeAfterToggleProps> = ({
@@ -361,5 +362,3 @@ const styles = StyleSheet.create({
   },
 });
 
-// Import spacing from theme
-const { spacing } = require('../../theme');

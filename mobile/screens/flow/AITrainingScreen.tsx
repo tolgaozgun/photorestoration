@@ -6,7 +6,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   SafeAreaView,
   Animated,
   Dimensions,
@@ -18,7 +17,7 @@ import { RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 
-const { width: screenWidth } = Dimensions.get('window');
+Dimensions.get('window');
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -34,7 +33,6 @@ interface TrainingStep {
 }
 
 export default function AITrainingScreen({ navigation, route }: Props) {
-  const { t } = useTranslation();
   const { 
     featureId, 
     featureTitle, 
@@ -57,7 +55,7 @@ export default function AITrainingScreen({ navigation, route }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isTraining, setIsTraining] = useState(true);
-  const [estimatedTime, setEstimatedTime] = useState(300); // 5 minutes default
+  const [estimatedTime] = useState(300); // 5 minutes default
 
   const trainingSteps: TrainingStep[] = [
     {

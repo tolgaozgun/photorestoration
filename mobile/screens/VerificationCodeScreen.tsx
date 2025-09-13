@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
@@ -60,9 +61,32 @@ export default function VerificationCodeScreen() {
   };
 
   const handleCodeChange = (value: string, index: number) => {
-    if (value.length > 1) {
-      // Handle paste
-      const pastedCode = value.slice(0, 6).split('');
+    if (index === 0 && value.length > 1) {
+      // Handle paste in first input field
+      const digitsOnly = value.replace(/\D/g, '').slice(0, 6);
+      const pastedCode = digitsOnly.split('');
+
+      const newCode = ['', '', '', '', '', ''];
+      pastedCode.forEach((digit, i) => {
+        if (i < 6) {
+          newCode[i] = digit;
+        }
+      });
+      setCode(newCode);
+
+      // Focus the appropriate next input
+      const nextIndex = Math.min(pastedCode.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+
+      // Auto-submit if complete code
+      if (pastedCode.length === 6) {
+        setTimeout(() => {
+          handleVerify();
+        }, 100);
+      }
+    } else if (value.length > 1) {
+      // Handle paste in other fields (rare case)
+      const pastedCode = value.slice(0, 6 - index).split('');
       const newCode = [...code];
       pastedCode.forEach((digit, i) => {
         if (i + index < 6) {
@@ -70,11 +94,12 @@ export default function VerificationCodeScreen() {
         }
       });
       setCode(newCode);
-      
+
       // Focus last input or next empty one
       const nextIndex = Math.min(index + pastedCode.length, 5);
       inputRefs.current[nextIndex]?.focus();
     } else {
+      // Normal single digit input
       const newCode = [...code];
       newCode[index] = value;
       setCode(newCode);
@@ -89,6 +114,49 @@ export default function VerificationCodeScreen() {
   const handleKeyPress = (key: string, index: number) => {
     if (key === 'Backspace' && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePasteFromContextMenu = async () => {
+    try {
+      const clipboardContent = await Clipboard.getStringAsync();
+
+      // Clean the clipboard content - extract only digits
+      const digitsOnly = clipboardContent.replace(/\D/g, '');
+
+      if (digitsOnly.length === 0) {
+        // No need to show alert for context menu paste, just fail silently
+        return;
+      }
+
+      // Take only the first 6 digits
+      const pastedCode = digitsOnly.slice(0, 6).split('');
+
+      // Fill the code inputs
+      const newCode = ['', '', '', '', '', ''];
+      pastedCode.forEach((digit, index) => {
+        if (index < 6) {
+          newCode[index] = digit;
+        }
+      });
+
+      setCode(newCode);
+
+      // Focus the next empty input or the last one
+      const nextIndex = Math.min(pastedCode.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+
+      // Auto-submit if all 6 digits are pasted
+      if (pastedCode.length === 6) {
+        setTimeout(() => {
+          handleVerify();
+        }, 100);
+      }
+
+      trackEvent('verification_code_pasted', { digitsPasted: pastedCode.length });
+    } catch (error) {
+      // Silently fail for context menu paste
+      console.error('Error pasting from clipboard:', error);
     }
   };
 
@@ -217,10 +285,17 @@ export default function VerificationCodeScreen() {
               value={digit}
               onChangeText={(value) => handleCodeChange(value, index)}
               onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
+              onContentSizeChange={() => {
+                // This helps trigger the paste context menu
+                if (index === 0) {
+                  handlePasteFromContextMenu();
+                }
+              }}
               keyboardType="number-pad"
-              maxLength={1}
+              maxLength={index === 0 ? 6 : 1} // Allow longer input on first field for paste
               selectTextOnFocus
               autoFocus={index === 0}
+              contextMenuHidden={false}
             />
           ))}
         </View>

@@ -6,9 +6,8 @@ import {
   SafeAreaView, 
   ScrollViewProps,
   ScrollView,
-  RefreshControl,
 } from 'react-native';
-import { colors, spacing, borderRadius } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 interface ContainerProps {
   children: React.ReactNode;

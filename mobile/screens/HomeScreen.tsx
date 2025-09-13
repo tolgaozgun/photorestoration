@@ -21,6 +21,7 @@ import { MainTabParamList, RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import sliderGif from '../assets/slider.gif';
 
 // Import our new components and services
 import { Container, Section, Row, Spacer } from '../components/Layout';
@@ -298,7 +299,7 @@ const navigationService = NavigationService.getInstance();
             onPress={() => handleSectionPress(item.id)}
             activeOpacity={0.9}
           >
-            <Image source={require('../assets/slider.gif')} style={styles.galleryCardBackground} />
+            <Image source={sliderGif} style={styles.galleryCardBackground} />
             <Image source={{ uri: contentItem.imageUrl }} style={styles.galleryCardImage} />
             <View style={styles.galleryCardOverlay}>
               <Text style={styles.galleryCardTitle}>{contentItem.title}</Text>
@@ -309,7 +310,7 @@ const navigationService = NavigationService.getInstance();
                 <Text style={styles.premiumBadgeText}>PREMIUM</Text>
               </View>
             )}
-          </TouchableOpacity>
+          </GalleryCard>
         ))}
       </ScrollView>
     </View>
@@ -396,7 +397,7 @@ const navigationService = NavigationService.getInstance();
                   onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
                   activeOpacity={0.9}
                 >
-                  <Image source={require('../assets/slider.gif')} style={styles.enhanceCardBackground} />
+                  <Image source={sliderGif} style={styles.enhanceCardBackground} />
                   <Image source={{ uri: photo.uri }} style={styles.enhanceCardImage} />
                   <View style={styles.enhanceCardOverlay}>
                     <Text style={styles.enhanceCardText}>{photo.title}</Text>

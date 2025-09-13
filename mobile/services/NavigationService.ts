@@ -1,7 +1,7 @@
 import { MenuData, MenuItem, MenuSection, getMenuData } from '../data/menuData';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, MainTabParamList } from '../App';
-import { useMenuVersion } from '../contexts/MenuVersionContext';
+// import { useMenuVersion } from '../contexts/MenuVersionContext';
 
 export interface NavigationItem {
   id: string;
@@ -11,10 +11,10 @@ export interface NavigationItem {
   screen?: keyof RootStackParamList | keyof MainTabParamList;
   action_type: 'screen' | 'url' | 'action' | 'section';
   action_value: string;
-  params?: any;
+  params?: Record<string, unknown>;
   is_premium: boolean;
   requires_auth: boolean;
-  meta_data: any;
+  meta_data: Record<string, unknown>;
 }
 
 export class NavigationService {
@@ -105,8 +105,8 @@ export class NavigationService {
 
   async navigateToItem(
     item: NavigationItem | string, 
-    navigation: StackNavigationProp<any>,
-    params?: any
+    navigation: StackNavigationProp<RootStackParamList>,
+    params?: Record<string, unknown>
   ): Promise<void> {
     const navItem = typeof item === 'string' 
       ? this.getNavigationItemById(item) || this.getNavigationItemByActionValue(item)
@@ -147,7 +147,7 @@ export class NavigationService {
     switch (navItem.action_type) {
       case 'screen':
         if (navItem.screen) {
-          navigation.navigate(navItem.screen as any, {
+          navigation.navigate(navItem.screen as keyof RootStackParamList, {
             ...params,
             ...navItem.params,
             menuItem: navItem
@@ -167,7 +167,7 @@ export class NavigationService {
       
       case 'section':
         // Navigate to section screen
-        navigation.navigate('Section' as any, {
+        navigation.navigate('Section', {
           sectionId: navItem.action_value,
           title: navItem.title,
           ...params

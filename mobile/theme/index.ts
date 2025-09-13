@@ -1,5 +1,5 @@
 // Theme system based on the UI/UX Design System Guide
-import { StyleSheet, Dimensions, Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 
 // Color Tokens
 export const colors = {

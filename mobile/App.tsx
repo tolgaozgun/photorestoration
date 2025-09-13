@@ -13,16 +13,21 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Onboarding screens
 import OnboardingFlow from './screens/onboarding/OnboardingFlow';
 
-// New Discovery Hub Screens
-import HomeScreen from './screens/HomeScreen';
-import MenuScreen from './screens/MenuScreen';
+// New 5-Tab Structure Screens
+import EnhanceScreen from './screens/tabs/EnhanceScreen';
+import AIPhotosScreen from './screens/tabs/AIPhotosScreen';
+import AIFiltersScreen from './screens/tabs/AIFiltersScreen';
+import AIVideosScreen from './screens/tabs/AIVideosScreen';
+import CustomAIEDitsScreen from './screens/tabs/CustomAIEDitsScreen';
 
 // Essential legacy screens (keeping only what's necessary)
-import ProfileScreen from './screens/ProfileScreen';
+// import ProfileScreen from './screens/ProfileScreen';
+import MenuScreen from './screens/MenuScreen';
 import PurchaseScreen from './screens/PurchaseScreen';
 import VideoGalleryScreen from './screens/VideoGalleryScreen';
 import EmailSyncScreen from './screens/EmailSyncScreen';
 import VerificationCodeScreen from './screens/VerificationCodeScreen';
+import CustomAIEditInputScreen from './screens/CustomAIEditInputScreen';
 import ExportScreen from './screens/ExportScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SaveAndShareScreen from './screens/SaveAndShareScreen';
@@ -32,7 +37,6 @@ import RestorationPreviewScreen from './screens/RestorationPreviewScreen';
 import PhotoInputScreen from './screens/flow/PhotoInputScreen';
 import ModeSelectionScreen from './screens/flow/ModeSelectionScreen';
 import SmartModeSelectionScreen from './screens/SmartModeSelectionScreen';
-import PreviewAndAdjustScreen from './screens/PreviewAndAdjustScreen';
 import PreviewScreen from './screens/flow/PreviewScreen';
 import ResultScreen from './screens/flow/ResultScreen';
 
@@ -46,13 +50,16 @@ import AIGenerationResultScreen from './screens/flow/AIGenerationResultScreen';
 import { UserProvider } from './contexts/UserContext';
 import { AnalyticsProvider } from './contexts/AnalyticsContext';
 import { FlowProvider } from './contexts/FlowContext';
-import { MenuVersionProvider } from './contexts/MenuVersionContext';
 import { generateUUID } from './utils/uuid';
 
 // Import our custom components
-import { CustomTabBar } from './components/Navigation';
+// import { CustomTabBar } from './components/Navigation';
 import { Text } from './components/Text';
-import { colors, spacing } from './theme';
+import { colors } from './theme';
+
+// Universal screens
+import UniversalProcessingScreen from './screens/UniversalProcessingScreen';
+import UniversalResultScreen from './screens/UniversalResultScreen';
 
 // Types for navigation
 export type RootStackParamList = {
@@ -61,14 +68,24 @@ export type RootStackParamList = {
   PhotoInput: undefined;
   ModeSelection: { imageUri: string };
   SmartModeSelection: { imageUri: string };
-  PreviewAndAdjust: { 
-    imageUri: string;
-    mode: string;
-  };
-  RestorationPreview: { imageUri: string };
+    RestorationPreview: { imageUri: string };
   Preview: { 
     imageUri: string;
     selectedMode: 'enhance' | 'colorize' | 'de-scratch' | 'enlighten' | 'recreate' | 'combine';
+  };
+  UniversalProcessing: { 
+    imageUri: string;
+    processingType: 'enhance' | 'filter' | 'video' | 'custom-edit' | 'ai-generation';
+    estimatedTime?: number;
+  };
+  UniversalResult: { 
+    originalUri: string;
+    enhancedUri: string;
+    enhancementId: string;
+    watermark: boolean;
+    mode: 'enhance' | 'filter' | 'video' | 'custom-edit' | 'ai-generation';
+    processingTime: number;
+    processingType?: string;
   };
   Result: { 
     originalUri: string;
@@ -117,82 +134,209 @@ export type RootStackParamList = {
   VideoGallery: undefined;
   EmailSync: undefined;
   VerificationCode: { 
-    email: string; 
-    deviceId: string; 
-    deviceName: string; 
-    deviceType: "ios" | "android" | "windows" | "macos" | "web"; 
+    email: string;
+    deviceId: string;
+    deviceName: string;
+    deviceType: "ios" | "android" | "windows" | "macos" | "web";
   };
+  CustomAIEDitsHome: undefined;
+  CustomAIEditInput: { imageUri: string; };
+  EnhanceHome: undefined;
+  ModeSelection: { imageUri: string; };
+  PhotoInput: undefined;
+  RestorationPreview: { imageUri: string; };
+  Preview: { originalUri: string; enhancedUri: string; };
+  Result: {
+    originalUri: string;
+    enhancedUri: string;
+    enhancementId: string;
+    watermark: boolean;
+    mode: string;
+    processingTime: number;
+  };
+  SmartModeSelection: { imageUri: string; };
 };
 
 export type MainTabParamList = {
-  Home: undefined;
   Enhance: undefined;
-  Create: undefined;
-  Videos: undefined;
-  Profile: undefined;
+  AIPhotos: undefined;
+  AIFilters: undefined;
+  AIVideos: undefined;
+  CustomAIEDits: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Main Tab Navigator with Discovery Hub
+// Enhance Stack Navigator type
+interface EnhanceStackParamList {
+  EnhanceHome: undefined;
+  ModeSelection: { imageUri: string };
+  PhotoInput: undefined;
+  RestorationPreview: { imageUri: string };
+  Preview: { originalUri: string; enhancedUri: string };
+  Result: {
+    originalUri: string;
+    enhancedUri: string;
+    enhancementId: string;
+    watermark: boolean;
+    mode: string;
+    processingTime: number;
+  };
+  SmartModeSelection: { imageUri: string };
+}
+
+
+// Enhance Stack Navigator
+function EnhanceStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="EnhanceHome"
+        component={EnhanceScreen}
+      />
+      <Stack.Screen
+        name="ModeSelection"
+        component={ModeSelectionScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="PhotoInput"
+        component={PhotoInputScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="RestorationPreview"
+        component={RestorationPreviewScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Preview"
+        component={PreviewScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Result"
+        component={ResultScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+// Custom AI Edits Stack Navigator
+function CustomAIEDitsStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="CustomAIEDitsHome"
+        component={CustomAIEDitsScreen}
+      />
+      <Stack.Screen
+        name="CustomAIEditInput"
+        component={CustomAIEditInputScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+// Main Tab Navigator with new 5-Tab structure
 function MainTabNavigator() {
   return (
     <Tab.Navigator
-      tabBar={props => <CustomTabBar {...props} tabs={[
-        {
-          name: 'Home',
-          label: 'Home',
-          icon: <Text style={styles.tabIcon}>🏠</Text>,
-          focusedIcon: <Text style={styles.tabIconFocused}>🏠</Text>,
-        },
-        {
-          name: 'Enhance', 
-          label: 'Fix',
-          icon: <Text style={styles.tabIcon}>✨</Text>,
-          focusedIcon: <Text style={styles.tabIconFocused}>✨</Text>,
-        },
-        {
-          name: 'Create',
-          label: 'AI', 
-          icon: <Text style={styles.tabIcon}>🎨</Text>,
-          focusedIcon: <Text style={styles.tabIconFocused}>🎨</Text>,
-        },
-        {
-          name: 'Videos',
-          label: 'Vids',
-          icon: <Text style={styles.tabIcon}>🎬</Text>,
-          focusedIcon: <Text style={styles.tabIconFocused}>🎬</Text>,
-        },
-        {
-          name: 'Profile',
-          label: 'Me',
-          icon: <Text style={styles.tabIcon}>👤</Text>,
-          focusedIcon: <Text style={styles.tabIconFocused}>👤</Text>,
-        },
-      ]} />}
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { display: 'none' }, // Hide default tab bar
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: '#8E8E93',
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarItemStyle: styles.tabBarItem,
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen
+        name="Enhance"
+        options={{
+          tabBarLabel: 'Enhance',
+          tabBarIcon: ({ focused }) => (
+            <Text style={[
+              styles.tabIcon,
+              focused && styles.tabIconFocused
+            ]}>✨</Text>
+          ),
+        }}
+      >
+        {(props) => (
+          <EnhanceStack {...props} />
+        )}
+      </Tab.Screen>
       <Tab.Screen 
-        name="Enhance" 
-        component={PhotoInputScreen}
-        options={{ title: 'Fix' }}
+        name="AIPhotos" 
+        component={AIPhotosScreen}
+        options={{
+          tabBarLabel: 'AI Photos',
+          tabBarIcon: ({ focused }) => (
+            <Text style={[
+              styles.tabIcon,
+              focused && styles.tabIconFocused
+            ]}>👤</Text>
+          ),
+        }}
       />
       <Tab.Screen 
-        name="Create" 
-        component={MenuScreen}
-        options={{ title: 'AI' }}
+        name="AIFilters" 
+        component={AIFiltersScreen}
+        options={{
+          tabBarLabel: 'AI Filters',
+          tabBarIcon: ({ focused }) => (
+            <Text style={[
+              styles.tabIcon,
+              focused && styles.tabIconFocused
+            ]}>🎨</Text>
+          ),
+        }}
       />
       <Tab.Screen 
-        name="Videos" 
-        component={MenuScreen}
-        options={{ title: 'Vids' }}
+        name="AIVideos" 
+        component={AIVideosScreen}
+        options={{
+          tabBarLabel: 'AI Videos',
+          tabBarIcon: ({ focused }) => (
+            <Text style={[
+              styles.tabIcon,
+              focused && styles.tabIconFocused
+            ]}>🎬</Text>
+          ),
+        }}
       />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="CustomAIEDits"
+        options={{
+          tabBarLabel: 'Custom AI',
+          tabBarIcon: ({ focused }) => (
+            <Text style={[
+              styles.tabIcon,
+              focused && styles.tabIconFocused
+            ]}>✏️</Text>
+          ),
+        }}
+      >
+        {(props) => (
+          <CustomAIEDitsStack {...props} />
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
@@ -242,7 +386,7 @@ export default function App() {
     }
   };
 
-  const handlePhotoSelected = (imageUri: string) => {
+  const handlePhotoSelected = (_imageUri: string) => {
     handleOnboardingComplete();
   };
 
@@ -256,7 +400,6 @@ export default function App() {
         <UserProvider>
           <AnalyticsProvider>
             <FlowProvider>
-              <MenuVersionProvider>
                 <View style={styles.container}>
                   <NavigationContainer>
                   <Stack.Navigator
@@ -280,78 +423,7 @@ export default function App() {
                     {/* Main App with Discovery Hub */}
                     <Stack.Screen name="MainTabs" component={MainTabNavigator} />
 
-                    {/* Enhancement Flow */}
-                    <Stack.Screen 
-                      name="PhotoInput" 
-                      component={PhotoInputScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Select Photo',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-                    <Stack.Screen 
-                      name="RestorationPreview" 
-                      component={RestorationPreviewScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Restoration Preview',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-                    <Stack.Screen 
-                      name="ModeSelection" 
-                      component={ModeSelectionScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Choose Enhancement',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-                    <Stack.Screen 
-                      name="SmartModeSelection" 
-                      component={SmartModeSelectionScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Smart Mode Selection',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-                    <Stack.Screen 
-                      name="PreviewAndAdjust" 
-                      component={PreviewAndAdjustScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Preview & Adjust',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-                    <Stack.Screen 
-                      name="Preview" 
-                      component={PreviewScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Preview',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-                    <Stack.Screen 
-                      name="Result" 
-                      component={ResultScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Result',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
-                      }}
-                    />
-
+                    
                     {/* Export Screen */}
                     <Stack.Screen 
                       name="Export" 
@@ -431,14 +503,11 @@ export default function App() {
                     />
 
                     {/* Settings Screen */}
-                    <Stack.Screen 
-                      name="Settings" 
+                    <Stack.Screen
+                      name="Settings"
                       component={SettingsScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Settings',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
+                      options={{
+                        headerShown: false,
                       }}
                     />
 
@@ -452,45 +521,53 @@ export default function App() {
                     />
 
                     {/* Video Gallery Screen */}
-                    <Stack.Screen 
-                      name="VideoGallery" 
+                    <Stack.Screen
+                      name="VideoGallery"
                       component={VideoGalleryScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'AI Video Gallery',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
+                      options={{
+                        headerShown: false,
                       }}
                     />
 
                     {/* Email Sync Screen */}
-                    <Stack.Screen 
-                      name="EmailSync" 
+                    <Stack.Screen
+                      name="EmailSync"
                       component={EmailSyncScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Email Sync',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
+                      options={{
+                        headerShown: false,
                       }}
                     />
 
                     {/* Verification Code Screen */}
-                    <Stack.Screen 
-                      name="VerificationCode" 
+                    <Stack.Screen
+                      name="VerificationCode"
                       component={VerificationCodeScreen}
-                      options={{ 
-                        headerShown: true,
-                        title: 'Verification Code',
-                        headerStyle: { backgroundColor: colors.background.secondary },
-                        headerTintColor: colors.text.primary,
+                      options={{
+                        headerShown: false,
                       }}
                     />
-                  </Stack.Navigator>
+
+                    {/* Custom AI Edit Input Screen */}
+                    {/* Universal Processing and Result Screens */}
+                    <Stack.Screen 
+                      name="UniversalProcessing" 
+                      component={UniversalProcessingScreen}
+                      options={{ 
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="UniversalResult" 
+                      component={UniversalResultScreen}
+                      options={{ 
+                        headerShown: false,
+                      }}
+                    />
+
+                                      </Stack.Navigator>
                 </NavigationContainer>
                 <StatusBar style="light" />
               </View>
-              </MenuVersionProvider>
             </FlowProvider>
           </AnalyticsProvider>
         </UserProvider>
@@ -504,12 +581,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background.primary,
   },
+  tabBar: {
+    height: 80,
+    backgroundColor: '#000000',
+    borderTopWidth: 1,
+    borderTopColor: '#333333',
+    paddingBottom: 20,
+  },
   tabIcon: {
-    fontSize: 22,
-    color: colors.text.tertiary,
+    fontSize: 24,
+    marginBottom: 4,
   },
   tabIconFocused: {
-    fontSize: 22,
-    color: colors.primary,
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  tabLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  tabBarItem: {
+    paddingVertical: 4,
   },
 });

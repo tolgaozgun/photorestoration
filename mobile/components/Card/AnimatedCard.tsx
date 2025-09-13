@@ -8,8 +8,7 @@ import {
   ImageSourcePropType,
   ViewStyle,
   ImageStyle,
-  Platform,
-} from 'react-native';
+  } from 'react-native';
 import { colors, borderRadius, spacing, layout } from '../../theme';
 import { Text } from '../Text';
 
@@ -54,9 +53,9 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   isPremium = false,
   showOverlay = true,
   aspectRatio = '4:3',
-  autoPlay = true,
-  loop = true,
-  muted = true,
+  _autoPlay = true,
+  _loop = true,
+  _muted = true,
   style,
   onPress,
   ...props
@@ -99,14 +98,7 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
     };
   };
 
-  const getAspectRatio = () => {
-    switch (aspectRatio) {
-      case '16:9': return 9 / 16;
-      case '1:1': return 1;
-      default: return 3 / 4; // 4:3
-    }
-  };
-
+  
   const cardSize = getCardSize();
 
   const renderAnimatedContent = () => {
@@ -214,12 +206,12 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
         </View>
       )}
 
-      {/* Animation Indicator */}
-      {false && (
-        <View style={styles.animationIndicator}>
-          <Text style={styles.animationIcon}>✨</Text>
-        </View>
-      )}
+      {/* Animation Indicator - Currently disabled */}
+      {/* 
+      <View style={styles.animationIndicator}>
+        <Text style={styles.animationIcon}>✨</Text>
+      </View>
+      */}
     </TouchableOpacity>
   );
 };

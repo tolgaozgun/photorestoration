@@ -21,12 +21,12 @@ export function Button({
   size = 'medium',
   disabled = false,
   loading = false,
-  style,
-  textStyle,
+  _style,
+  _textStyle,
   icon,
 }: ButtonProps) {
   const getButtonStyle = () => {
-    const baseStyle: any[] = [styles.button];
+    const baseStyle: ViewStyle[] = [styles.button];
     
     switch (variant) {
       case 'outline':
@@ -65,7 +65,7 @@ export function Button({
   };
 
   const getTextStyle = () => {
-    const baseStyle: any[] = [styles.buttonText];
+    const baseStyle: TextStyle[] = [styles.buttonText];
     
     switch (variant) {
       case 'outline':
@@ -119,13 +119,13 @@ interface IconButtonProps {
 export function IconButton({
   icon,
   onPress,
-  variant = 'ghost',
+  _variant = 'ghost',
   size = 'medium',
   disabled = false,
   style,
 }: IconButtonProps) {
   const getButtonStyle = () => {
-    const baseStyle: any[] = [styles.iconButton];
+    const baseStyle: ViewStyle[] = [styles.iconButton];
     
     switch (size) {
       case 'small':

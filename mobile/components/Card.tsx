@@ -72,7 +72,7 @@ interface GalleryCardProps {
 
 export function GalleryCard({ 
   title, 
-  category, 
+  _category, 
   subtitle, 
   imageUrl, 
   onPress, 
@@ -80,7 +80,7 @@ export function GalleryCard({
   imageStyle, 
   variant = 'photo',
   size = 'medium',
-  isPremium = false 
+  _isPremium = false 
 }: GalleryCardProps) {
   const getSizeStyle = () => {
     switch (size) {

@@ -88,7 +88,6 @@ export const Card: React.FC<CardProps> = ({
   };
 
   const getImageStyle = (): ImageStyle => {
-    const { width, height } = getCardSize();
     return {
       width: '100%',
       height: '100%',
@@ -200,9 +199,9 @@ interface GalleryCardProps extends CardProps {
 }
 
 export const GalleryCard: React.FC<GalleryCardProps> = ({
-  emoji,
-  description,
-  onPressSeeAll,
+  _emoji,
+  _description,
+  _onPressSeeAll,
   ...props
 }) => {
   return (

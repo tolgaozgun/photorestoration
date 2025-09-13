@@ -13,6 +13,7 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
+import sliderGif from '../assets/slider.gif';
 
 type SmartModeSelectionScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -43,7 +44,7 @@ export default function SmartModeSelectionScreen({ navigation, route }: Props) {
 
   const handleModeSelection = (mode: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate('PreviewAndAdjust', { imageUri, mode });
+    navigation.navigate('Preview', { imageUri, selectedMode: mode });
   };
 
   const modes: Mode[] = [
@@ -70,7 +71,7 @@ export default function SmartModeSelectionScreen({ navigation, route }: Props) {
           <Text style={styles.modeSubtitle}>{mode.subtitle}</Text>
         </View>
         <View style={styles.imageSection}>
-          <Image source={require('../assets/slider.gif')} style={styles.previewImage} />
+          <Image source={sliderGif} style={styles.previewImage} />
         </View>
       </View>
       {mode.recommended && (

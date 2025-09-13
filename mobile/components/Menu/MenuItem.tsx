@@ -4,8 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableOpacityProps,
-  Dimensions,
-} from 'react-native';
+  } from 'react-native';
 import { colors, borderRadius, spacing } from '../../theme';
 import { Text } from '../Text';
 
@@ -25,8 +24,8 @@ export const MenuItemComponent: React.FC<MenuItemProps> = ({
   title,
   description,
   icon,
-  actionType,
-  actionValue,
+  _actionType,
+  _actionValue,
   isPremium = false,
   requiresAuth = false,
   size = 'medium',

@@ -7,7 +7,7 @@ export interface MenuSection {
   icon?: string;
   layout: 'grid' | 'list' | 'horizontal';
   is_active: boolean;
-  metadata: any;
+  metadata: Record<string, unknown>;
 }
 
 export interface MenuItem {
@@ -23,7 +23,7 @@ export interface MenuItem {
   is_active: boolean;
   is_premium: boolean;
   requires_auth: boolean;
-  metadata: any;
+  metadata: Record<string, unknown>;
 }
 
 export interface MenuData {

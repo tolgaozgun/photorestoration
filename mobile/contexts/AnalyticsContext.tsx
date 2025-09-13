@@ -5,13 +5,13 @@ import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 
 interface AnalyticsContextType {
-  trackEvent: (eventType: string, eventData: any) => void;
+  trackEvent: (eventType: string, eventData: Record<string, unknown>) => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
 
 export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const trackEvent = async (eventType: string, eventData: any) => {
+  const trackEvent = async (eventType: string, eventData: Record<string, unknown>) => {
     try {
       const userId = await SecureStore.getItemAsync('userId');
       if (!userId) return;

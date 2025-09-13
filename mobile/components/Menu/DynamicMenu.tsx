@@ -3,6 +3,7 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  ViewStyle,
 } from 'react-native';
 import { colors, spacing } from '../../theme';
 import { Text } from '../Text';
@@ -12,7 +13,7 @@ import { MenuData, MenuItem } from '../../data/menuData';
 interface DynamicMenuProps {
   menuData: MenuData;
   onItemPress?: (item: MenuItem) => void;
-  style?: any;
+  style?: ViewStyle;
   showRefresh?: boolean;
   isLoading?: boolean;
   onRefresh?: () => void;
@@ -22,9 +23,9 @@ export const DynamicMenu: React.FC<DynamicMenuProps> = ({
   menuData,
   onItemPress,
   style,
-  showRefresh = true,
-  isLoading = false,
-  onRefresh,
+  _showRefresh = true,
+  _isLoading = false,
+  _onRefresh,
 }) => {
 
   const handleItemPress = (item: MenuItem) => {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text as NativeText, TextStyle, View, TextProps, ViewStyle, FlexAlignType, StyleSheet } from 'react-native';
+import { Text as NativeText, TextStyle, View, ViewStyle, FlexAlignType, StyleSheet } from 'react-native';
 import { colors, typography, spacing } from '../theme';
 
 interface CustomTextProps {

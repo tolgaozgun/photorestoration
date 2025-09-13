@@ -7,11 +7,10 @@ import {
   Modal,
   SafeAreaView,
   TouchableWithoutFeedback,
-  TextStyle,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
-import { colors, spacing, borderRadius, typography } from '../theme';
+import { } from '../theme';
 
 const LANGUAGES = [
   { code: 'en', labelKey: 'settings.languageNames.en' },

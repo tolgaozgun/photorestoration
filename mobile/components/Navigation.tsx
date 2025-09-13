@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, TextStyle } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { colors, spacing, borderRadius, shadows, typography, components } from '../theme';
 
@@ -69,7 +69,7 @@ interface HeaderProps {
   subtitle?: string;
   leftAction?: React.ReactNode;
   rightAction?: React.ReactNode;
-  style?: any;
+  style?: ViewStyle;
 }
 
 export function Header({ title, subtitle, leftAction, rightAction, style }: HeaderProps) {
@@ -98,7 +98,7 @@ export function Header({ title, subtitle, leftAction, rightAction, style }: Head
 interface NavigationButtonProps {
   icon: React.ReactNode;
   onPress: () => void;
-  style?: any;
+  style?: ViewStyle;
 }
 
 export function NavigationButton({ icon, onPress, style }: NavigationButtonProps) {
@@ -116,7 +116,7 @@ export function NavigationButton({ icon, onPress, style }: NavigationButtonProps
 interface FloatingActionButtonProps {
   icon: React.ReactNode;
   onPress: () => void;
-  style?: any;
+  style?: ViewStyle;
 }
 
 export function FloatingActionButton({ icon, onPress, style }: FloatingActionButtonProps) {

@@ -7,10 +7,8 @@ import {
   TouchableWithoutFeedback,
   ViewStyle,
   ModalProps as RNModalProps,
-  Animated,
-  Easing,
 } from 'react-native';
-import { colors, borderRadius, spacing, layout, animation } from '../../theme';
+import { colors, borderRadius, spacing, layout } from '../../theme';
 import { Text } from '../Text';
 import { Button } from '../Button';
 import { Header } from '../Navigation';
@@ -123,21 +121,9 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   cancelText,
   onConfirm,
   onCancel,
-  variant = 'info',
+  _variant = 'info',
 }) => {
-  const getVariantColor = () => {
-    switch (variant) {
-      case 'warning':
-        return colors.interactive.warning;
-      case 'error':
-        return colors.interactive.error;
-      case 'success':
-        return colors.interactive.success;
-      default:
-        return colors.text.primary;
-    }
-  };
-
+  
   return (
     <Modal
       visible={visible}
@@ -242,7 +228,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   onClose,
   title,
   children,
-  snapPoints = ['50%', '80%'],
+  _snapPoints = ['50%', '80%'],
 }) => {
   return (
     <Modal

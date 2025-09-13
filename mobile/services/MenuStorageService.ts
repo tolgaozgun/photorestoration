@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { MenuData } from '../services/MenuService';
+import { MenuData } from '../data/menuData';
 
 export interface MenuCacheEntry {
   version: string;
@@ -26,7 +26,7 @@ export const MENU_CACHE_KEYS = {
 };
 
 class MenuStorageService {
-  private async setSecureStore(key: string, value: any): Promise<void> {
+  private async setSecureStore(key: string, value: unknown): Promise<void> {
     try {
       const jsonValue = JSON.stringify(value);
       await SecureStore.setItemAsync(key, jsonValue);

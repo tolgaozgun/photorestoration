@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Alert,
   Animated,
@@ -15,11 +14,9 @@ import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
 
 // Import our new components
-import { Container, Section, Row, Column, Spacer } from '../components/Layout';
-import { Text, SectionHeader } from '../components/Text';
-import { Button, IconButton } from '../components/Button';
-import { Card, ModeCard } from '../components/Card';
-import { Header, NavigationButton } from '../components/Navigation';
+import { Container, Section, Column, Spacer } from '../components/Layout';
+import { Text } from '../components/Text';
+import { NavigationButton } from '../components/Navigation';
 import { Modal, LoadingModal } from '../components/Modal';
 import { NavigationService, NavigationItem } from '../services/NavigationService';
 
@@ -30,11 +27,10 @@ type ModeSelectionScreenRouteProp = RouteProp<RootStackParamList, 'ModeSelection
 export default function ModeSelectionScreenNew() {
   const route = useRoute<ModeSelectionScreenRouteProp>();
   const navigation = useNavigation<ModeSelectionScreenNavigationProp>();
-  const { t } = useTranslation();
   const { user } = useUser();
   const { trackEvent } = useAnalytics();
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [showDetails, setShowDetails] = useState<string | null>(null);
   const [menuLoading, setMenuLoading] = useState(true);
   const [enhancementModes, setEnhancementModes] = useState<NavigationItem[]>([]);

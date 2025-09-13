@@ -15,9 +15,9 @@ import {
   TextStyle,
   Dimensions,
   Share,
+  StatusBar,
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useNavigation } from '@react-navigation/native';
@@ -25,7 +25,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, typography, shadows } from '../theme';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -163,6 +162,27 @@ export default function SettingsScreen() {
     }
   };
 
+  const renderUserSection = () => (
+    <View style={styles.userSection}>
+      <View style={styles.userCard}>
+        <View style={styles.userIconContainer}>
+          <Text style={styles.userIcon}>👤</Text>
+        </View>
+        {linkedEmail ? (
+          <View style={styles.userInfo}>
+            <Text style={styles.userEmail}>{linkedEmail}</Text>
+            <Text style={styles.userStatus}>Signed in</Text>
+          </View>
+        ) : (
+          <View style={styles.userInfo}>
+            <Text style={styles.userStatus}>Not signed in</Text>
+            <Text style={styles.userSubtitle}>Sign in to sync across devices</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+
   const renderPremiumSection = () => (
     <View style={styles.premiumSection}>
       <View style={styles.premiumCard}>
@@ -170,10 +190,10 @@ export default function SettingsScreen() {
         <View style={styles.crownContainer}>
           <Text style={styles.crownIcon}>👑</Text>
         </View>
-        
+
         <Text style={styles.premiumTitle}>Go Pro</Text>
         <Text style={styles.premiumSubtitle}>Unlock all premium features</Text>
-        
+
         {/* Feature List */}
         <View style={styles.featureList}>
           <View style={styles.featureItem}>
@@ -197,7 +217,7 @@ export default function SettingsScreen() {
             <Text style={styles.featureText}>No watermarks</Text>
           </View>
         </View>
-        
+
         <TouchableOpacity
           style={styles.tryProButton}
           onPress={() => navigation.navigate('Purchase')}
@@ -208,13 +228,14 @@ export default function SettingsScreen() {
     </View>
   );
 
-  const SettingItem = ({ 
-    icon, 
-    title, 
-    subtitle, 
-    onPress, 
+  const SettingItem = ({
+    icon,
+    title,
+    subtitle,
+    onPress,
     showArrow = true,
-    rightElement 
+    rightElement,
+    disabled = false
   }: {
     icon: string;
     title: string;
@@ -222,12 +243,16 @@ export default function SettingsScreen() {
     onPress?: () => void;
     showArrow?: boolean;
     rightElement?: React.ReactNode;
+    disabled?: boolean;
   }) => (
-    <TouchableOpacity 
-      style={styles.settingItem}
+    <TouchableOpacity
+      style={[
+        styles.settingItem,
+        disabled && styles.settingItemDisabled
+      ]}
       onPress={onPress}
-      activeOpacity={onPress ? 0.7 : 1}
-      disabled={!onPress}
+      activeOpacity={onPress && !disabled ? 0.7 : 1}
+      disabled={disabled || !onPress}
     >
       <View style={styles.settingItemLeft}>
         <Text style={styles.settingIcon}>{icon}</Text>
@@ -236,58 +261,54 @@ export default function SettingsScreen() {
           {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
         </View>
       </View>
-      {rightElement || (showArrow && onPress && (
+      {rightElement || (showArrow && onPress && !disabled && (
         <Text style={styles.settingArrow}>›</Text>
       ))}
     </TouchableOpacity>
   );
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {/* Background gradient */}
-      <LinearGradient
-        colors={['#1a0f1f', '#2a1a3a', '#1a0f1f']}
-        style={styles.backgroundGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      />
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
 
-      <ScrollView 
-        style={styles.scrollView}
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Screen Title */}
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.screenTitle}>Settings</Text>
+            <Text style={styles.screenSubtitle}>Manage your preferences</Text>
+          </View>
+        </View>
+      </View>
+
+      <ScrollView
+        style={styles.content}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <Animated.View 
-          style={[
-            styles.header,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <Text style={styles.headerTitle}>Settings</Text>
-        </Animated.View>
+
+        {/* User Section */}
+        {renderUserSection()}
 
         {/* Premium Section */}
         {renderPremiumSection()}
 
-        {/* User Section */}
-        <Animated.View 
+        {/* Sync Section */}
+        <Animated.View
           style={[
             styles.section,
             { opacity: fadeAnim },
           ]}
         >
-          <Text style={styles.sectionTitle}>Account</Text>
+          <Text style={styles.sectionTitle}>Sync</Text>
           <View style={styles.sectionContent}>
-            <SettingItem
-              icon="🔑"
-              title="Your Unique ID"
-              subtitle={userId ? `${userId.substring(0, 8)}...` : 'Loading...'}
-              onPress={copyUserId}
-            />
             <SettingItem
               icon="☁️"
               title="Sync Across Devices"
@@ -301,14 +322,13 @@ export default function SettingsScreen() {
                 />
               }
             />
-            {linkedEmail && (
-              <SettingItem
-                icon="📧"
-                title={t('settings.manageDevices')}
-                subtitle={t('settings.manageDevicesSubtitle')}
-                onPress={() => navigation.navigate('EmailSync')}
-              />
-            )}
+            <SettingItem
+              icon="📧"
+              title="Manage Devices"
+              subtitle={linkedEmail ? 'View and manage connected devices' : 'Sign in to manage devices'}
+              onPress={linkedEmail ? () => navigation.navigate('EmailSync') : undefined}
+              disabled={!linkedEmail}
+            />
           </View>
         </Animated.View>
 
@@ -428,122 +448,145 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#000000',
   },
-  backgroundGradient: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+
+  // Title Section Styles
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
   },
-  scrollView: {
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  backIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
+  },
+  titleTextContainer: {
     flex: 1,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  screenSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
+  },
+
+  // Content Styles
+  content: {
+    flex: 1,
+    backgroundColor: '#000000',
   },
   scrollContent: {
     paddingBottom: 100,
   },
-  header: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  headerTitle: {
-    fontSize: typography.fontSize['6xl'],
-    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
-    color: colors.text.primary,
-    letterSpacing: typography.letterSpacing.tight,
-    textAlign: 'center',
-  },
   premiumSection: {
-    marginHorizontal: spacing.md,
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 32,
   },
   premiumCard: {
-    backgroundColor: colors.text.inverse,
-    borderRadius: borderRadius.xl,
-    padding: spacing.xl,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
-    ...shadows.xl,
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
   },
   crownContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   crownIcon: {
     fontSize: 64,
   },
   premiumTitle: {
-    fontSize: typography.fontSize['3xl'],
-    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
-    color: '#000000',
-    marginBottom: spacing.sm,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 8,
     textAlign: 'center',
   },
   premiumSubtitle: {
-    fontSize: typography.fontSize.lg,
-    color: '#666666',
-    marginBottom: spacing.xl,
+    fontSize: 16,
+    color: '#8E8E93',
+    marginBottom: 24,
     textAlign: 'center',
   },
   featureList: {
     width: '100%',
-    marginBottom: spacing.xl,
+    marginBottom: 32,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: 16,
   },
   featureCheck: {
-    fontSize: typography.fontSize.lg,
+    fontSize: 18,
     color: '#4CAF50',
-    marginRight: spacing.md,
+    marginRight: 16,
     fontWeight: 'bold',
   },
   featureText: {
-    fontSize: typography.fontSize.base,
-    color: '#333333',
+    fontSize: 16,
+    color: '#FFFFFF',
     flex: 1,
   },
   tryProButton: {
-    backgroundColor: colors.accent.primary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.lg,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 12,
     width: '100%',
     alignItems: 'center',
   },
   tryProButtonText: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
+    fontSize: 16,
+    fontWeight: '600',
     color: '#FFFFFF',
   },
   section: {
-    marginTop: spacing['3xl'],
-    paddingHorizontal: spacing.xlLegacy,
+    marginTop: 32,
+    paddingHorizontal: 16,
   },
   sectionTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
-    color: colors.text.muted,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#8E8E93',
     textTransform: 'uppercase',
-    letterSpacing: typography.letterSpacing.wide,
-    marginBottom: spacing.lg,
-    marginLeft: spacing.sm,
+    letterSpacing: 1,
+    marginBottom: 16,
+    marginLeft: 4,
   },
   sectionContent: {
-    backgroundColor: colors.background.card,
-    borderRadius: borderRadius.xlLegacy,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: spacing.xlLegacy,
+    padding: 24,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.borderSecondary,
+    borderBottomColor: '#3A3A3C',
   },
   settingItemLeft: {
     flexDirection: 'row',
@@ -551,38 +594,87 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingIcon: {
-    fontSize: typography.fontSize['3xl'],
-    marginRight: spacing.xlLegacy,
+    fontSize: 24,
+    marginRight: 24,
   },
   settingTextContainer: {
     flex: 1,
   },
   settingTitle: {
-    fontSize: typography.fontSize.xl,
-    fontWeight: typography.fontWeight.medium as TextStyle['fontWeight'],
-    color: colors.text.primary,
-    marginBottom: spacing.sm,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
   settingSubtitle: {
-    fontSize: typography.fontSize.sm,
-    color: colors.text.muted,
+    fontSize: 14,
+    color: '#8E8E93',
   },
   settingArrow: {
-    fontSize: typography.fontSize['3xl'],
-    color: colors.text.muted,
+    fontSize: 24,
+    color: '#8E8E93',
+  },
+  settingItemDisabled: {
+    opacity: 0.5,
   },
   appInfo: {
     alignItems: 'center',
-    marginTop: spacing['5xl'],
-    marginBottom: spacing['3xl'],
+    marginTop: 80,
+    marginBottom: 48,
   },
   appVersion: {
-    fontSize: typography.fontSize.lg,
-    color: colors.text.secondary,
-    marginBottom: spacing.sm,
+    fontSize: 16,
+    color: '#8E8E93',
+    marginBottom: 8,
   },
   appCopyright: {
-    fontSize: typography.fontSize.base,
-    color: colors.text.tertiary,
+    fontSize: 14,
+    color: '#666666',
+  },
+
+  // User Section Styles
+  userSection: {
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  userCard: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#2C2C2E',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  userIcon: {
+    fontSize: 32,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userEmail: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  userStatus: {
+    fontSize: 16,
+    color: '#8E8E93',
+    marginBottom: 2,
+  },
+  userSubtitle: {
+    fontSize: 14,
+    color: '#666666',
   },
 });

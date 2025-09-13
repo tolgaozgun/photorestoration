@@ -7,7 +7,6 @@ import {
   Alert,
   Animated,
   Image,
-  FlatList,
   ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,11 +19,9 @@ import { useTranslation } from 'react-i18next';
 
 // Import our new components
 import { Container, Section, Row, Column, Spacer } from '../components/Layout';
-import { Text, SectionHeader } from '../components/Text';
-import { Button, IconButton } from '../components/Button';
-import { Card } from '../components/Card';
-import { Header, NavigationButton } from '../components/Navigation';
-import { Modal, LoadingModal, PremiumModal } from '../components/Modal';
+import { Text } from '../components/Text';
+import { Button } from '../components/Button';
+import { LoadingModal, PremiumModal } from '../components/Modal';
 import { spacing, colors } from '../theme';
 import { NavigationService, NavigationItem } from '../services/NavigationService';
 
@@ -38,9 +35,7 @@ interface UploadedPhoto {
 }
 
 export default function AIGenerationScreen() {
-  const navigation = useNavigation<AIGenerationScreenNavigationProp>();
   const route = useRoute();
-  const { t } = useTranslation();
   const { user } = useUser();
   const { trackEvent } = useAnalytics();
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
@@ -278,7 +273,7 @@ export default function AIGenerationScreen() {
 
           {/* Photo grid */}
           <View style={styles.photoGrid}>
-            {uploadedPhotos.map((photo, index) => (
+            {uploadedPhotos.map((photo, _index) => (
               <View key={photo.id} style={styles.photoItem}>
                 <Image source={{ uri: photo.uri }} style={styles.photoImage} />
                 <TouchableOpacity

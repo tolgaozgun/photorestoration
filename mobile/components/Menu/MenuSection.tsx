@@ -4,10 +4,23 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
+  ViewStyle,
 } from 'react-native';
 import { colors, borderRadius, spacing } from '../../theme';
 import { Text } from '../Text';
 import { MenuItemComponent } from './MenuItem';
+
+type MenuItem = {
+  id: string;
+  title: string;
+  description?: string;
+  icon?: string;
+  action_type: 'screen' | 'url' | 'action' | 'section';
+  action_value?: string;
+  is_premium: boolean;
+  requires_auth: boolean;
+  metadata: Record<string, unknown>;
+};
 
 interface MenuSectionProps {
   section: {
@@ -18,7 +31,7 @@ interface MenuSectionProps {
     icon?: string;
     layout: 'grid' | 'list' | 'horizontal';
     is_active: boolean;
-    metadata: any;
+    metadata: Record<string, unknown>;
   };
   items: Array<{
     id: string;
@@ -29,10 +42,10 @@ interface MenuSectionProps {
     action_value?: string;
     is_premium: boolean;
     requires_auth: boolean;
-    metadata: any;
+    metadata: Record<string, unknown>;
   }>;
-  onItemPress?: (item: any) => void;
-  style?: any;
+  onItemPress?: (item: MenuItem) => void;
+  style?: ViewStyle;
 }
 
 export const MenuSection: React.FC<MenuSectionProps> = ({
