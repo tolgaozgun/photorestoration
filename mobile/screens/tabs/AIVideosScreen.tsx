@@ -110,10 +110,10 @@ export default function AIVideosScreen() {
       activeOpacity={0.8}
     >
       <Image source={{ uri: item.imageUrl }} style={styles.videoImage} />
+      <View style={styles.playButton}>
+        <Text style={styles.playIcon}>▶</Text>
+      </View>
       <View style={styles.videoOverlay}>
-        <View style={styles.playButton}>
-          <Text style={styles.playIcon}>▶</Text>
-        </View>
         <View style={styles.videoInfo}>
           <Text style={styles.videoTitle}>{item.title}</Text>
           <Text style={styles.videoDuration}>{item.duration}</Text>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+    backgroundColor: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent 60%)',
     padding: 12,
   },
   playButton: {
