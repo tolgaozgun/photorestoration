@@ -11,6 +11,8 @@ import {
   Image,
   Text,
   ScrollView,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -49,6 +51,10 @@ export default function AIFiltersScreen() {
   const navigation = useNavigation<AIFiltersScreenNavigationProp>();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  const handleSettingsPress = () => {
+    navigation.navigate('Settings');
+  };
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('3d-photos');
   const [loading] = useState(false);
@@ -171,7 +177,22 @@ export default function AIFiltersScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Screen Title */}
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.screenTitle}>AI Filters</Text>
+            <Text style={styles.screenSubtitle}>Transform your photos with AI filters</Text>
+          </View>
+          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {/* Top Section - Photo Selection */}
       <View style={styles.topSection}>
         <View style={styles.topContent}>
@@ -217,7 +238,7 @@ export default function AIFiltersScreen() {
           {renderFilterGrid()}
         </ScrollView>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -225,6 +246,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
+  },
+
+  // Title Section Styles
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleTextContainer: {
+    flex: 1,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  screenSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   
   // Top Section Styles

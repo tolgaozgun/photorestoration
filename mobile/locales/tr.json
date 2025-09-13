@@ -182,10 +182,10 @@
     "noPurchasesFound": "Satın alma bulunamadı",
     "settingsButton": "Ayarlar",
     "languageNames": {
-      "en": "İngilizce",
-      "tr": "Türkçe",
-      "de": "Almanca",
-      "zh": "Çince"
+      "en": "İngilizce (English)",
+      "tr": "Türkçe (Türkçe)",
+      "de": "Almanca (Deutsch)",
+      "zh": "Çince (中文)"
     },
     "disableSyncTitle": "Senkronizasyonu Devre Dışı Bırak?",
     "disableSyncMessage": "Bu, restorasyon geçmişinizin cihazlar arasında senkronize edilmesini durduracaktır. Restorasyonlarınız bu cihazda kalacaktır.",

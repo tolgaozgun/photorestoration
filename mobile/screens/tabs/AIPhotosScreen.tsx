@@ -7,6 +7,8 @@ import {
   ScrollView,
   Image,
   Text,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -119,6 +121,10 @@ export default function AIPhotosScreen() {
     handleAlbumPress(albumId);
   };
 
+  const handleSettingsPress = () => {
+    navigation.navigate('Settings');
+  };
+
   
   const renderAlbumCard = (item: AlbumItem, album: AlbumCategory) => (
     <TouchableOpacity
@@ -162,30 +168,30 @@ export default function AIPhotosScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>AI Photos</Text>
-        <View style={styles.headerRight}>
-          {user?.subscriptionType && (
-            <View style={styles.proBadge}>
-              <Text style={styles.proBadgeText}>PRO</Text>
-            </View>
-          )}
-          <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate('Profile')}>
-            <Text style={styles.avatarText}>👤</Text>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Screen Title */}
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.screenTitle}>AI Photos</Text>
+            <Text style={styles.screenSubtitle}>Generate AI-powered photos</Text>
+          </View>
+          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Main Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {albumCategories.map(renderAlbumSection)}
-        
+
         {/* Bottom spacing for tab bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -194,59 +200,51 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
-  
-  // Header Styles
-  header: {
-    height: 88,
-    backgroundColor: '#000000',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 44,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  proBadge: {
-    backgroundColor: '#FF3B30',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    minWidth: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  proBadgeText: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-  avatarButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#333333',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  avatarText: {
-    fontSize: 18,
-  },
-  
+
   // Content Styles
   content: {
     flex: 1,
     backgroundColor: '#000000',
+  },
+
+  scrollContent: {
+    paddingTop: 8,
+  },
+
+  // Title Section Styles
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  titleTextContainer: {
+    flex: 1,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  screenSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   
   // Album Section Styles
@@ -325,6 +323,6 @@ const styles = StyleSheet.create({
   
   // Utility Styles
   bottomSpacing: {
-    height: 96,
+    height: 80,
   },
 });

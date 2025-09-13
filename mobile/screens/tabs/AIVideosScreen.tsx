@@ -7,6 +7,8 @@ import {
   ScrollView,
   Image,
   Text,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -150,13 +152,20 @@ export default function AIVideosScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>AI Videos</Text>
-        <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Screen Title */}
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.screenTitle}>AI Videos</Text>
+            <Text style={styles.screenSubtitle}>Generate AI-powered videos</Text>
+          </View>
+          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Main Content */}
@@ -166,7 +175,7 @@ export default function AIVideosScreen() {
         {/* Bottom spacing for tab bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -176,20 +185,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   
-  // Header Styles
-  header: {
-    height: 88,
-    backgroundColor: '#000000',
+  // Title Section Styles
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 44,
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+  titleTextContainer: {
+    flex: 1,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
     color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  screenSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
   },
   settingsButton: {
     width: 44,

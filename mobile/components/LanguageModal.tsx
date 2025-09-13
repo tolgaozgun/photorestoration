@@ -22,14 +22,18 @@ const LANGUAGES = [
 type Props = {
   isVisible: boolean;
   onClose: () => void;
+  onLanguageChange?: (language: string) => void;
 };
 
-export default function LanguageModal({ isVisible, onClose }: Props) {
+export default function LanguageModal({ isVisible, onClose, onLanguageChange }: Props) {
   const { t, i18n } = useTranslation();
 
   const onSelectLanguage = (code: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     i18n.changeLanguage(code);
+    if (onLanguageChange) {
+      onLanguageChange(code);
+    }
     onClose();
   };
 

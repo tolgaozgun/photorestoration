@@ -182,10 +182,10 @@
     "noPurchasesFound": "Keine Käufe gefunden",
     "settingsButton": "Einstellungen",
     "languageNames": {
-      "en": "Englisch",
-      "tr": "Türkisch",
-      "de": "Deutsch",
-      "zh": "Chinesisch"
+      "en": "Englisch (English)",
+      "tr": "Türkisch (Türkçe)",
+      "de": "Deutsch (Deutsch)",
+      "zh": "Chinesisch (中文)"
     },
     "disableSyncTitle": "Synchronisierung deaktivieren?",
     "disableSyncMessage": "Dadurch wird die Synchronisierung Ihres Wiederherstellungsverlaufs auf allen Geräten beendet. Ihre Wiederherstellungen bleiben auf diesem Gerät.",

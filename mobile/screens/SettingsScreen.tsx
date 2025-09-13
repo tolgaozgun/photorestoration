@@ -25,6 +25,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
+import LanguageModal from '../components/LanguageModal';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -32,12 +34,13 @@ type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Set
 
 export default function SettingsScreen() {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
-  const { t } = useTranslation();
+  const { t, i18n: i18nInstance } = useTranslation();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [userId, setUserId] = useState<string>('');
   const [syncEnabled, setSyncEnabled] = useState(false);
   const [linkedEmail, setLinkedEmail] = useState<string | null>(null);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -160,6 +163,55 @@ export default function SettingsScreen() {
     } catch (error) {
       console.error('Error sharing app:', error);
     }
+  };
+
+  const handleLanguageChange = async (language: string) => {
+    try {
+      await i18nInstance.changeLanguage(language);
+      await SecureStore.setItemAsync('appLanguage', language);
+      trackEvent('settings_action', { type: 'language_change', language });
+      setShowLanguageModal(false);
+    } catch (error) {
+      console.error('Error changing language:', error);
+    }
+  };
+
+  const handleRelaunchOnboarding = () => {
+    Alert.alert(
+      'Relaunch Onboarding',
+      'This will reset the onboarding process and show you the app introduction again. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await SecureStore.deleteItemAsync('hasSeenOnboarding');
+              trackEvent('settings_action', { type: 'relaunch_onboarding' });
+              // Navigate to onboarding
+              navigation.getParent()?.reset({
+                index: 0,
+                routes: [{ name: 'Onboarding' }],
+              });
+            } catch (error) {
+              console.error('Error relaunching onboarding:', error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const getCurrentLanguageName = () => {
+    const currentLang = i18nInstance.language;
+    const languages = {
+      en: 'English',
+      tr: 'Türkçe',
+      de: 'Deutsch',
+      zh: '中文',
+    };
+    return languages[currentLang as keyof typeof languages] || 'English';
   };
 
   const renderUserSection = () => (
@@ -299,6 +351,30 @@ export default function SettingsScreen() {
 
         {/* Premium Section */}
         {renderPremiumSection()}
+
+        {/* App Settings Section */}
+        <Animated.View
+          style={[
+            styles.section,
+            { opacity: fadeAnim },
+          ]}
+        >
+          <Text style={styles.sectionTitle}>App Settings</Text>
+          <View style={styles.sectionContent}>
+            <SettingItem
+              icon="🌐"
+              title="Language"
+              subtitle={getCurrentLanguageName()}
+              onPress={() => setShowLanguageModal(true)}
+            />
+            <SettingItem
+              icon="🎬"
+              title="Replay Onboarding"
+              subtitle="See the app introduction again"
+              onPress={handleRelaunchOnboarding}
+            />
+          </View>
+        </Animated.View>
 
         {/* Sync Section */}
         <Animated.View
@@ -441,7 +517,14 @@ export default function SettingsScreen() {
           <Text style={styles.appCopyright}>© 2024 Photo Restoration App</Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+
+        {/* Language Modal */}
+        <LanguageModal
+          isVisible={showLanguageModal}
+          onClose={() => setShowLanguageModal(false)}
+          onLanguageChange={handleLanguageChange}
+        />
+      </SafeAreaView>
   );
 }
 

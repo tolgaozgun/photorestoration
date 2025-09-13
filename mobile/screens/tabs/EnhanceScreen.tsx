@@ -11,8 +11,12 @@ import {
   Text,
   SafeAreaView,
   StatusBar,
+  ActivityIndicator,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -44,26 +48,15 @@ import { useAnalytics } from '../../contexts/AnalyticsContext';
 const { width: screenWidth } = Dimensions.get('window');
 const cardSize = (screenWidth - 32 - 16) / 3; // 3 columns with margins
 
-// Mock recent photos data
-const mockRecentPhotos = [
-  { id: '1', uri: 'https://picsum.photos/300/400?random=recent1' },
-  { id: '2', uri: 'https://picsum.photos/300/400?random=recent2' },
-  { id: '3', uri: 'https://picsum.photos/300/400?random=recent3' },
-  { id: '4', uri: 'https://picsum.photos/300/400?random=recent4' },
-  { id: '5', uri: 'https://picsum.photos/300/400?random=recent5' },
-  { id: '6', uri: 'https://picsum.photos/300/400?random=recent6' },
-  { id: '7', uri: 'https://picsum.photos/300/400?random=recent7' },
-  { id: '8', uri: 'https://picsum.photos/300/400?random=recent8' },
-  { id: '9', uri: 'https://picsum.photos/300/400?random=recent9' },
-];
-
 export default function EnhanceScreen() {
   const navigation = useNavigation<EnhanceScreenNavigationProp>();
   // const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
-  // const [loading, setLoading] = useState(false);
+  const [recentPhotos, setRecentPhotos] = useState<Array<{ id: string; uri: string }>>([]);
+  const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
+  const [photosError, setPhotosError] = useState<string | null>(null);
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'enhance' });
@@ -71,9 +64,65 @@ export default function EnhanceScreen() {
     requestPermissions();
   }, []);
 
+  useEffect(() => {
+    if (hasGalleryPermission) {
+      loadRecentPhotos();
+    } else if (hasGalleryPermission === false) {
+      setPhotosError('Gallery permission denied. Please enable access in device settings to see your recent photos.');
+    }
+  }, [hasGalleryPermission]);
+
   const requestPermissions = async () => {
     const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
     setHasGalleryPermission(galleryStatus.status === 'granted');
+  };
+
+  const loadRecentPhotos = async () => {
+    if (!hasGalleryPermission) return;
+
+    setIsLoadingPhotos(true);
+    setPhotosError(null);
+
+    try {
+      // Request MediaLibrary permission
+      const mediaPermission = await MediaLibrary.requestPermissionsAsync();
+
+      if (mediaPermission.status !== 'granted') {
+        setPhotosError('Media library permission required to access recent photos');
+        return;
+      }
+
+      // Get recent photos from library
+      const { assets } = await MediaLibrary.getAssetsAsync({
+        mediaType: 'photo',
+        first: 9, // Get first 9 photos
+        sortBy: MediaLibrary.SortBy.creationTime,
+      });
+
+      // Filter out any problematic URIs and get proper accessible URIs
+      const photos = [];
+      for (const asset of assets) {
+        try {
+          // Get a proper URI that React Native can handle
+          const photoInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+          if (photoInfo && photoInfo.localUri) {
+            photos.push({
+              id: asset.id,
+              uri: photoInfo.localUri,
+            });
+          }
+        } catch (uriError) {
+          console.warn('Skipping problematic photo:', asset.id, uriError);
+        }
+      }
+
+      setRecentPhotos(photos);
+    } catch (error) {
+      console.error('Error loading recent photos:', error);
+      setPhotosError('Failed to load recent photos. Please try again.');
+    } finally {
+      setIsLoadingPhotos(false);
+    }
   };
 
   const pickImageFromSource = async (source: 'camera' | 'gallery') => {
@@ -150,18 +199,42 @@ export default function EnhanceScreen() {
         {/* Recent Photos Grid */}
         <View style={styles.recentSection}>
           <Text style={styles.recentTitle}>Recent Photos</Text>
-          <View style={styles.photosGrid}>
-            {mockRecentPhotos.map((photo) => (
+          {photosError ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorIcon}>📱</Text>
+              <Text style={styles.errorText}>{photosError}</Text>
               <TouchableOpacity
-                key={photo.id}
-                style={styles.photoCard}
-                onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
-                activeOpacity={0.8}
+                style={styles.retryButton}
+                onPress={requestPermissions}
               >
-                <Image source={{ uri: photo.uri }} style={styles.photoImage} />
+                <Text style={styles.retryButtonText}>Grant Permission</Text>
               </TouchableOpacity>
-            ))}
-          </View>
+            </View>
+          ) : isLoadingPhotos ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#FF6B6B" />
+              <Text style={styles.loadingText}>Loading recent photos...</Text>
+            </View>
+          ) : recentPhotos.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyIcon}>📷</Text>
+              <Text style={styles.emptyText}>No recent photos found</Text>
+              <Text style={styles.emptySubtitle}>Take some photos to see them here</Text>
+            </View>
+          ) : (
+            <View style={styles.photosGrid}>
+              {recentPhotos.map((photo) => (
+                <TouchableOpacity
+                  key={photo.id}
+                  style={styles.photoCard}
+                  onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
+                  activeOpacity={0.8}
+                >
+                  <Image source={{ uri: photo.uri }} style={styles.photoImage} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Bottom spacing for tab bar */}
@@ -289,5 +362,68 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+  },
+
+  // Loading, Error, and Empty States
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#8E8E93',
+    marginTop: 12,
+  },
+  errorContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#FF6B6B',
+    textAlign: 'center',
+    marginBottom: 8,
+    paddingHorizontal: 20,
+  },
+  errorSubtext: {
+    fontSize: 12,
+    color: '#8E8E93',
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  retryButton: {
+    backgroundColor: '#FF6B6B',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  retryButtonText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#8E8E93',
+    textAlign: 'center',
   },
 });

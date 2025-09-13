@@ -182,10 +182,10 @@
     "noPurchasesFound": "未找到购买",
     "settingsButton": "设置",
     "languageNames": {
-      "en": "英语",
-      "tr": "土耳其语",
-      "de": "德语",
-      "zh": "中文"
+      "en": "英语 (English)",
+      "tr": "土耳其语 (Türkçe)",
+      "de": "德语 (Deutsch)",
+      "zh": "中文 (中文)"
     },
     "disableSyncTitle": "禁用同步？",
     "disableSyncMessage": "这将停止您的恢复历史记录在设备之间同步。您的恢复将保留在此设备上。",
