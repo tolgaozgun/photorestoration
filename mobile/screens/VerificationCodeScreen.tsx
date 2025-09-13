@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react'
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -204,7 +205,11 @@ export default function VerificationCodeScreen() {
           {code.map((digit, index) => (
             <TextInput
               key={index}
-              ref={(ref) => (inputRefs.current[index] = ref)}
+              ref={(ref) => {
+                if (ref) {
+                  inputRefs.current[index] = ref;
+                }
+              }}
               style={[
                 styles.codeInput,
                 digit ? styles.codeInputFilled : {},

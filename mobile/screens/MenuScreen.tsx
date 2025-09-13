@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react'
+import { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
-  RefreshControl,
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -18,8 +18,7 @@ import { Text, SectionHeader } from '../components/Text';
 import { Button, IconButton } from '../components/Button';
 import { Header, NavigationButton, FloatingActionButton } from '../components/Navigation';
 import { DynamicMenu } from '../components/Menu';
-import { LoadingModal } from '../components/Modal';
-import menuService, { MenuItem } from '../services/MenuService';
+import { MenuItem, getMenuData } from '../data/menuData';
 
 type MenuScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Menu'>;
 
@@ -27,33 +26,11 @@ export default function MenuScreen() {
   const navigation = useNavigation<MenuScreenNavigationProp>();
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [menuData, setMenuData] = useState<any>(null);
+  const menuData = getMenuData();
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'menu' });
-    loadMenuData();
   }, []);
-
-  const loadMenuData = async () => {
-    try {
-      setLoading(true);
-      const data = await menuService.getMenu();
-      setMenuData(data);
-    } catch (error) {
-      console.error('Error loading menu:', error);
-      Alert.alert('Error', 'Failed to load menu. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await loadMenuData();
-    setRefreshing(false);
-  };
 
   const handleItemPress = (item: MenuItem) => {
     trackEvent('menu_item_tap', { 
@@ -82,9 +59,6 @@ export default function MenuScreen() {
       case 'action':
         // Handle custom actions
         switch (item.action_value) {
-          case 'refresh_menu':
-            handleRefresh();
-            break;
           case 'settings':
             navigation.navigate('Profile');
             break;
@@ -107,20 +81,10 @@ export default function MenuScreen() {
     <Container>
       {/* Header */}
       <Header
-        title="Features"
-        subtitle="Discover all available features"
-        leftAction={
-          <NavigationButton
-            icon={<Text variant="title">←</Text>}
-            onPress={() => navigation.goBack()}
-          />
-        }
-        rightAction={
-          <NavigationButton
-            icon={<Text variant="title">🔄</Text>}
-            onPress={handleRefresh}
-          />
-        }
+        title=""
+        subtitle=""
+        leftAction={<View />}
+        rightAction={<View />}
       />
 
       {/* Main Content */}
@@ -128,13 +92,6 @@ export default function MenuScreen() {
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#666"
-          />
-        }
       >
         {/* Welcome Section */}
         <Section style={styles.welcomeSection}>
@@ -149,18 +106,13 @@ export default function MenuScreen() {
 
         {/* Dynamic Menu */}
         <DynamicMenu
+          menuData={menuData}
           onItemPress={handleItemPress}
           showRefresh={false}
         />
 
         <Spacer size="large" />
       </ScrollView>
-
-      {/* Loading Modal */}
-      <LoadingModal
-        visible={loading}
-        message="Loading menu..."
-      />
     </Container>
   );
 }

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react'
+import { useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import { NavigationContainer } from '@react-navigation/native';
@@ -14,19 +15,32 @@ import OnboardingFlow from './screens/onboarding/OnboardingFlow';
 
 // New Discovery Hub Screens
 import HomeScreen from './screens/HomeScreen';
-import ModeSelectionScreen from './screens/ModeSelectionScreen';
-import AIGenerationScreen from './screens/AIGenerationScreen';
-import VideoGenerationScreen from './screens/VideoGenerationScreen';
 import MenuScreen from './screens/MenuScreen';
 
 // Essential legacy screens (keeping only what's necessary)
 import ProfileScreen from './screens/ProfileScreen';
 import PurchaseScreen from './screens/PurchaseScreen';
+import VideoGalleryScreen from './screens/VideoGalleryScreen';
+import EmailSyncScreen from './screens/EmailSyncScreen';
+import VerificationCodeScreen from './screens/VerificationCodeScreen';
+import ExportScreen from './screens/ExportScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import SaveAndShareScreen from './screens/SaveAndShareScreen';
+import RestorationPreviewScreen from './screens/RestorationPreviewScreen';
 
 // Flow screens (keeping essential flow)
 import PhotoInputScreen from './screens/flow/PhotoInputScreen';
+import ModeSelectionScreen from './screens/flow/ModeSelectionScreen';
+import SmartModeSelectionScreen from './screens/SmartModeSelectionScreen';
+import PreviewAndAdjustScreen from './screens/PreviewAndAdjustScreen';
 import PreviewScreen from './screens/flow/PreviewScreen';
 import ResultScreen from './screens/flow/ResultScreen';
+
+// New AI Generation Flow Screens
+import SelfieUploadScreen from './screens/flow/SelfieUploadScreen';
+import AITrainingScreen from './screens/flow/AITrainingScreen';
+import StyleSelectionScreen from './screens/flow/StyleSelectionScreen';
+import AIGenerationResultScreen from './screens/flow/AIGenerationResultScreen';
 
 // Contexts
 import { UserProvider } from './contexts/UserContext';
@@ -37,7 +51,7 @@ import { generateUUID } from './utils/uuid';
 // Import our custom components
 import { CustomTabBar } from './components/Navigation';
 import { Text } from './components/Text';
-import { colors } from './theme';
+import { colors, spacing } from './theme';
 
 // Types for navigation
 export type RootStackParamList = {
@@ -45,6 +59,12 @@ export type RootStackParamList = {
   MainTabs: undefined;
   PhotoInput: undefined;
   ModeSelection: { imageUri: string };
+  SmartModeSelection: { imageUri: string };
+  PreviewAndAdjust: { 
+    imageUri: string;
+    mode: string;
+  };
+  RestorationPreview: { imageUri: string };
   Preview: { 
     imageUri: string;
     selectedMode: 'enhance' | 'colorize' | 'de-scratch' | 'enlighten' | 'recreate' | 'combine';
@@ -57,11 +77,50 @@ export type RootStackParamList = {
     mode: string;
     processingTime: number;
   };
+  Export: { 
+    originalUri: string;
+    enhancedUri: string;
+    enhancementId: string;
+    watermark: boolean;
+  };
+  SaveAndShare: { enhancedImageUri: string };
+  SelfieUpload: { 
+    featureId: string;
+    featureTitle: string;
+    featureDescription: string;
+  };
+  AITraining: { 
+    featureId: string;
+    featureTitle: string;
+    featureDescription: string;
+    photoUris: string[];
+  };
+  StyleSelection: { 
+    featureId: string;
+    featureTitle: string;
+    featureDescription: string;
+    photoUris: string[];
+  };
+  AIGenerationResult: { 
+    featureId: string;
+    featureTitle: string;
+    photoUris: string[];
+    selectedStyle: string;
+    styleTitle: string;
+    processingTime: number;
+  };
   Profile: undefined;
   Purchase: undefined;
-  AIGeneration: { featureId?: string };
-  VideoGeneration: { featureId?: string };
+  Settings: undefined;
   Menu: undefined;
+  VideoGallery: undefined;
+  EmailSync: undefined;
+  VerificationCode: { 
+    email: string; 
+    deviceId: string; 
+    deviceName: string; 
+    deviceType: "ios" | "android" | "windows" | "macos" | "web"; 
+  };
 };
 
 export type MainTabParamList = {
@@ -88,49 +147,49 @@ function MainTabNavigator() {
         },
         {
           name: 'Enhance', 
-          label: 'Enhance',
+          label: 'Fix',
           icon: <Text style={styles.tabIcon}>✨</Text>,
           focusedIcon: <Text style={styles.tabIconFocused}>✨</Text>,
         },
         {
           name: 'Create',
-          label: 'Create', 
-          icon: <Text style={styles.tabIcon}>🤖</Text>,
-          focusedIcon: <Text style={styles.tabIconFocused}>🤖</Text>,
+          label: 'AI', 
+          icon: <Text style={styles.tabIcon}>🎨</Text>,
+          focusedIcon: <Text style={styles.tabIconFocused}>🎨</Text>,
         },
         {
           name: 'Videos',
-          label: 'Videos',
+          label: 'Vids',
           icon: <Text style={styles.tabIcon}>🎬</Text>,
           focusedIcon: <Text style={styles.tabIconFocused}>🎬</Text>,
         },
         {
           name: 'Profile',
-          label: 'Profile',
+          label: 'Me',
           icon: <Text style={styles.tabIcon}>👤</Text>,
           focusedIcon: <Text style={styles.tabIconFocused}>👤</Text>,
         },
       ]} />}
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: { display: 'none' }, // Hide default tab bar
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen 
         name="Enhance" 
         component={PhotoInputScreen}
-        options={{ title: 'Enhance Photos' }}
+        options={{ title: 'Fix' }}
       />
       <Tab.Screen 
         name="Create" 
-        component={AIGenerationScreen}
-        options={{ title: 'AI Creation' }}
+        component={MenuScreen}
+        options={{ title: 'AI' }}
       />
       <Tab.Screen 
         name="Videos" 
-        component={VideoGenerationScreen}
-        options={{ title: 'Video Generation' }}
+        component={MenuScreen}
+        options={{ title: 'Vids' }}
       />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
@@ -231,11 +290,41 @@ export default function App() {
                       }}
                     />
                     <Stack.Screen 
+                      name="RestorationPreview" 
+                      component={RestorationPreviewScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Restoration Preview',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
                       name="ModeSelection" 
                       component={ModeSelectionScreen}
                       options={{ 
                         headerShown: true,
                         title: 'Choose Enhancement',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="SmartModeSelection" 
+                      component={SmartModeSelectionScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Smart Mode Selection',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="PreviewAndAdjust" 
+                      component={PreviewAndAdjustScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Preview & Adjust',
                         headerStyle: { backgroundColor: colors.background.secondary },
                         headerTintColor: colors.text.primary,
                       }}
@@ -261,37 +350,67 @@ export default function App() {
                       }}
                     />
 
-                    {/* AI Generation Features */}
+                    {/* Export Screen */}
                     <Stack.Screen 
-                      name="AIGeneration" 
-                      component={AIGenerationScreen}
+                      name="Export" 
+                      component={ExportScreen}
                       options={{ 
                         headerShown: true,
-                        title: 'AI Generation',
+                        title: 'Export',
                         headerStyle: { backgroundColor: colors.background.secondary },
                         headerTintColor: colors.text.primary,
                       }}
                     />
 
-                    {/* Video Generation Features */}
+                    {/* Save and Share Screen */}
                     <Stack.Screen 
-                      name="VideoGeneration" 
-                      component={VideoGenerationScreen}
+                      name="SaveAndShare" 
+                      component={SaveAndShareScreen}
                       options={{ 
                         headerShown: true,
-                        title: 'Video Generation',
+                        title: 'Save & Share',
                         headerStyle: { backgroundColor: colors.background.secondary },
                         headerTintColor: colors.text.primary,
                       }}
                     />
 
-                    {/* Profile */}
+                    {/* AI Generation Flow */}
                     <Stack.Screen 
-                      name="Profile" 
-                      component={ProfileScreen}
+                      name="SelfieUpload" 
+                      component={SelfieUploadScreen}
                       options={{ 
                         headerShown: true,
-                        title: 'Profile',
+                        title: 'Upload Selfies',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="AITraining" 
+                      component={AITrainingScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'AI Training',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="StyleSelection" 
+                      component={StyleSelectionScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Choose Style',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+                    <Stack.Screen 
+                      name="AIGenerationResult" 
+                      component={AIGenerationResultScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Results',
                         headerStyle: { backgroundColor: colors.background.secondary },
                         headerTintColor: colors.text.primary,
                       }}
@@ -309,12 +428,60 @@ export default function App() {
                       }}
                     />
 
+                    {/* Settings Screen */}
+                    <Stack.Screen 
+                      name="Settings" 
+                      component={SettingsScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Settings',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
                     {/* Menu Screen */}
                     <Stack.Screen 
                       name="Menu" 
                       component={MenuScreen}
                       options={{ 
                         headerShown: false,
+                      }}
+                    />
+
+                    {/* Video Gallery Screen */}
+                    <Stack.Screen 
+                      name="VideoGallery" 
+                      component={VideoGalleryScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'AI Video Gallery',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* Email Sync Screen */}
+                    <Stack.Screen 
+                      name="EmailSync" 
+                      component={EmailSyncScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Email Sync',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
+                      }}
+                    />
+
+                    {/* Verification Code Screen */}
+                    <Stack.Screen 
+                      name="VerificationCode" 
+                      component={VerificationCodeScreen}
+                      options={{ 
+                        headerShown: true,
+                        title: 'Verification Code',
+                        headerStyle: { backgroundColor: colors.background.secondary },
+                        headerTintColor: colors.text.primary,
                       }}
                     />
                   </Stack.Navigator>
@@ -334,19 +501,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background.primary,
   },
-  tabBar: {
-    backgroundColor: colors.background.primary,
-    borderTopWidth: 1,
-    borderTopColor: colors.background.tertiary,
-    height: 80,
-    paddingBottom: 20, // Safe area for iOS
-  },
   tabIcon: {
-    fontSize: 24,
-    color: colors.text.secondary,
+    fontSize: 22,
+    color: colors.text.tertiary,
   },
   tabIconFocused: {
-    fontSize: 24,
-    color: colors.text.primary,
+    fontSize: 22,
+    color: colors.primary,
   },
 });

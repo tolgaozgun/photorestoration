@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import * as React from 'react'
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 
 type FlowStep = 'photo-input' | 'mode-selection' | 'preview' | 'result';
 type ModeType = 'enhance' | 'colorize' | 'de-scratch' | 'enlighten' | 'recreate' | 'combine';

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '../App';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../App';
 import { useTranslation } from 'react-i18next';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';

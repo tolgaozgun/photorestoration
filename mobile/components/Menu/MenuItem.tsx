@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   StyleSheet,
@@ -116,8 +116,8 @@ export const MenuItemComponent: React.FC<MenuItemProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background.secondary,
-    borderRadius: borderRadius.large,
-    padding: spacing.small,
+    borderRadius: borderRadius.largeLegacy,
+    padding: spacing.smallLegacy,
     margin: spacing.micro,
     shadowColor: colors.text.primary,
     shadowOffset: { width: 0, height: 2 },
@@ -128,11 +128,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 40,
     height: 40,
-    borderRadius: borderRadius.medium,
+    borderRadius: borderRadius.mediumLegacy,
     backgroundColor: colors.background.tertiary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.small,
+    marginBottom: spacing.smallLegacy,
   },
   icon: {
     fontSize: 20,
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
   },
   badges: {
     position: 'absolute',
-    top: spacing.small,
-    right: spacing.small,
+    top: spacing.smallLegacy,
+    right: spacing.smallLegacy,
     flexDirection: 'row',
     gap: spacing.micro,
   },
@@ -158,12 +158,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent.primary,
     paddingHorizontal: spacing.micro,
     paddingVertical: 2,
-    borderRadius: borderRadius.small,
+    borderRadius: borderRadius.smallLegacy,
   },
   authBadge: {
     backgroundColor: colors.background.tertiary,
     paddingHorizontal: spacing.micro,
     paddingVertical: 2,
-    borderRadius: borderRadius.small,
+    borderRadius: borderRadius.smallLegacy,
   },
 });

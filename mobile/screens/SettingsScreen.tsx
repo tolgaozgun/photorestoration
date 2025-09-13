@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import * as React from 'react'
+import { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +12,9 @@ import {
   Linking,
   Switch,
   SafeAreaView,
+  TextStyle,
+  Dimensions,
+  Share,
 } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,6 +25,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
 import { useTranslation } from 'react-i18next';
+import { colors, spacing, borderRadius, typography, shadows } from '../theme';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Settings'>;
 
@@ -145,6 +152,62 @@ export default function SettingsScreen() {
     Linking.openURL('mailto:support@photorestoration.app');
   };
 
+  const handleShareApp = async () => {
+    try {
+      await Share.share({
+        message: 'Check out this amazing photo restoration app!',
+        url: 'https://example.com', // Replace with actual app URL
+      });
+    } catch (error) {
+      console.error('Error sharing app:', error);
+    }
+  };
+
+  const renderPremiumSection = () => (
+    <View style={styles.premiumSection}>
+      <View style={styles.premiumCard}>
+        {/* Crown Illustration */}
+        <View style={styles.crownContainer}>
+          <Text style={styles.crownIcon}>👑</Text>
+        </View>
+        
+        <Text style={styles.premiumTitle}>Go Pro</Text>
+        <Text style={styles.premiumSubtitle}>Unlock all premium features</Text>
+        
+        {/* Feature List */}
+        <View style={styles.featureList}>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureCheck}>✓</Text>
+            <Text style={styles.featureText}>Unlimited AI generations</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureCheck}>✓</Text>
+            <Text style={styles.featureText}>HD quality outputs</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureCheck}>✓</Text>
+            <Text style={styles.featureText}>Priority processing</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureCheck}>✓</Text>
+            <Text style={styles.featureText}>All premium filters</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <Text style={styles.featureCheck}>✓</Text>
+            <Text style={styles.featureText}>No watermarks</Text>
+          </View>
+        </View>
+        
+        <TouchableOpacity
+          style={styles.tryProButton}
+          onPress={() => navigation.navigate('Purchase')}
+        >
+          <Text style={styles.tryProButtonText}>Try Pro Now</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   const SettingItem = ({ 
     icon, 
     title, 
@@ -204,8 +267,11 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.headerTitle}>{t('settings.title')}</Text>
+          <Text style={styles.headerTitle}>Settings</Text>
         </Animated.View>
+
+        {/* Premium Section */}
+        {renderPremiumSection()}
 
         {/* User Section */}
         <Animated.View 
@@ -214,18 +280,18 @@ export default function SettingsScreen() {
             { opacity: fadeAnim },
           ]}
         >
-          <Text style={styles.sectionTitle}>{t('profile.account')}</Text>
+          <Text style={styles.sectionTitle}>Account</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="🔑"
-              title={t('settings.yourUniqueId')}
-              subtitle={userId ? `${userId.substring(0, 8)}...` : t('common.loading')}
+              title="Your Unique ID"
+              subtitle={userId ? `${userId.substring(0, 8)}...` : 'Loading...'}
               onPress={copyUserId}
             />
             <SettingItem
               icon="☁️"
-              title={t('settings.syncAcrossDevices')}
-              subtitle={linkedEmail ? t('settings.syncedTo', { email: linkedEmail }) : t('settings.syncYourHistory')}
+              title="Sync Across Devices"
+              subtitle={linkedEmail ? `Synced to ${linkedEmail}` : 'Sync your history'}
               rightElement={
                 <Switch
                   value={syncEnabled}
@@ -256,7 +322,7 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>{t('settings.purchases')}</Text>
+          <Text style={styles.sectionTitle}>Purchases</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="🔄"
@@ -275,11 +341,11 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon="💎"
-              title={t('settings.getMoreCredits')}
-              subtitle={t('settings.getMoreCreditsSubtitle')}
+              title="Get More Credits"
+              subtitle="Purchase additional credits"
               onPress={() => {
                 trackEvent('settings_action', { type: 'get_credits_settings' });
-                Alert.alert(t('purchase.title'), t('purchase.comingSoonMessage'));
+                navigation.navigate('Purchase');
               }}
             />
           </View>
@@ -295,16 +361,16 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>{t('settings.legal')}</Text>
+          <Text style={styles.sectionTitle}>Legal</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="📄"
-              title={t('settings.terms')}
+              title="Terms of Service"
               onPress={openTerms}
             />
             <SettingItem
               icon="🔒"
-              title={t('settings.privacy')}
+              title="Privacy Policy"
               onPress={openPrivacy}
             />
           </View>
@@ -320,34 +386,39 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>{t('settings.support')}</Text>
+          <Text style={styles.sectionTitle}>Support</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon="💬"
-              title={t('settings.contactSupport')}
-              subtitle={t('settings.contactSupportSubtitle')}
+              title="Contact Support"
+              subtitle="Get help with the app"
               onPress={contactSupport}
             />
             <SettingItem
               icon="⭐"
-              title={t('settings.rateApp')}
-              subtitle={t('settings.rateAppSubtitle')}
+              title="Rate App"
+              subtitle="Share your feedback"
               onPress={() => {
                 trackEvent('settings_action', { type: 'rate_app' });
-                // Platform-specific app store links
                 const url = Platform.OS === 'ios' 
                   ? 'https://apps.apple.com/app/id...' 
                   : 'https://play.google.com/store/apps/details?id=...';
                 Linking.openURL(url);
               }}
             />
+            <SettingItem
+              icon="📤"
+              title="Share App"
+              subtitle="Tell friends about us"
+              onPress={handleShareApp}
+            />
           </View>
         </Animated.View>
 
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appVersion}>{t('settings.version')}</Text>
-          <Text style={styles.appCopyright}>{t('settings.copyright')}</Text>
+          <Text style={styles.appVersion}>Version 1.0.0</Text>
+          <Text style={styles.appCopyright}>© 2024 Photo Restoration App</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -357,7 +428,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: colors.background.primary,
   },
   backgroundGradient: {
     position: 'absolute',
@@ -378,36 +449,101 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerTitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: '#fff',
-    letterSpacing: -0.5,
+    fontSize: typography.fontSize['6xl'],
+    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
+    color: colors.text.primary,
+    letterSpacing: typography.letterSpacing.tight,
+    textAlign: 'center',
+  },
+  premiumSection: {
+    marginHorizontal: spacing.md,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  premiumCard: {
+    backgroundColor: colors.text.inverse,
+    borderRadius: borderRadius.xl,
+    padding: spacing.xl,
+    alignItems: 'center',
+    ...shadows.xl,
+  },
+  crownContainer: {
+    marginBottom: spacing.lg,
+  },
+  crownIcon: {
+    fontSize: 64,
+  },
+  premiumTitle: {
+    fontSize: typography.fontSize['3xl'],
+    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
+    color: '#000000',
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  premiumSubtitle: {
+    fontSize: typography.fontSize.lg,
+    color: '#666666',
+    marginBottom: spacing.xl,
+    textAlign: 'center',
+  },
+  featureList: {
+    width: '100%',
+    marginBottom: spacing.xl,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  featureCheck: {
+    fontSize: typography.fontSize.lg,
+    color: '#4CAF50',
+    marginRight: spacing.md,
+    fontWeight: 'bold',
+  },
+  featureText: {
+    fontSize: typography.fontSize.base,
+    color: '#333333',
+    flex: 1,
+  },
+  tryProButton: {
+    backgroundColor: colors.accent.primary,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.lg,
+    width: '100%',
+    alignItems: 'center',
+  },
+  tryProButtonText: {
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
+    color: '#FFFFFF',
   },
   section: {
-    marginTop: 24,
-    paddingHorizontal: 20,
+    marginTop: spacing['3xl'],
+    paddingHorizontal: spacing.xlLegacy,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#888',
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
+    color: colors.text.muted,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 12,
-    marginLeft: 4,
+    letterSpacing: typography.letterSpacing.wide,
+    marginBottom: spacing.lg,
+    marginLeft: spacing.sm,
   },
   sectionContent: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 16,
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.xlLegacy,
     overflow: 'hidden',
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: spacing.xlLegacy,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    borderBottomColor: colors.border.borderSecondary,
   },
   settingItemLeft: {
     flexDirection: 'row',
@@ -415,38 +551,38 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingIcon: {
-    fontSize: 24,
-    marginRight: 16,
+    fontSize: typography.fontSize['3xl'],
+    marginRight: spacing.xlLegacy,
   },
   settingTextContainer: {
     flex: 1,
   },
   settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#fff',
-    marginBottom: 2,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.medium as TextStyle['fontWeight'],
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
   },
   settingSubtitle: {
-    fontSize: 13,
-    color: '#888',
+    fontSize: typography.fontSize.sm,
+    color: colors.text.muted,
   },
   settingArrow: {
-    fontSize: 24,
-    color: '#888',
+    fontSize: typography.fontSize['3xl'],
+    color: colors.text.muted,
   },
   appInfo: {
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 20,
+    marginTop: spacing['5xl'],
+    marginBottom: spacing['3xl'],
   },
   appVersion: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+    fontSize: typography.fontSize.lg,
+    color: colors.text.secondary,
+    marginBottom: spacing.sm,
   },
   appCopyright: {
-    fontSize: 12,
-    color: '#555',
+    fontSize: typography.fontSize.base,
+    color: colors.text.tertiary,
   },
 });

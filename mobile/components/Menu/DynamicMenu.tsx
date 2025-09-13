@@ -1,88 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
-  RefreshControl,
-  Alert,
 } from 'react-native';
 import { colors, spacing } from '../../theme';
 import { Text } from '../Text';
 import { MenuSection } from './MenuSection';
-import { LoadingModal } from '../Modal';
-
-interface MenuData {
-  sections: Array<{
-    id: string;
-    name: string;
-    title: string;
-    description?: string;
-    icon?: string;
-    layout: 'grid' | 'list' | 'horizontal';
-    is_active: boolean;
-    metadata: any;
-  }>;
-  items: Array<{
-    id: string;
-    title: string;
-    description?: string;
-    icon?: string;
-    action_type: 'screen' | 'url' | 'action' | 'section';
-    action_value?: string;
-    is_premium: boolean;
-    requires_auth: boolean;
-    metadata: any;
-    section_id?: string;
-  }>;
-  success: boolean;
-}
+import { MenuData, MenuItem } from '../../data/menuData';
 
 interface DynamicMenuProps {
-  onItemPress?: (item: any) => void;
+  menuData: MenuData;
+  onItemPress?: (item: MenuItem) => void;
   style?: any;
   showRefresh?: boolean;
 }
 
 export const DynamicMenu: React.FC<DynamicMenuProps> = ({
+  menuData,
   onItemPress,
   style,
   showRefresh = true,
 }) => {
-  const [menuData, setMenuData] = useState<MenuData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchMenuData = async () => {
-    try {
-      setLoading(true);
-      // Replace with your actual API call
-      const response = await fetch(`${process.env.API_BASE_URL || 'http://localhost:8000'}/api/menu`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setMenuData(data);
-      } else {
-        Alert.alert('Error', 'Failed to load menu');
-      }
-    } catch (error) {
-      console.error('Error fetching menu:', error);
-      Alert.alert('Error', 'Failed to load menu');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMenuData();
-  }, []);
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchMenuData();
-    setRefreshing(false);
-  };
-
-  const handleItemPress = (item: any) => {
+  const handleItemPress = (item: MenuItem) => {
     // Handle different action types
     switch (item.action_type) {
       case 'screen':
@@ -109,16 +50,8 @@ export const DynamicMenu: React.FC<DynamicMenuProps> = ({
   };
 
   const getItemsForSection = (sectionId: string) => {
-    return menuData?.items.filter(item => item.section_id === sectionId) || [];
+    return menuData.items.filter(item => item.section_id === sectionId && item.is_active) || [];
   };
-
-  if (loading && !menuData) {
-    return (
-      <View style={[styles.container, style]}>
-        <LoadingModal visible={true} message="Loading menu..." />
-      </View>
-    );
-  }
 
   return (
     <View style={[styles.container, style]}>
@@ -126,17 +59,8 @@ export const DynamicMenu: React.FC<DynamicMenuProps> = ({
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          showRefresh ? (
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              tintColor={colors.text.primary}
-            />
-          ) : undefined
-        }
       >
-        {menuData?.sections.map((section) => (
+        {menuData.sections.map((section) => (
           <MenuSection
             key={section.id}
             section={section}
@@ -145,7 +69,7 @@ export const DynamicMenu: React.FC<DynamicMenuProps> = ({
           />
         ))}
         
-        {!menuData?.sections.length && (
+        {!menuData.sections.length && (
           <View style={styles.emptyContainer}>
             <Text variant="h3" color="secondary" style={styles.emptyTitle}>
               No Menu Available
@@ -169,15 +93,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingVertical: spacing.medium,
+    paddingVertical: spacing.mediumLegacy,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.large,
+    padding: spacing.largeLegacy,
   },
   emptyTitle: {
-    marginBottom: spacing.small,
+    marginBottom: spacing.smallLegacy,
   },
 });

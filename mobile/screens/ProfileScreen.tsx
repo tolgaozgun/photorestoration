@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react'
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +10,7 @@ import {
   Alert,
   Linking,
   Platform,
+  TextStyle,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
@@ -18,6 +20,7 @@ import { useAnalytics } from '../contexts/AnalyticsContext';
 import * as SecureStore from 'expo-secure-store';
 import LanguageModal from '../components/LanguageModal';
 import * as Haptics from 'expo-haptics';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -136,13 +139,8 @@ export default function ProfileScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          navigation.goBack();
-        }}>
-          <Text style={styles.backButton}>‹</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>{t('profile.title')}</Text>
+        <View />
+        <Text style={styles.title}></Text>
       </View>
       <ScrollView style={styles.scrollView}>
         {/* Account Section */}
@@ -272,24 +270,24 @@ export default function ProfileScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: colors.background.primary,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    paddingTop: 40,
+    padding: spacing.xlLegacy,
+    paddingTop: spacing.lg,
   },
   backButton: {
-    fontSize: 24,
-    color: '#007AFF',
-    marginRight: 10,
+    fontSize: typography.fontSize['3xl'],
+    color: colors.primary,
+    marginRight: spacing.lg,
   },
   title: {
-    fontFamily: 'SF Pro Display',
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontFamily: typography.fontFamily.primary,
+    fontSize: typography.fontSize['5xl'],
+    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
+    color: colors.text.primary,
   },
   scrollView: {
     flex: 1,

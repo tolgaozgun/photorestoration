@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   StyleSheet,
@@ -129,23 +129,23 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: spacing.large,
+    marginBottom: spacing.largeLegacy,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.medium,
-    paddingHorizontal: spacing.small,
+    marginBottom: spacing.mediumLegacy,
+    paddingHorizontal: spacing.smallLegacy,
   },
   sectionIcon: {
     fontSize: 24,
-    marginRight: spacing.small,
+    marginRight: spacing.smallLegacy,
   },
   headerContent: {
     flex: 1,
   },
   itemsContainer: {
-    paddingHorizontal: spacing.small,
+    paddingHorizontal: spacing.smallLegacy,
   },
   gridLayout: {
     justifyContent: 'space-between',
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.large,
+    padding: spacing.largeLegacy,
     backgroundColor: colors.background.tertiary,
-    borderRadius: borderRadius.large,
+    borderRadius: borderRadius.largeLegacy,
   },
 });

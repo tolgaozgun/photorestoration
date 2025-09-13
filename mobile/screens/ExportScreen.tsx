@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react'
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -56,7 +57,7 @@ export default function ExportScreen({ navigation, route }: Props) {
     } catch (error) {
       console.error('Save error:', error);
       Alert.alert(t('restoration.error'), t('export.saveFailed'));
-      trackEvent('export_error', { type: 'save_to_device', error: error.message });
+      trackEvent('export_error', { type: 'save_to_device', error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setIsSaving(false);
     }
@@ -82,7 +83,7 @@ export default function ExportScreen({ navigation, route }: Props) {
     } catch (error) {
       console.error('Share error:', error);
       Alert.alert(t('restoration.error'), t('export.shareFailed'));
-      trackEvent('export_error', { type: 'share', error: error.message });
+      trackEvent('export_error', { type: 'share', error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setIsSharing(false);
     }
@@ -90,7 +91,7 @@ export default function ExportScreen({ navigation, route }: Props) {
 
   const handlePurchase = () => {
     trackEvent('export_action', { type: 'purchase_from_watermark' });
-    navigation.navigate('Home');
+    navigation.navigate('Purchase');
     Alert.alert(t('purchase.title'), t('purchase.comingSoonMessage'));
   };
 
@@ -160,7 +161,7 @@ export default function ExportScreen({ navigation, route }: Props) {
 
       <TouchableOpacity 
         style={styles.doneButton}
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.navigate('MainTabs')}
       >
         <Text style={styles.doneButtonText}>{t('common.done')}</Text>
       </TouchableOpacity>

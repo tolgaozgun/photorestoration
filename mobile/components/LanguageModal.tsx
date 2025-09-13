@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,11 @@ import {
   StyleSheet,
   Modal,
   SafeAreaView,
+  TextStyle,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -75,10 +77,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    margin: 20,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 20,
-    padding: 35,
+    margin: spacing.xlLegacy,
+    backgroundColor: colors.background.secondary,
+    borderRadius: borderRadius.xlLegacy,
+    padding: spacing['5xl'],
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -91,31 +93,31 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#fff',
+    fontSize: typography.fontSize['5xl'],
+    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
+    marginBottom: spacing.lg,
+    color: colors.text.primary,
   },
   languageButton: {
     width: '100%',
-    padding: 15,
+    padding: spacing.xlLegacy,
     borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    borderBottomColor: colors.border.primary,
   },
   languageText: {
-    fontSize: 18,
-    color: '#fff',
+    fontSize: typography.fontSize.xl,
+    color: colors.text.primary,
     textAlign: 'center',
   },
   selectedLanguageText: {
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
+    color: colors.primary,
   },
   closeButton: {
-    marginTop: 20,
+    marginTop: spacing.xlLegacy,
   },
   closeButtonText: {
-    fontSize: 18,
-    color: '#FF6B6B',
+    fontSize: typography.fontSize.xl,
+    color: colors.text.error,
   },
 });

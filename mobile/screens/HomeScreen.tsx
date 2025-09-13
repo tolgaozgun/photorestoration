@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import * as React from 'react'
+import { useEffect, useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,11 +9,14 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  SafeAreaView,
+  Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../App';
+import { MainTabParamList, RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +28,19 @@ import { Button, IconButton } from '../components/Button';
 import { Card, GalleryCard, ModeCard } from '../components/Card';
 import { Header, NavigationButton, FloatingActionButton } from '../components/Navigation';
 import { Modal, LoadingModal } from '../components/Modal';
+import { colors, spacing, borderRadius, shadows, typography, components } from '../theme';
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'PhotoInput'>;
+type HomeScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'Home'> & 
+  StackNavigationProp<RootStackParamList>;
+
+// Mock data for enhanced photos
+const mockEnhancedPhotos = [
+  { id: '1', title: 'Enhanced', uri: 'https://picsum.photos/300/400?random=enhanced1' },
+  { id: '2', title: 'Sunset', uri: 'https://picsum.photos/300/400?random=enhanced2' },
+  { id: '3', title: 'Portrait', uri: 'https://picsum.photos/300/400?random=enhanced3' },
+  { id: '4', title: 'Landscape', uri: 'https://picsum.photos/300/400?random=enhanced4' },
+  { id: '5', title: 'Vintage', uri: 'https://picsum.photos/300/400?random=enhanced5' },
+];
 
 // Mock data for content galleries
 const mockContentSections = [
@@ -35,9 +50,9 @@ const mockContentSections = [
     emoji: '🍼',
     description: 'See what your future baby might look like',
     items: [
-      { id: '1', title: 'Baby Prediction', category: 'AI', isPremium: true },
-      { id: '2', title: 'Family Preview', category: 'AI', isPremium: true },
-      { id: '3', title: 'Child Generator', category: 'AI', isPremium: true },
+      { id: '1', title: 'Baby Prediction', category: 'AI', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=baby1' },
+      { id: '2', title: 'Family Preview', category: 'AI', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=family1' },
+      { id: '3', title: 'Child Generator', category: 'AI', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=child1' },
     ],
   },
   {
@@ -46,9 +61,9 @@ const mockContentSections = [
     emoji: '🎭',
     description: 'Clean up your photos by removing unwanted objects',
     items: [
-      { id: '1', title: 'Background Remove', category: 'Tool' },
-      { id: '2', title: 'Object Removal', category: 'Tool' },
-      { id: '3', title: 'People Remover', category: 'Tool', isPremium: true },
+      { id: '1', title: 'Background Remove', category: 'Tool', imageUrl: 'https://picsum.photos/300/300?random=bg1' },
+      { id: '2', title: 'Object Removal', category: 'Tool', imageUrl: 'https://picsum.photos/300/300?random=object1' },
+      { id: '3', title: 'People Remover', category: 'Tool', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=people1' },
     ],
   },
   {
@@ -57,9 +72,9 @@ const mockContentSections = [
     emoji: '👕',
     description: 'Try different outfits on your photos',
     items: [
-      { id: '1', title: 'Casual Wear', category: 'Fashion' },
-      { id: '2', title: 'Business Attire', category: 'Fashion', isPremium: true },
-      { id: '3', title: 'Evening Dress', category: 'Fashion', isPremium: true },
+      { id: '1', title: 'Casual Wear', category: 'Fashion', imageUrl: 'https://picsum.photos/300/300?random=fashion1' },
+      { id: '2', title: 'Business Attire', category: 'Fashion', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=business1' },
+      { id: '3', title: 'Evening Dress', category: 'Fashion', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=evening1' },
     ],
   },
   {
@@ -68,9 +83,9 @@ const mockContentSections = [
     emoji: '🎭',
     description: 'Create your digital avatar',
     items: [
-      { id: '1', title: '3D Avatar', category: 'AI', isPremium: true },
-      { id: '2', title: 'Virtual Clone', category: 'AI', isPremium: true },
-      { id: '3', title: 'Digital Persona', category: 'AI', isPremium: true },
+      { id: '1', title: '3D Avatar', category: 'AI', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=avatar1' },
+      { id: '2', title: 'Virtual Clone', category: 'AI', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=clone1' },
+      { id: '3', title: 'Digital Persona', category: 'AI', isPremium: true, imageUrl: 'https://picsum.photos/300/300?random=persona1' },
     ],
   },
   {
@@ -79,9 +94,9 @@ const mockContentSections = [
     emoji: '🎮',
     description: 'Transform your photos into pixel art',
     items: [
-      { id: '1', title: '8-bit Style', category: 'Filter' },
-      { id: '2', title: '16-bit Art', category: 'Filter' },
-      { id: '3', title: 'Retro Gaming', category: 'Filter', isPremium: true },
+      { id: '1', title: '8-bit Style', category: 'Filter', imageUrl: 'https://via.placeholder.com/300x200/9C27B0/FFFFFF?text=8bit' },
+      { id: '2', title: '16-bit Art', category: 'Filter', imageUrl: 'https://via.placeholder.com/300x200/9C27B0/FFFFFF?text=16bit' },
+      { id: '3', title: 'Retro Gaming', category: 'Filter', isPremium: true, imageUrl: 'https://via.placeholder.com/300x200/9C27B0/FFFFFF?text=Retro' },
     ],
   },
   {
@@ -90,9 +105,9 @@ const mockContentSections = [
     emoji: '🎨',
     description: 'Create cute chibi versions of yourself',
     items: [
-      { id: '1', title: 'Chibi Avatar', category: 'Cartoon' },
-      { id: '2', title: 'Kawaii Style', category: 'Cartoon', isPremium: true },
-      { id: '3', title: 'Anime Character', category: 'Cartoon', isPremium: true },
+      { id: '1', title: 'Chibi Avatar', category: 'Cartoon', imageUrl: 'https://via.placeholder.com/300x200/FF9800/FFFFFF?text=Chibi' },
+      { id: '2', title: 'Kawaii Style', category: 'Cartoon', isPremium: true, imageUrl: 'https://via.placeholder.com/300x200/FF9800/FFFFFF?text=Kawaii' },
+      { id: '3', title: 'Anime Character', category: 'Cartoon', isPremium: true, imageUrl: 'https://via.placeholder.com/300x200/FF9800/FFFFFF?text=Anime' },
     ],
   },
 ];
@@ -123,7 +138,7 @@ const mockVideoContent = [
   },
 ];
 
-export default function HomeScreenNew() {
+export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const { t } = useTranslation();
   const { user, refreshUser } = useUser();
@@ -189,33 +204,55 @@ export default function HomeScreenNew() {
   const handleSectionPress = (sectionId: string) => {
     trackEvent('action', { type: 'section_tap', section: sectionId });
     setSelectedSection(sectionId);
-    // Navigate to category screen
-    // navigation.navigate('CategoryScreen', { sectionId });
+    
+    // Navigate to AI generation flow for person-specific features
+    const aiFeatures = ['future-baby', 'digital-twin', 'outfit-tryon'];
+    if (aiFeatures.includes(sectionId)) {
+      const section = mockContentSections.find(s => s.id === sectionId);
+      if (section) {
+        navigation.navigate('SelfieUpload', {
+          featureId: sectionId,
+          featureTitle: section.title,
+          featureDescription: section.description,
+        });
+      }
+    }
   };
 
   const handleSeeAllPress = (sectionId: string) => {
     trackEvent('action', { type: 'see_all_tap', section: sectionId });
-    // Navigate to category screen
-    // navigation.navigate('CategoryScreen', { sectionId });
+    
+    // Navigate to selfie upload for AI features
+    const aiFeatures = ['future-baby', 'digital-twin', 'outfit-tryon'];
+    if (aiFeatures.includes(sectionId)) {
+      const section = mockContentSections.find(s => s.id === sectionId);
+      if (section) {
+        navigation.navigate('SelfieUpload', {
+          featureId: sectionId,
+          featureTitle: section.title,
+          featureDescription: section.description,
+        });
+      }
+    }
   };
 
   const handleVideoPress = (videoId: string) => {
     trackEvent('action', { type: 'video_tap', video: videoId });
-    // Navigate to video creation screen
-    // navigation.navigate('VideoCreation', { videoId });
+    navigation.navigate('VideoGallery');
   };
 
   const renderContentSection = ({ item }: { item: typeof mockContentSections[0] }) => (
-    <Section key={item.id} style={styles.section}>
+    <View key={item.id} style={styles.contentSection}>
       <View style={styles.sectionHeader}>
-        <SectionHeader emoji={item.emoji}>{item.title}</SectionHeader>
-        <Button
-          variant="tertiary"
-          onPress={() => handleSeeAllPress(item.id)}
+        <View style={styles.sectionTitleContainer}>
+          <Text style={styles.sectionTitle}>{item.emoji} {item.title}</Text>
+        </View>
+        <TouchableOpacity
           style={styles.seeAllButton}
+          onPress={() => handleSeeAllPress(item.id)}
         >
-          See All
-        </Button>
+          <Text style={styles.seeAllText}>See All</Text>
+        </TouchableOpacity>
       </View>
       
       <ScrollView
@@ -224,19 +261,27 @@ export default function HomeScreenNew() {
         contentContainerStyle={styles.horizontalScroll}
       >
         {item.items.map((contentItem) => (
-          <GalleryCard
+          <TouchableOpacity
             key={contentItem.id}
-            variant="photo"
-            size="medium"
-            title={contentItem.title}
-            category={contentItem.category}
-            isPremium={contentItem.isPremium}
-            onPress={() => handleSectionPress(item.id)}
             style={styles.galleryCard}
-          />
+            onPress={() => handleSectionPress(item.id)}
+            activeOpacity={0.9}
+          >
+            <Image source={require('../assets/slider.gif')} style={styles.galleryCardBackground} />
+            <Image source={{ uri: contentItem.imageUrl }} style={styles.galleryCardImage} />
+            <View style={styles.galleryCardOverlay}>
+              <Text style={styles.galleryCardTitle}>{contentItem.title}</Text>
+              <Text style={styles.galleryCardCategory}>{contentItem.category}</Text>
+            </View>
+            {contentItem.isPremium && (
+              <View style={styles.premiumBadge}>
+                <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         ))}
       </ScrollView>
-    </Section>
+    </View>
   );
 
   const renderVideoSection = () => (
@@ -266,71 +311,72 @@ export default function HomeScreenNew() {
   const hasCredits = totalCredits > 0;
 
   return (
-    <Container>
-      {/* Header */}
-      <Header
-        title="PhotoRestore"
-        subtitle="AI Photo Enhancement"
-        leftAction={
-          <View style={styles.appLogo}>
-            <Text variant="display" weight="bold">✨</Text>
-          </View>
-        }
-        rightAction={
-          <Row spacing="small">
+    <SafeAreaView style={styles.safeArea}>
+      <Container>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.logoButton}>
+            <Text style={styles.logoText}>Remini</Text>
+          </TouchableOpacity>
+          <View style={styles.headerRight}>
             {user?.isPro && (
               <View style={styles.proBadge}>
-                <Text variant="caption" color="primary" weight="medium">PRO</Text>
+                <Text style={styles.proBadgeText}>PRO</Text>
               </View>
             )}
-            <NavigationButton
-              icon={<Text variant="title">📋</Text>}
-              onPress={() => navigation.navigate('Menu')}
-            />
-            <NavigationButton
-              icon={<Text variant="title">⚙️</Text>}
-              onPress={() => navigation.navigate('Profile')}
-            />
-          </Row>
-        }
-      />
+            <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('Settings')}>
+              <Text style={styles.headerIcon}>⚙️</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.headerButton} onPress={() => navigation.navigate('MainTabs', { screen: 'Profile' })}>
+              <View style={styles.avatarContainer}>
+                <Text style={styles.avatarText}>👤</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      {/* Main Content */}
-      <Animated.ScrollView
-        style={[styles.container, { opacity: fadeAnim }]}
-        showsVerticalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-        scrollEventThrottle={16}
-      >
-        {/* Quick Actions */}
-        <Section style={styles.quickActionsSection}>
-          <Button
-            variant="primary"
-            onPress={pickImageFromGallery}
-            style={styles.mainActionButton}
-            icon={<Text variant="title">📷</Text>}
-          >
-            Enhance Photo
-          </Button>
-          
-          {!hasCredits && (
-            <Button
-              variant="premium"
-              onPress={() => {
-                trackEvent('action', { type: 'upgrade_tap' });
-                // navigation.navigate('Purchase');
-              }}
-              style={styles.upgradeButton}
-            >
-              Get Credits
-            </Button>
+        {/* Main Content */}
+        <Animated.ScrollView
+          style={[styles.container, { opacity: fadeAnim }]}
+          showsVerticalScrollIndicator={false}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
           )}
-        </Section>
+          scrollEventThrottle={16}
+        >
+        {/* Enhance Section */}
+        <View style={styles.enhanceSection}>
+          <Text style={styles.enhanceSubtitle}>What brings you here?</Text>
+          <Section 
+            title="Sunset glow" 
+            emoji="🌅" 
+            style={styles.enhanceGallerySection}
+          >
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.enhanceGalleryScroll}
+            >
+              {mockEnhancedPhotos.map((photo) => (
+                <TouchableOpacity
+                  key={photo.id}
+                  style={styles.enhanceCard}
+                  onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
+                  activeOpacity={0.9}
+                >
+                  <Image source={require('../assets/slider.gif')} style={styles.enhanceCardBackground} />
+                  <Image source={{ uri: photo.uri }} style={styles.enhanceCardImage} />
+                  <View style={styles.enhanceCardOverlay}>
+                    <Text style={styles.enhanceCardText}>{photo.title}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </Section>
+        </View>
 
-        {/* Content Discovery Sections */}
+        {/* AI Generation Sections */}
         <FlatList
           data={mockContentSections}
           renderItem={renderContentSection}
@@ -339,7 +385,7 @@ export default function HomeScreenNew() {
           ListFooterComponent={renderVideoSection()}
         />
 
-        <Spacer size="large" />
+        <View style={styles.bottomSpacing} />
       </Animated.ScrollView>
 
       {/* Floating Action Button */}
@@ -353,70 +399,240 @@ export default function HomeScreenNew() {
       <LoadingModal
         visible={loading}
         message="Processing your photo..."
+        onClose={() => {}}
       />
-    </Container>
+      </Container>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
   container: {
     flex: 1,
   },
   
-  section: {
-    marginBottom: 32,
+  // Header Styles
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 44,
+    paddingBottom: 12,
+    backgroundColor: '#000000',
+  },
+  logoButton: {
+    padding: 8,
+  },
+  logoText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  proBadge: {
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    minWidth: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  proBadgeText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  headerButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
+  },
+  avatarContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#333333',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  avatarText: {
+    fontSize: 18,
   },
   
+  // Enhance Section Styles
+  enhanceSection: {
+    marginHorizontal: 16,
+    marginTop: 32,
+  },
+  enhanceSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
+    marginBottom: 16,
+  },
+  enhanceGallerySection: {
+    marginBottom: 32,
+  },
+  enhanceGalleryScroll: {
+    paddingHorizontal: 0,
+  },
+  enhanceCard: {
+    width: 140,
+    height: 175,
+    borderRadius: 16,
+    marginRight: 12,
+    overflow: 'hidden',
+    backgroundColor: '#2C2C2E',
+  },
+  enhanceCardBackground: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    opacity: 0.3,
+  },
+  enhanceCardImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  enhanceCardOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)',
+    padding: 12,
+  },
+  enhanceCardText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  
+  // Content Section Styles
+  contentSection: {
+    marginBottom: 32,
+    paddingHorizontal: 16,
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 24,
   },
-  
+  sectionTitleContainer: {
+    flex: 1,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
   seeAllButton: {
-    paddingHorizontal: 0,
-  },
-  
-  horizontalScroll: {
+    backgroundColor: '#2C2C2E',
     paddingHorizontal: 16,
-  },
-  
-  galleryCard: {
-    marginRight: 12,
-  },
-  
-  quickActionsSection: {
-    paddingHorizontal: 16,
-    marginBottom: 32,
-  },
-  
-  mainActionButton: {
-    width: '100%',
-    marginBottom: 12,
-  },
-  
-  upgradeButton: {
-    width: '100%',
-  },
-  
-  appLogo: {
-    width: 40,
-    height: 40,
+    paddingVertical: 8,
+    borderRadius: 18,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 59, 48, 0.1)',
-    borderRadius: 20,
   },
-  
-  proBadge: {
-    backgroundColor: '#FF3B30',
+  seeAllText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '500',
+  },
+  horizontalScroll: {
+    paddingHorizontal: 0,
+  },
+  galleryCard: {
+    width: 140,
+    height: 175,
+    borderRadius: 16,
+    marginRight: 12,
+    overflow: 'hidden',
+    backgroundColor: '#2C2C2E',
+  },
+  galleryCardBackground: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    opacity: 0.3,
+  },
+  galleryCardImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  galleryCardOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 12,
+    backgroundColor: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent)',
+  },
+  galleryCardTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  galleryCardCategory: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#FFD700',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
   },
+  premiumBadgeText: {
+    fontSize: 10,
+    color: '#000000',
+    fontWeight: '700',
+  },
   
+  // FAB Styles
   fab: {
-    bottom: 90,
+    bottom: 96,
+    right: 16,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FF3B30',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  bottomSpacing: {
+    height: 96,
   },
 });

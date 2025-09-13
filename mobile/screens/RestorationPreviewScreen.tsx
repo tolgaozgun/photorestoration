@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import * as React from 'react'
+import { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -61,7 +62,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
         t('restoration.noCreditsMessage'),
         [
           { text: t('restoration.cancel'), style: 'cancel' },
-          { text: t('restoration.purchase'), onPress: () => navigation.navigate('Home') },
+          { text: t('restoration.purchase'), onPress: () => navigation.navigate('Purchase') },
         ]
       );
       return;
@@ -111,7 +112,7 @@ export default function RestorationPreviewScreen({ navigation, route }: Props) {
     } catch (error) {
       console.error('Enhancement error:', error);
       Alert.alert(t('restoration.error'), t('restoration.enhanceFailed'));
-      trackEvent(`restore_${selectedResolution}`, { failed: true, error: error.message });
+      trackEvent(`restore_${selectedResolution}`, { failed: true, error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setIsProcessing(false);
     }

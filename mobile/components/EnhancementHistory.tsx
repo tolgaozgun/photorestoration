@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react'
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   Dimensions,
+  TextStyle,
 } from 'react-native';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
@@ -15,6 +17,7 @@ import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
+import { colors, spacing, borderRadius, typography } from '../theme';
 
 interface Enhancement {
   id: string;
@@ -30,7 +33,7 @@ interface Enhancement {
 
 const { width: screenWidth } = Dimensions.get('window');
 const numColumns = 3;
-const itemSize = (screenWidth - 40 - (numColumns - 1) * 10) / numColumns;
+const itemSize = (screenWidth - spacing['5xl'] - (numColumns - 1) * spacing.lg) / numColumns;
 
 export default function EnhancementHistory() {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -144,39 +147,39 @@ export default function EnhancementHistory() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: spacing.xlLegacy,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: spacing['5xl'],
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: spacing['5xl'],
   },
   emptyText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
+    color: colors.text.primary,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
+    marginBottom: spacing.lg,
   },
   emptySubtext: {
-    color: '#666',
-    fontSize: 14,
+    color: colors.text.secondary,
+    fontSize: typography.fontSize.lg,
   },
   sectionTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
-    paddingHorizontal: 20,
+    color: colors.text.primary,
+    fontSize: typography.fontSize['5xl'],
+    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.xlLegacy,
   },
   listContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.xlLegacy,
   },
   row: {
     justifyContent: 'space-between',
@@ -184,10 +187,10 @@ const styles = StyleSheet.create({
   enhancementItem: {
     width: itemSize,
     height: itemSize,
-    marginBottom: 10,
-    borderRadius: 8,
+    marginBottom: spacing.lg,
+    borderRadius: borderRadius.md,
     overflow: 'hidden',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: colors.background.secondary,
   },
   thumbnail: {
     width: '100%',
@@ -199,12 +202,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 4,
+    padding: spacing.sm,
   },
   resolutionBadge: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '600',
+    color: colors.text.primary,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.semibold as TextStyle['fontWeight'],
     textAlign: 'center',
   },
 });

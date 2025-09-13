@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react'
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -115,7 +116,7 @@ export default function PreviewAndAdjustScreen({ navigation, route }: Props) {
     } catch (error) {
       console.error('Enhancement error:', error);
       Alert.alert(t('restoration.error'), t('restoration.enhanceFailed'));
-      trackEvent('restore_standard', { failed: true, error: error.message });
+      trackEvent('restore_standard', { failed: true, error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setIsProcessing(false);
     }

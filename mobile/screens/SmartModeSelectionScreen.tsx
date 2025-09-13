@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react'
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -8,7 +9,8 @@ import {
   Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '../App';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../App';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 
@@ -68,7 +70,7 @@ export default function SmartModeSelectionScreen({ navigation, route }: Props) {
           <Text style={styles.modeSubtitle}>{mode.subtitle}</Text>
         </View>
         <View style={styles.imageSection}>
-          <Image source={require('../assets/before-after.png')} style={styles.previewImage} />
+          <Image source={require('../assets/slider.gif')} style={styles.previewImage} />
         </View>
       </View>
       {mode.recommended && (
