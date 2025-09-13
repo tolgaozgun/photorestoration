@@ -5,12 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import { useMenuVersion } from '../contexts/MenuVersionContext';
 
 // Import our new components
 import { Container, Section, Spacer } from '../components/Layout';
@@ -26,11 +28,28 @@ export default function MenuScreen() {
   const navigation = useNavigation<MenuScreenNavigationProp>();
   const { t } = useTranslation();
   const { trackEvent } = useAnalytics();
-  const menuData = getMenuData();
+  const { state, loadMenuConfig, refreshMenu, setDevelopmentMode } = useMenuVersion();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'menu' });
-  }, []);
+    loadMenuConfig();
+  }, [loadMenuConfig]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshMenu();
+    setRefreshing(false);
+  };
+
+  const toggleDevelopmentMode = async () => {
+    const newMode = !state.isDevelopment;
+    await setDevelopmentMode(newMode);
+    Alert.alert(
+      'Development Mode',
+      `Development mode ${newMode ? 'enabled' : 'disabled'}. ${newMode ? 'You will see real-time menu updates.' : 'You are now using production menu.'}`
+    );
+  };
 
   const handleItemPress = (item: MenuItem) => {
     trackEvent('menu_item_tap', { 
@@ -81,10 +100,34 @@ export default function MenuScreen() {
     <Container>
       {/* Header */}
       <Header
-        title=""
-        subtitle=""
-        leftAction={<View />}
-        rightAction={<View />}
+        title="Features"
+        subtitle={state.currentVersion ? `v${state.currentVersion}${state.fromCache ? ' (cached)' : ''}` : 'Discover all available features'}
+        leftAction={
+          <NavigationButton
+            icon={<Text variant="title">←</Text>}
+            onPress={() => navigation.goBack()}
+          />
+        }
+        rightActions={
+          <View style={styles.headerActions}>
+            {state.hasUpdate && (
+              <NavigationButton
+                icon={<Text variant="title">📡</Text>}
+                onPress={() => Alert.alert('Update Available', `A new menu version (${state.latestVersion}) is available!`)}
+              />
+            )}
+            <NavigationButton
+              icon={<Text variant="title">🔄</Text>}
+              onPress={handleRefresh}
+            />
+            {__DEV__ && (
+              <NavigationButton
+                icon={<Text variant="title">{state.isDevelopment ? '🔧' : '🔨'}</Text>}
+                onPress={toggleDevelopmentMode}
+              />
+            )}
+          </View>
+        }
       />
 
       {/* Main Content */}
@@ -100,19 +143,44 @@ export default function MenuScreen() {
           </Text>
           <Text variant="body" color="secondary" style={styles.welcomeText}>
             Explore our AI-powered photo enhancement and creative tools. 
-            New features are added regularly!
+            {state.isDevelopment && '\n🔧 Development mode is active - you\'ll see real-time updates!'}
+            {state.hasUpdate && !state.isDevelopment && '\n📡 A new menu version is available!'}
           </Text>
         </Section>
 
         {/* Dynamic Menu */}
-        <DynamicMenu
-          menuData={menuData}
-          onItemPress={handleItemPress}
-          showRefresh={false}
-        />
+        {state.menuData && (
+          <DynamicMenu
+            menuData={state.menuData}
+            onItemPress={handleItemPress}
+            showRefresh={false}
+            isLoading={state.isLoading}
+          />
+        )}
+
+        {/* Error state */}
+        {state.error && (
+          <Section style={styles.errorSection}>
+            <Text variant="body" color="error" style={styles.errorText}>
+              {state.error}
+            </Text>
+            <Button 
+              title="Retry" 
+              onPress={refreshMenu}
+              variant="outline"
+              style={styles.retryButton}
+            />
+          </Section>
+        )}
 
         <Spacer size="large" />
       </ScrollView>
+
+      {/* Loading Modal */}
+      <LoadingModal
+        visible={state.isLoading}
+        message={state.isDevelopment ? "Loading development menu..." : "Loading menu..."}
+      />
     </Container>
   );
 }
@@ -133,5 +201,23 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     lineHeight: 20,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  errorSection: {
+    marginHorizontal: 16,
+    padding: 16,
+    borderRadius: 8,
+    backgroundColor: '#FEE2E2',
+    alignItems: 'center',
+  },
+  errorText: {
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  retryButton: {
+    minWidth: 100,
   },
 });

@@ -6,7 +6,11 @@ import sys
 
 # Import from backend root directory
 sys.path.append('/app')
-from email_service import EmailService
+try:
+    from email_service import EmailService
+except ImportError:
+    # Fallback if email service is not available
+    EmailService = None
 
 from ..models import get_db, EmailVerification, LinkedDevice, User
 from ..services import UserService

@@ -1,5 +1,7 @@
 from sqladmin import Admin, ModelView
-from ..models import User, Purchase, Enhancement, AnalyticsEvent, EmailVerification, LinkedDevice, MenuItem, MenuSection
+from ..models import User, Purchase, Enhancement, AnalyticsEvent, EmailVerification, LinkedDevice, MenuItem as MenuItemModel, MenuSection as MenuSectionModel
+from .menu_management import MenuManagementView
+from .menu_item_crud import MenuItemCRUDView
 
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.created_at, User.credits, User.subscription_type, User.subscription_expires, User.daily_credits_used, User.daily_reset_at, User.user_metadata]
@@ -19,17 +21,17 @@ class EmailVerificationAdmin(ModelView, model=EmailVerification):
 class LinkedDeviceAdmin(ModelView, model=LinkedDevice):
     column_list = [LinkedDevice.id, LinkedDevice.email, LinkedDevice.device_id, LinkedDevice.device_name, LinkedDevice.device_type, LinkedDevice.linked_at, LinkedDevice.last_active]
 
-class MenuSectionAdmin(ModelView, model=MenuSection):
-    column_list = [MenuSection.id, MenuSection.name, MenuSection.title, MenuSection.description, MenuSection.icon, MenuSection.layout, MenuSection.sort_order, MenuSection.is_active, MenuSection.created_at, MenuSection.updated_at]
-    column_searchable_list = [MenuSection.name, MenuSection.title, MenuSection.description]
-    column_sortable_list = [MenuSection.name, MenuSection.title, MenuSection.sort_order, MenuSection.created_at]
-    form_columns = [MenuSection.name, MenuSection.title, MenuSection.description, MenuSection.icon, MenuSection.layout, MenuSection.sort_order, MenuSection.is_active, MenuSection.meta_data]
+class MenuSectionAdmin(ModelView, model=MenuSectionModel):
+    column_list = [MenuSectionModel.id, MenuSectionModel.name, MenuSectionModel.title, MenuSectionModel.description, MenuSectionModel.icon, MenuSectionModel.layout, MenuSectionModel.sort_order, MenuSectionModel.is_active, MenuSectionModel.created_at, MenuSectionModel.updated_at]
+    column_searchable_list = [MenuSectionModel.name, MenuSectionModel.title, MenuSectionModel.description]
+    column_sortable_list = [MenuSectionModel.name, MenuSectionModel.title, MenuSectionModel.sort_order, MenuSectionModel.created_at]
+    form_columns = [MenuSectionModel.name, MenuSectionModel.title, MenuSectionModel.description, MenuSectionModel.icon, MenuSectionModel.layout, MenuSectionModel.sort_order, MenuSectionModel.is_active, MenuSectionModel.meta_data]
 
-class MenuItemAdmin(ModelView, model=MenuItem):
-    column_list = [MenuItem.id, MenuItem.title, MenuItem.description, MenuItem.icon, MenuItem.action_type, MenuItem.action_value, MenuItem.section_id, MenuItem.parent_id, MenuItem.sort_order, MenuItem.is_active, MenuItem.is_premium, MenuItem.requires_auth, MenuItem.created_at, MenuItem.updated_at]
-    column_searchable_list = [MenuItem.title, MenuItem.description, MenuItem.action_value]
-    column_sortable_list = [MenuItem.title, MenuItem.sort_order, MenuItem.created_at]
-    form_columns = [MenuItem.title, MenuItem.description, MenuItem.icon, MenuItem.action_type, MenuItem.action_value, MenuItem.section_id, MenuItem.parent_id, MenuItem.sort_order, MenuItem.is_active, MenuItem.is_premium, MenuItem.requires_auth, MenuItem.meta_data]
+class MenuItemAdmin(ModelView, model=MenuItemModel):
+    column_list = [MenuItemModel.id, MenuItemModel.title, MenuItemModel.description, MenuItemModel.icon, MenuItemModel.action_type, MenuItemModel.action_value, MenuItemModel.section_id, MenuItemModel.parent_id, MenuItemModel.sort_order, MenuItemModel.is_active, MenuItemModel.is_premium, MenuItemModel.requires_auth, MenuItemModel.created_at, MenuItemModel.updated_at]
+    column_searchable_list = [MenuItemModel.title, MenuItemModel.description, MenuItemModel.action_value]
+    column_sortable_list = [MenuItemModel.title, MenuItemModel.sort_order, MenuItemModel.created_at]
+    form_columns = [MenuItemModel.title, MenuItemModel.description, MenuItemModel.icon, MenuItemModel.action_type, MenuItemModel.action_value, MenuItemModel.section_id, MenuItemModel.parent_id, MenuItemModel.sort_order, MenuItemModel.is_active, MenuItemModel.is_premium, MenuItemModel.requires_auth, MenuItemModel.meta_data]
 
 def setup_admin(app, engine):
     admin = Admin(
@@ -48,5 +50,7 @@ def setup_admin(app, engine):
     admin.add_view(LinkedDeviceAdmin)
     admin.add_view(MenuSectionAdmin)
     admin.add_view(MenuItemAdmin)
+    admin.add_view(MenuManagementView)
+    admin.add_view(MenuItemCRUDView)
     
     return admin

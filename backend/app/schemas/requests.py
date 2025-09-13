@@ -38,3 +38,16 @@ class RemoveDeviceRequest(BaseModel):
     email: str
     device_id_to_remove: str
     requesting_device_id: str
+
+class MenuVersionRequest(BaseModel):
+    version: str
+    environment: str
+    changelog: Optional[str] = None
+    is_development: Optional[bool] = False
+
+class MenuDeployRequest(BaseModel):
+    version_id: str
+    environment: str
+
+class MenuDevelopmentRequest(BaseModel):
+    version_id: str

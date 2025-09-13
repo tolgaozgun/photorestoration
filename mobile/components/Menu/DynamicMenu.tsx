@@ -14,6 +14,8 @@ interface DynamicMenuProps {
   onItemPress?: (item: MenuItem) => void;
   style?: any;
   showRefresh?: boolean;
+  isLoading?: boolean;
+  onRefresh?: () => void;
 }
 
 export const DynamicMenu: React.FC<DynamicMenuProps> = ({
@@ -21,6 +23,8 @@ export const DynamicMenu: React.FC<DynamicMenuProps> = ({
   onItemPress,
   style,
   showRefresh = true,
+  isLoading = false,
+  onRefresh,
 }) => {
 
   const handleItemPress = (item: MenuItem) => {

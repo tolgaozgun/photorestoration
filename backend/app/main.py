@@ -12,11 +12,16 @@ from starlette.responses import Response
 
 # Import from backend root directory
 sys.path.append('/app')
-from email_service import EmailService
+try:
+    from email_service import EmailService
+except ImportError:
+    # Fallback if email service is not available
+    EmailService = None
+    print("Warning: Email service not available (boto3 not installed)")
 
 from .models import engine
 from .config import settings
-from .routes import enhancement_router, purchase_router, analytics_router, user_router, email_router, menu_router
+from .routes import enhancement_router, purchase_router, analytics_router, user_router, email_router, menu_configuration_router
 from .services import StorageService, EnhancementService
 from .admin import setup_admin
 from .utils import seed_menu_data_if_needed
@@ -112,7 +117,7 @@ def create_app() -> FastAPI:
     app.include_router(analytics_router, prefix="/api")
     app.include_router(user_router, prefix="/api")
     app.include_router(email_router, prefix="/api")
-    app.include_router(menu_router, prefix="/api")
+    app.include_router(menu_configuration_router, prefix="/api")
     
     @app.get("/health")
     async def health_check():

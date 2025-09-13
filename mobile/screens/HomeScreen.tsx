@@ -11,6 +11,7 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -21,14 +22,14 @@ import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
 
-// Import our new components
+// Import our new components and services
 import { Container, Section, Row, Spacer } from '../components/Layout';
 import { Text, SectionHeader } from '../components/Text';
 import { Button, IconButton } from '../components/Button';
 import { Card, GalleryCard, ModeCard } from '../components/Card';
 import { Header, NavigationButton, FloatingActionButton } from '../components/Navigation';
 import { Modal, LoadingModal } from '../components/Modal';
-import { colors, spacing, borderRadius, shadows, typography, components } from '../theme';
+import { NavigationService, NavigationItem } from '../services/NavigationService';
 
 type HomeScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'Home'> & 
   StackNavigationProp<RootStackParamList>;
@@ -146,6 +147,9 @@ export default function HomeScreen() {
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [contentSections, setContentSections] = useState<NavigationItem[]>([]);
+  const [videoContent, setVideoContent] = useState<NavigationItem[]>([]);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -155,6 +159,7 @@ export default function HomeScreen() {
     trackEvent('screen_view', { screen: 'home' });
     refreshUser();
     requestPermissions();
+    loadMenuData();
     
     // Entry animation
     Animated.timing(fadeAnim, {
@@ -163,6 +168,24 @@ export default function HomeScreen() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  const loadMenuData = async () => {
+    try {
+      setMenuLoading(true);
+      const navigationService = NavigationService.getInstance();
+      await navigationService.loadMenuData();
+      
+      const homeSections = navigationService.getScreenItems('home');
+      const videoSections = navigationService.getScreenItems('video');
+      
+      setContentSections(homeSections);
+      setVideoContent(videoSections);
+    } catch (error) {
+      console.error('Failed to load menu data:', error);
+    } finally {
+      setMenuLoading(false);
+    }
+  };
 
   const requestPermissions = async () => {
     const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -201,7 +224,7 @@ export default function HomeScreen() {
     return totalCredits;
   };
 
-  const handleSectionPress = (sectionId: string) => {
+  const handleSectionPress = async (sectionId: string) => {
     trackEvent('action', { type: 'section_tap', section: sectionId });
     setSelectedSection(sectionId);
     
@@ -216,10 +239,14 @@ export default function HomeScreen() {
           featureDescription: section.description,
         });
       }
+const navigationService = NavigationService.getInstance();
+    const item = navigationService.getNavigationItemById(sectionId);
+    if (item) {
+      await navigationService.navigateToItem(item, navigation);
     }
   };
 
-  const handleSeeAllPress = (sectionId: string) => {
+  const handleSeeAllPress = async (sectionId: string) => {
     trackEvent('action', { type: 'see_all_tap', section: sectionId });
     
     // Navigate to selfie upload for AI features
@@ -233,10 +260,14 @@ export default function HomeScreen() {
           featureDescription: section.description,
         });
       }
+const navigationService = NavigationService.getInstance();
+    const item = navigationService.getNavigationItemById(sectionId);
+    if (item) {
+      await navigationService.navigateToItem(item, navigation);
     }
   };
 
-  const handleVideoPress = (videoId: string) => {
+  const handleVideoPress = async (videoId: string) => {
     trackEvent('action', { type: 'video_tap', video: videoId });
     navigation.navigate('VideoGallery');
   };
@@ -260,8 +291,8 @@ export default function HomeScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.horizontalScroll}
       >
-        {item.items.map((contentItem) => (
-          <TouchableOpacity
+        {item.meta_data?.items?.map((contentItem: any) => (
+          <GalleryCard
             key={contentItem.id}
             style={styles.galleryCard}
             onPress={() => handleSectionPress(item.id)}
@@ -291,14 +322,14 @@ export default function HomeScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.horizontalScroll}
       >
-        {mockVideoContent.map((video) => (
+        {videoContent.map((video) => (
           <Card
             key={video.id}
             variant="video"
             size="medium"
             title={video.title}
-            metadata={video.duration}
-            isPremium={video.isPremium}
+            metadata={video.meta_data?.duration}
+            isPremium={video.is_premium}
             onPress={() => handleVideoPress(video.id)}
             style={styles.galleryCard}
           />
@@ -376,14 +407,18 @@ export default function HomeScreen() {
           </Section>
         </View>
 
-        {/* AI Generation Sections */}
-        <FlatList
-          data={mockContentSections}
-          renderItem={renderContentSection}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-          ListFooterComponent={renderVideoSection()}
-        />
+      {/* Content Discovery Sections */}
+        {menuLoading ? (
+          <ActivityIndicator size="large" color="#FF3B30" />
+        ) : (
+          <FlatList
+            data={contentSections}
+            renderItem={({ item }) => renderContentSection(item)}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+            ListFooterComponent={renderVideoSection()}
+          />
+        )}
 
         <View style={styles.bottomSpacing} />
       </Animated.ScrollView>

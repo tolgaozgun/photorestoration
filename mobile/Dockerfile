@@ -1,40 +1,18 @@
-# Use Node.js LTS as base image
-FROM node:18-alpine
+# Dockerfile
+FROM node:20-bullseye
+RUN apt-get update && apt-get install -y git python3 build-essential && rm -rf /var/lib/apt/lists/*
+WORKDIR /usr/src/app
+RUN mkdir -p /usr/src/app && chown -R node:node /usr/src/app
+USER node
+COPY --chown=node:node package*.json ./
+RUN npm ci --no-audit --no-fund
+COPY --chown=node:node . .
 
-# Install system dependencies required by Expo
-RUN apk add --no-cache \
-    bash \
-    git \
-    python3 \
-    make \
-    g++
+ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 \
+    REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0 \
+    CHOKIDAR_USEPOLLING=1
+# NOTE: no CI=1
 
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy the rest of the application
-COPY . .
-
-# Expose the Expo dev server port
-EXPOSE 8081
-
-# Expose the Metro bundler port
-EXPOSE 19000
-
-# Expose the Expo DevTools port
-EXPOSE 19002
-
-# Set environment variables for Expo
-ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
-ENV REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
-ENV CI=1
-
-# Start Expo development server
-# Using LAN mode for better reverse proxy compatibility
-CMD ["npx", "expo", "start", "--host", "lan", "--port", "19000"]
+EXPOSE 8081 19000 19001 19002 19006
+# Use npm exec so we don’t depend on global npx
+CMD ["npm","exec","--yes","expo","start","--","--tunnel","--host","0.0.0.0","--non-interactive"]

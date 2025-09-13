@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Modal,
   SafeAreaView,
+  TouchableWithoutFeedback,
   TextStyle,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -13,10 +14,10 @@ import * as Haptics from 'expo-haptics';
 import { colors, spacing, borderRadius, typography } from '../theme';
 
 const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'tr', label: 'Türkçe' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'zh', label: '中文' },
+  { code: 'en', labelKey: 'settings.languageNames.en' },
+  { code: 'tr', labelKey: 'settings.languageNames.tr' },
+  { code: 'de', labelKey: 'settings.languageNames.de' },
+  { code: 'zh', labelKey: 'settings.languageNames.zh' },
 ];
 
 type Props = {
@@ -25,7 +26,7 @@ type Props = {
 };
 
 export default function LanguageModal({ isVisible, onClose }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const onSelectLanguage = (code: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -41,28 +42,43 @@ export default function LanguageModal({ isVisible, onClose }: Props) {
       onRequestClose={onClose}
     >
       <SafeAreaView style={styles.container}>
-        <View style={styles.modalView}>
-          <Text style={styles.title}>Select Language</Text>
-          {LANGUAGES.map((language) => {
-            const selected = i18n.language === language.code;
-            return (
-              <TouchableOpacity
-                key={language.code}
-                style={styles.languageButton}
-                onPress={() => onSelectLanguage(language.code)}
-              >
-                <Text style={[styles.languageText, selected && styles.selectedLanguageText]}>
-                  {language.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-          <TouchableOpacity style={styles.closeButton} onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onClose();
-          }}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+        
+        <View style={styles.modalContent}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              onClose();
+            }}>
+              <Text style={styles.backButton}>‹</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>{t('settings.selectLanguage')}</Text>
+          </View>
+
+          {/* Language Options */}
+          <View style={styles.section}>
+            <View style={styles.sectionContent}>
+              {LANGUAGES.map((language, index) => {
+                const selected = i18n.language === language.code;
+                return (
+                  <TouchableOpacity
+                    key={language.code}
+                    style={[
+                      styles.languageButton,
+                      index === LANGUAGES.length - 1 && styles.lastLanguageButton
+                    ]}
+                    onPress={() => onSelectLanguage(language.code)}
+                  >
+                    <Text style={styles.languageText}>{t(language.labelKey)}</Text>
+                    {selected && <Text style={styles.checkmark}>✓</Text>}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
         </View>
       </SafeAreaView>
     </Modal>
@@ -72,52 +88,71 @@ export default function LanguageModal({ isVisible, onClose }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: '#0a0a0a',
   },
-  modalView: {
-    margin: spacing.xlLegacy,
-    backgroundColor: colors.background.secondary,
-    borderRadius: borderRadius.xlLegacy,
-    padding: spacing['5xl'],
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  modalContent: {
+    flex: 1,
+    backgroundColor: '#0a0a0a',
+  },
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    width: '80%',
+    padding: 16,
+    paddingTop: 40,
+    backgroundColor: '#0a0a0a',
+  },
+  backButton: {
+    fontSize: 24,
+    color: '#007AFF',
+    marginRight: 10,
   },
   title: {
-    fontSize: typography.fontSize['5xl'],
-    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
-    marginBottom: spacing.lg,
-    color: colors.text.primary,
+    fontFamily: 'SF Pro Display',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  section: {
+    marginTop: 24,
+    paddingHorizontal: 16,
+  },
+  sectionContent: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#3A3A3C',
   },
   languageButton: {
-    width: '100%',
-    padding: spacing.xlLegacy,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.primary,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'transparent',
+  },
+  lastLanguageButton: {
+    borderBottomWidth: 0,
   },
   languageText: {
-    fontSize: typography.fontSize.xl,
-    color: colors.text.primary,
-    textAlign: 'center',
+    fontFamily: 'SF Pro Text',
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#FFFFFF',
   },
-  selectedLanguageText: {
-    fontWeight: typography.fontWeight.bold as TextStyle['fontWeight'],
-    color: colors.primary,
-  },
-  closeButton: {
-    marginTop: spacing.xlLegacy,
-  },
-  closeButtonText: {
-    fontSize: typography.fontSize.xl,
-    color: colors.text.error,
+  checkmark: {
+    fontFamily: 'SF Pro Text',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#007AFF',
   },
 });

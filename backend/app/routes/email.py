@@ -8,7 +8,11 @@ import re
 from ..models import get_db, LinkedDevice
 from ..schemas.requests import EmailVerificationRequest
 from ..schemas.responses import DeviceResponse, EmailVerificationResponse, DeviceListResponse, DeviceRemoveRequest
-from email_service import EmailService
+try:
+    from email_service import EmailService
+except ImportError:
+    # Fallback if email service is not available
+    EmailService = None
 
 router = APIRouter()
 
