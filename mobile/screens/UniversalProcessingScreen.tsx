@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import {
   View,
+  Text,
   StyleSheet,
   TouchableOpacity,
   Image,

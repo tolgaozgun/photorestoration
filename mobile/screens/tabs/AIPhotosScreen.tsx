@@ -34,69 +34,70 @@ interface AlbumCategory {
 
 type AIPhotosScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'AIPhotos'>;
 
-// Mock album data for AI Photos
-const albumCategories = [
-  {
-    id: 'future-baby',
-    title: 'Future Baby',
-    emoji: '🍼',
-    description: 'See what your future baby might look like',
-    items: [
-      { id: '1', title: 'Baby Prediction', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=baby1' },
-      { id: '2', title: 'Family Preview', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=baby2' },
-      { id: '3', title: 'Child Generator', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=baby3' },
-    ],
-  },
-  {
-    id: 'digital-twin',
-    title: 'Digital Twin',
-    emoji: '🎭',
-    description: 'Create your digital avatar',
-    items: [
-      { id: '1', title: '3D Avatar', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=avatar1' },
-      { id: '2', title: 'Virtual Clone', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=avatar2' },
-      { id: '3', title: 'Digital Persona', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=avatar3' },
-    ],
-  },
-  {
-    id: 'professional-headshots',
-    title: 'Professional Headshots',
-    emoji: '💼',
-    description: 'Business photo enhancement',
-    items: [
-      { id: '1', title: 'Corporate', imageUrl: 'https://picsum.photos/140/175?random=corporate1' },
-      { id: '2', title: 'LinkedIn', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=corporate2' },
-      { id: '3', title: 'Portfolio', imageUrl: 'https://picsum.photos/140/175?random=corporate3' },
-    ],
-  },
-  {
-    id: 'vintage-portraits',
-    title: 'Vintage Portraits',
-    emoji: '🎨',
-    description: 'Classic styling',
-    items: [
-      { id: '1', title: 'Victorian', imageUrl: 'https://picsum.photos/140/175?random=vintage1' },
-      { id: '2', title: 'Renaissance', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=vintage2' },
-      { id: '3', title: 'Retro', imageUrl: 'https://picsum.photos/140/175?random=vintage3' },
-    ],
-  },
-  {
-    id: 'fantasy-characters',
-    title: 'Fantasy Characters',
-    emoji: '🧙',
-    description: 'Costume and character photos',
-    items: [
-      { id: '1', title: 'Wizard', imageUrl: 'https://picsum.photos/140/175?random=fantasy1' },
-      { id: '2', title: 'Knight', isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=fantasy2' },
-      { id: '3', title: 'Elf', imageUrl: 'https://picsum.photos/140/175?random=fantasy3' },
-    ],
-  },
-];
-
 export default function AIPhotosScreen() {
   const navigation = useNavigation<AIPhotosScreenNavigationProp>();
+  const { t } = useTranslation();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Album data using translations
+  const albumCategories = [
+    {
+      id: 'future-baby',
+      title: t('content.aiPhotos.futureBaby.title'),
+      emoji: '🍼',
+      description: t('content.aiPhotos.futureBaby.description'),
+      items: [
+        { id: '1', title: t('content.aiPhotos.futureBaby.babyPrediction'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=baby1' },
+        { id: '2', title: t('content.aiPhotos.futureBaby.familyPreview'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=baby2' },
+        { id: '3', title: t('content.aiPhotos.futureBaby.childGenerator'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=baby3' },
+      ],
+    },
+    {
+      id: 'digital-twin',
+      title: t('content.aiPhotos.digitalTwin.title'),
+      emoji: '🎭',
+      description: t('content.aiPhotos.digitalTwin.description'),
+      items: [
+        { id: '1', title: t('content.aiPhotos.digitalTwin.avatar3d'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=avatar1' },
+        { id: '2', title: t('content.aiPhotos.digitalTwin.virtualClone'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=avatar2' },
+        { id: '3', title: t('content.aiPhotos.digitalTwin.digitalPersona'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=avatar3' },
+      ],
+    },
+    {
+      id: 'professional-headshots',
+      title: t('content.aiPhotos.professionalHeadshots.title'),
+      emoji: '💼',
+      description: t('content.aiPhotos.professionalHeadshots.description'),
+      items: [
+        { id: '1', title: t('content.aiPhotos.professionalHeadshots.corporate'), imageUrl: 'https://picsum.photos/140/175?random=corporate1' },
+        { id: '2', title: t('content.aiPhotos.professionalHeadshots.linkedin'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=corporate2' },
+        { id: '3', title: t('content.aiPhotos.professionalHeadshots.portfolio'), imageUrl: 'https://picsum.photos/140/175?random=corporate3' },
+      ],
+    },
+    {
+      id: 'vintage-portraits',
+      title: t('content.aiPhotos.vintagePortraits.title'),
+      emoji: '🎨',
+      description: t('content.aiPhotos.vintagePortraits.description'),
+      items: [
+        { id: '1', title: t('content.aiPhotos.vintagePortraits.victorian'), imageUrl: 'https://picsum.photos/140/175?random=vintage1' },
+        { id: '2', title: t('content.aiPhotos.vintagePortraits.renaissance'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=vintage2' },
+        { id: '3', title: t('content.aiPhotos.vintagePortraits.retro'), imageUrl: 'https://picsum.photos/140/175?random=vintage3' },
+      ],
+    },
+    {
+      id: 'fantasy-characters',
+      title: t('content.aiPhotos.fantasyCharacters.title'),
+      emoji: '🧙',
+      description: t('content.aiPhotos.fantasyCharacters.description'),
+      items: [
+        { id: '1', title: t('content.aiPhotos.fantasyCharacters.wizard'), imageUrl: 'https://picsum.photos/140/175?random=fantasy1' },
+        { id: '2', title: t('content.aiPhotos.fantasyCharacters.knight'), isPremium: true, imageUrl: 'https://picsum.photos/140/175?random=fantasy2' },
+        { id: '3', title: t('content.aiPhotos.fantasyCharacters.elf'), imageUrl: 'https://picsum.photos/140/175?random=fantasy3' },
+      ],
+    },
+  ];
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'ai_photos' });
@@ -139,7 +140,7 @@ export default function AIPhotosScreen() {
       </View>
       {item.isPremium && (
         <View style={styles.premiumBadge}>
-          <Text style={styles.premiumBadgeText}>PRO</Text>
+          <Text style={styles.premiumBadgeText}>{t('common.pro')}</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -153,7 +154,7 @@ export default function AIPhotosScreen() {
           style={styles.seeAllButton}
           onPress={() => handleSeeAllPress(album.id)}
         >
-          <Text style={styles.seeAllText}>See All</Text>
+          <Text style={styles.seeAllText}>{t('common.seeAll')}</Text>
         </TouchableOpacity>
       </View>
       
@@ -175,8 +176,8 @@ export default function AIPhotosScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>AI Photos</Text>
-            <Text style={styles.screenSubtitle}>Generate AI-powered photos</Text>
+            <Text style={styles.screenTitle}>{t('tabs.aiPhotos.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('tabs.aiPhotos.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
             <Text style={styles.settingsIcon}>⚙️</Text>

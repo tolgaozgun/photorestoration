@@ -1,0 +1,582 @@
+{
+  "common": {
+    "ok": "OK",
+    "loading": "Cargando...",
+    "done": "Hecho"
+  },
+  "home": {
+    "permissionRequired": "Permiso Requerido",
+    "galleryPermission": "Por favor habilita el acceso a la galería en configuraciones.",
+    "cameraPermission": "Por favor habilita el acceso a la cámara en configuraciones.",
+    "cameraPermissionRequired": "Permiso de Cámara Requerido",
+    "mainTitle": "Restaura Tus Fotos",
+    "subtitle": "Elige entre 6 modos de restauración para traer de vuelta los recuerdos a la vida",
+    "permissionDenied": "Permiso Denegado"
+  },
+  "modes": {
+    "selectMode": "Selecciona un Modo",
+    "showMore": "Mostrar Más Opciones",
+    "showLess": "Mostrar Menos Opciones",
+    "recommended": "Recomendado",
+    "auto": {
+      "title": "Mejora Automática",
+      "subtitle": "Mejor para mejoras generales",
+      "description": "Perfecto para fotos borrosas o de baja calidad"
+    },
+    "scratch": {
+      "title": "Reparar Rayones",
+      "subtitle": "Mejor para fotos con daño físico",
+      "description": "Elimina rayones, manchas y daños"
+    },
+    "colorize": {
+      "title": "Añadir Color",
+      "subtitle": "Colorea recuerdos antiguos",
+      "description": "Da vida a fotos en blanco y negro"
+    },
+    "enlighten": {
+      "title": "Corregir Iluminación",
+      "subtitle": "Equilibra exposición y contraste",
+      "description": "Corrige fotos oscuras o sobreexpuestas"
+    },
+    "recreate": {
+      "title": "Restaurar Retratos",
+      "subtitle": "Restauración facial avanzada",
+      "description": "Reconstruye rostros severamente dañados"
+    },
+    "combine": {
+      "title": "Fusionar Ancestros",
+      "subtitle": "Característica experimental",
+      "description": "Combina características con fotos familiares"
+    },
+    "chooseEnhancement": "Elegir Mejora",
+    "selectOption": "Selecciona la mejor opción para tu foto:",
+    "continueWith": "Continuar con {{modeName}}"
+  },
+  "preview": {
+    "title": "Vista Previa y Ajustar",
+    "quality": {
+      "fast": "Rápido",
+      "best": "Mejor",
+      "good": "Bueno"
+    },
+    "timeIndicator": "Tiempo estimado: ~{{time}}s",
+    "apply": "Aplicar Mejora",
+    "processingQuality": "Calidad de Procesamiento",
+    "timeEstimate": "Tiempo estimado: {{time}} • calidad {{quality}}",
+    "noCreditsAvailable": "Sin Créditos Disponibles",
+    "usesCredit": "Usa 1 crédito {{resolution}}",
+    "continueToSave": "Continuar para Guardar"
+  },
+  "result": {
+    "save": "Guardar",
+    "share": "Compartir",
+    "tryAnother": "Probar Otra Foto",
+    "viewHistory": "Ver Historial",
+    "saveSuccessTitle": "¡Guardado!",
+    "saveSuccessMessage": "Foto guardada en tu dispositivo.",
+    "saveErrorTitle": "Error al Guardar",
+    "saveErrorMessage": "No se pudo guardar la foto. Por favor intenta de nuevo.",
+    "shareErrorTitle": "Error al Compartir",
+    "shareErrorMessage": "No se pudo compartir la foto. Por favor intenta de nuevo.",
+    "shareNotAvailableMessage": "Compartir no está disponible en este dispositivo.",
+    "title": "🎉 ¡Foto Restaurada!",
+    "subtitle": "Mejorada usando modo {{mode}} • {{time}}",
+    "watermarkText": "Marca de Agua Demo",
+    "saving": "Guardando...",
+    "saved": "Guardado",
+    "savedToPhotos": "¡Guardado en Fotos!",
+    "saveToPhotos": "Guardar en Fotos",
+    "modeUsed": "Modo Usado",
+    "processingTime": "Tiempo de Procesamiento",
+    "quality": "Calidad",
+    "qualityDemo": "Demo",
+    "qualityFull": "Completa"
+  },
+  "restoration": {
+    "before": "Antes",
+    "after": "Después",
+    "selectResolution": "Seleccionar Resolución",
+    "standard": "Estándar",
+    "standardResolution": "~1024×1024",
+    "hd": "HD",
+    "hdResolution": "~2048×2048",
+    "fast": "Rápido",
+    "fastResolution": "Buena calidad, ~30s",
+    "bestQuality": "Mejor Calidad",
+    "bestQualityResolution": "Máximo detalle, ~90s",
+    "processing": "Mejorando tu foto...",
+    "enhancePhoto": "Mejorar Foto",
+    "exportPhoto": "Exportar Foto",
+    "error": "Error",
+    "userNotInitialized": "Usuario no inicializado",
+    "noCredits": "Sin Créditos",
+    "noCreditsMessage": "No tienes más créditos {{resolution}}. ¿Te gustaría comprar más?",
+    "cancel": "Cancelar",
+    "purchase": "Comprar",
+    "enhanceFailed": "Error al mejorar la imagen. Por favor intenta de nuevo.",
+    "processingSubtext": "Usando modo {{mode}} • calidad {{qualityText}}",
+    "selectEnhancementMode": "Seleccionar Modo de Mejora",
+    "enhance": {
+      "description": "Eliminar desenfoque y enfocar"
+    },
+    "colorize": {
+      "description": "Añadir color a los recuerdos"
+    },
+    "scratch": {
+      "description": "Eliminar rayones y suciedad"
+    },
+    "enlighten": {
+      "description": "Corregir iluminación"
+    },
+    "recreate": {
+      "description": "Restaurar retratos dañados"
+    },
+    "combine": {
+      "description": "Fusionar con ancestros"
+    }
+  },
+  "navigation": {
+    "preview": "Vista Previa",
+    "export": "Exportar",
+    "sync": "Sincronizar",
+    "verifyEmail": "Verificar Email",
+    "back": "Atrás",
+    "home": "Restaurar",
+    "recents": "Recientes",
+    "settings": "Configuración",
+    "tabs": {
+      "enhance": "Mejorar",
+      "aiPhotos": "Fotos AI",
+      "aiFilters": "Filtros AI",
+      "aiVideos": "Videos AI",
+      "customAI": "AI Personalizado"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "sync": "Sincronizar",
+    "notLoggedIn": "No has iniciado sesión",
+    "notLoggedInSubtitle": "Inicia sesión para sincronizar tu historial de restauración entre dispositivos",
+    "login": "Iniciar sesión para sincronizar",
+    "syncNote": "Esto no afectará tus compras dentro de la aplicación. Puedes restaurarlas en cualquier momento sin necesidad de esta función.",
+    "loggedIn": "Sesión iniciada",
+    "manageDevices": "Administrar Dispositivos",
+    "manageDevicesSubtitle": "Ver y administrar dispositivos sincronizados",
+    "purchases": "Compras",
+    "restorePurchases": "Restaurar Compras",
+    "restorePurchasesSubtitle": "Restaurar compras anteriores",
+    "purchaseHistory": "Historial de Compras",
+    "purchaseHistorySubtitle": "Ver todas las compras pasadas",
+    "getMoreCredits": "Obtener Más Créditos",
+    "getMoreCreditsSubtitle": "Comprar paquetes de créditos",
+    "legal": "Legal",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "support": "Soporte",
+    "contactSupport": "Contactar Soporte",
+    "contactSupportSubtitle": "Obtener ayuda con la aplicación",
+    "rateApp": "Calificar Aplicación",
+    "rateAppSubtitle": "Comparte tus comentarios",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar Idioma",
+    "version": "Versión 1.0.0",
+    "copyright": "© 2024 Photo Restoration AI",
+    "restorePurchasesAlertTitle": "Restaurar Compras",
+    "restorePurchasesAlertMessage": "Esto restaurará cualquier compra anterior realizada con este Apple ID o Cuenta de Google.",
+    "cancel": "Cancelar",
+    "restore": "Restaurar",
+    "success": "Éxito",
+    "purchasesRestored": "¡Compras restauradas exitosamente!",
+    "noPurchasesFound": "No se encontraron compras",
+    "settingsButton": "Configuración",
+    "languageNames": {
+      "en": "Inglés (English)",
+      "tr": "Turco (Türkçe)",
+      "de": "Alemán (Deutsch)",
+      "es": "Español (Español)",
+      "zh": "Chino (中文)"
+    },
+    "disableSyncTitle": "¿Deshabilitar Sincronización?",
+    "disableSyncMessage": "Esto detendrá la sincronización de tu historial de restauración entre dispositivos. Tus restauraciones permanecerán en este dispositivo.",
+    "disable": "Deshabilitar",
+    "userIdTitle": "ID de Usuario",
+    "userIdMessage": "Tu ID único:\n\n{{userId}}\n\nGuarda este ID para restaurar tus datos en otro dispositivo.",
+    "yourUniqueId": "Tu ID Único",
+    "syncAcrossDevices": "Sincronizar Entre Dispositivos",
+    "syncYourHistory": "Sincronizar tu historial de restauración",
+    "syncedTo": "Sincronizado con {{email}}",
+    "managePreferences": "Administrar tus preferencias",
+    "signedIn": "Sesión iniciada",
+    "notSignedIn": "No has iniciado sesión",
+    "signInToSync": "Iniciar sesión para sincronizar entre dispositivos",
+    "goPro": "Ir Pro",
+    "unlockPremiumFeatures": "Desbloquear todas las características premium",
+    "unlimitedAI": "Generaciones de IA ilimitadas",
+    "hdQuality": "Salidas de calidad HD",
+    "priorityProcessing": "Procesamiento prioritario",
+    "premiumFilters": "Todos los filtros premium",
+    "noWatermarks": "Sin marcas de agua",
+    "tryProNow": "Probar Pro Ahora",
+    "appSettings": "Configuración de la Aplicación",
+    "replayOnboarding": "Repetir Introducción",
+    "seeIntroAgain": "Ver la introducción de la aplicación de nuevo",
+    "viewManageDevices": "Ver y administrar dispositivos conectados",
+    "signInToManageDevices": "Iniciar sesión para administrar dispositivos",
+    "purchaseAdditionalCredits": "Comprar créditos adicionales",
+    "shareApp": "Compartir Aplicación",
+    "tellFriendsAboutUs": "Cuéntales a tus amigos sobre nosotros",
+    "relaunchOnboardingTitle": "Relanzar Introducción",
+    "relaunchOnboardingMessage": "Esto reiniciará el proceso de introducción y te mostrará la introducción de la aplicación de nuevo. ¿Continuar?",
+    "continue": "Continuar",
+    "shareAppMessage": "¡Mira esta increíble aplicación de restauración de fotos!"
+  },
+  "tabs": {
+    "enhance": {
+      "title": "Mejorar Fotos",
+      "subtitle": "Selecciona una foto para comenzar a mejorar",
+      "selectPhotoToEnhance": "Selecciona una foto para mejorar",
+      "tapToChooseFromGalleryOrCamera": "Toca para elegir de galería o cámara",
+      "recentPhotos": "Fotos Recientes",
+      "loadingRecentPhotos": "Cargando fotos recientes...",
+      "noRecentPhotosFound": "No se encontraron fotos recientes",
+      "takeSomePhotosToSeeThemHere": "Toma algunas fotos para verlas aquí",
+      "galleryPermissionDenied": "Permiso de galería denegado. Por favor habilita el acceso en configuraciones del dispositivo para ver tus fotos recientes.",
+      "mediaLibraryPermissionRequired": "Se requiere permiso de biblioteca de medios para acceder a fotos recientes",
+      "failedToLoadRecentPhotos": "Error al cargar fotos recientes. Por favor intenta de nuevo.",
+      "pleaseGrantGalleryPermission": "Por favor otorga permiso de galería para seleccionar fotos",
+      "failedToPickImage": "Error al seleccionar imagen. Por favor intenta de nuevo."
+    },
+    "aiPhotos": {
+      "title": "Fotos AI",
+      "subtitle": "Genera fotos con inteligencia artificial"
+    },
+    "aiVideos": {
+      "title": "Videos AI",
+      "subtitle": "Genera videos con inteligencia artificial"
+    },
+    "aiFilters": {
+      "title": "Filtros AI",
+      "subtitle": "Transforma tus fotos con filtros de IA",
+      "pickAPhoto": "Elige una foto",
+      "transformYourPhotoWithAIFilters": "Transforma tu foto con filtros de IA",
+      "selectPhoto": "Seleccionar Foto",
+      "pleaseGrantGalleryPermission": "Por favor otorga permiso de galería para seleccionar fotos",
+      "failedToPickImage": "Error al seleccionar imagen. Por favor intenta de nuevo."
+    },
+    "customAI": {
+      "title": "Ediciones AI Personalizadas",
+      "subtitle": "Transforma fotos con IA personalizada",
+      "uploadAnImage": "Subir una imagen",
+      "transformYourPhotoWithCustomAIEdits": "Transforma tu foto con ediciones AI personalizadas",
+      "describeAnyEditYouWant": "Describe cualquier edición que quieras",
+      "useNaturalLanguageDescription": "Usa lenguaje natural para describir los cambios que quieres hacer a tu foto. Por ejemplo: \"Remover el fondo\", \"Cambiar el color de cabello a rubio\", \"Agregar iluminación de atardecer\"",
+      "popularEdits": "Ediciones populares:",
+      "pleaseGrantGalleryPermission": "Por favor otorga permiso de galería para seleccionar fotos",
+      "failedToPickImage": "Error al seleccionar imagen. Por favor intenta de nuevo."
+    }
+  },
+  "common": {
+    "seeAll": "Ver Todo",
+    "pro": "PRO",
+    "permissionRequired": "Permiso Requerido",
+    "error": "Error",
+    "grantPermission": "Otorgar Permiso"
+  },
+  "content": {
+    "aiPhotos": {
+      "futureBaby": {
+        "title": "Bebé Futuro",
+        "description": "Ve cómo podría verse tu futuro bebé",
+        "babyPrediction": "Predicción de Bebé",
+        "familyPreview": "Vista Previa Familiar",
+        "childGenerator": "Generador de Niño"
+      },
+      "digitalTwin": {
+        "title": "Gemelo Digital",
+        "description": "Crea tu avatar digital",
+        "avatar3d": "Avatar 3D",
+        "virtualClone": "Clon Virtual",
+        "digitalPersona": "Persona Digital"
+      },
+      "professionalHeadshots": {
+        "title": "Fotos Profesionales",
+        "description": "Mejora de fotos de negocios",
+        "corporate": "Corporativo",
+        "linkedin": "LinkedIn",
+        "portfolio": "Portafolio"
+      },
+      "vintagePortraits": {
+        "title": "Retratos Vintage",
+        "description": "Estilo clásico",
+        "victorian": "Victoriano",
+        "renaissance": "Renacimiento",
+        "retro": "Retro"
+      },
+      "fantasyCharacters": {
+        "title": "Personajes de Fantasía",
+        "description": "Fotos de disfraces y personajes",
+        "wizard": "Mago",
+        "knight": "Caballero",
+        "elf": "Elfo"
+      }
+    },
+    "aiVideos": {
+      "animateOldPhotos": {
+        "title": "Animar Fotos Antiguas",
+        "description": "Dale vida a tus fotos antiguas",
+        "faceAnimation": "Animación Facial",
+        "subtleMotion": "Movimiento Sutil",
+        "expressionChanges": "Cambios de Expresión"
+      },
+      "cinemagraphs": {
+        "title": "Creación de Cinemagrafías",
+        "description": "Efectos de movimiento sutil",
+        "waterFlow": "Flujo de Agua",
+        "hairMovement": "Movimiento de Cabello",
+        "cloudMotion": "Movimiento de Nubes"
+      },
+      "portraitAnimation": {
+        "title": "Animación de Retrato",
+        "description": "Expresiones faciales y movimiento",
+        "smileAnimation": "Animación de Sonrisa",
+        "talkingEffect": "Efecto de Habla",
+        "eyeMovement": "Movimiento de Ojos"
+      },
+      "backgroundAnimation": {
+        "title": "Animación de Fondo",
+        "description": "Fondos dinámicos",
+        "skyChanges": "Cambios del Cielo",
+        "weatherEffects": "Efectos Climáticos",
+        "lightTransitions": "Transiciones de Luz"
+      }
+    },
+    "aiFilters": {
+      "3dPhotos": "Fotos 3D",
+      "muscles": "Músculos",
+      "flash": "Flash",
+      "fairyToon": "Hada Animada",
+      "nineties": "Anime de los 90",
+      "chibi": "Chibi",
+      "pixel": "Píxel",
+      "animalToon": "Animal Animado",
+      "animated": "Animado",
+      "caricature": "Caricatura",
+      "miniToys": "Juguetes Miniatura",
+      "doll": "Muñeca"
+    },
+    "customAI": {
+      "removeBackground": "Remover fondo",
+      "changeLighting": "Cambiar iluminación",
+      "fixSkin": "Arreglar piel",
+      "addEffects": "Agregar efectos",
+      "changeHairColor": "Cambiar color de cabello",
+      "enhanceEyes": "Mejorar ojos"
+    }
+  },
+  "onboarding": {
+    "skip": "Saltar",
+    "continue": "Continuar",
+    "getStarted": "Comenzar",
+    "screen1": {
+      "title": "Trae las Fotos Antiguas de Vuelta a la Vida",
+      "subtitle": "Restaura fotos dañadas, desvanecidas o rayadas en segundos",
+      "damaged": "Dañada",
+      "restored": "Restaurada"
+    },
+    "screen2": {
+      "title": "Cómo Funciona",
+      "subtitle": "Elegir Foto → IA Restaura → Guardar Resultado",
+      "step1": "Elegir Foto",
+      "step2": "IA Restaura",
+      "step3": "Guardar Resultado"
+    },
+    "screen3": {
+      "title": "Vamos a restaurar tu primera foto",
+      "subtitle": "Elige una foto dañada o antigua para ver la magia",
+      "accessPhotos": "Acceder a Fotos",
+      "failedToAccessPhotos": "Error al acceder a las fotos. Por favor intenta de nuevo.",
+      "failedToAccessCamera": "Error al acceder a la cámara. Por favor intenta de nuevo.",
+      "helperText": "💡 Funciona mejor con fotos familiares antiguas, recuerdos desvanecidos o imágenes rayadas"
+    }
+  },
+  "recents": {
+    "title": "Sin Restauraciones Recientes",
+    "subtitle": "Tus restauraciones de fotos pasadas aparecerán aquí.",
+    "cta": "Comenzar a restaurar fotos",
+    "photosCount": "fotos",
+    "emptyTitle": "Aún No Hay Restauraciones",
+    "emptySubtitle": "Tus fotos restauradas aparecerán aquí"
+  },
+  "pro": {
+    "title": "Ir Pro",
+    "subtitle": "Desbloquea restauraciones ilimitadas y obtén acceso a características exclusivas.",
+    "cta": "Obtener Más Créditos"
+  },
+  "about": {
+    "title": "Acerca de Photo Restoration AI"
+  },
+  "photoInput": {
+    "chooseFromPhotos": "Elegir de Fotos",
+    "takeNewPhoto": "Tomar Nueva Foto",
+    "scanDocument": "Escanear Documento",
+    "title": "Elegir Foto",
+    "creditsLabel": "créditos",
+    "chooseFromPhotosSubtitle": "Seleccionar de tu galería",
+    "helperText": "💡 Mejores resultados con fotos familiares antiguas, recuerdos desvanecidos o imágenes dañadas",
+    "noCreditsWarning": "⚠️ No quedan créditos. Compra más para continuar restaurando fotos.",
+    "getCreditsButton": "Obtener Créditos →",
+    "recentRestorationsTitle": "Restauraciones Recientes",
+    "viewAllButton": "Ver Todas",
+    "noRecentRestorations": "Aún no hay restauraciones recientes",
+    "choosePhoto": "Elegir Foto"
+  },
+  "history": {
+    "title": "Historial de Restauración",
+    "empty": "Aún no hay historial de restauración."
+  },
+  "profile": {
+    "title": "Perfil",
+    "account": "Cuenta"
+  },
+  "purchase": {
+    "title": "Obtener Más Créditos",
+    "description": "Elige un paquete de créditos para mejorar más fotos.",
+    "standard25": "25 Créditos Estándar",
+    "hd10": "10 Créditos HD",
+    "comingSoonTitle": "¡Próximamente!",
+    "comingSoonMessage": "Las opciones de compra estarán disponibles pronto."
+  },
+  "verification": {
+    "invalidCodeTitle": "Código Inválido",
+    "invalidCodeMessage": "Por favor ingresa los 6 dígitos",
+    "codeExpiredTitle": "Código Expirado",
+    "codeExpiredMessage": "El código de verificación ha expirado. Por favor solicita uno nuevo.",
+    "successTitle": "¡Éxito!",
+    "successMessage": "Tu dispositivo ha sido vinculado exitosamente. Tu historial de restauración ahora se sincronizará entre dispositivos.",
+    "failedTitle": "Verificación Fallida",
+    "failedMessage": "Código de verificación inválido. Por favor intenta de nuevo.",
+    "resendCodeTitle": "Reenviar Código",
+    "resendCodeConfirmation": "¿Estás seguro de que quieres solicitar un nuevo código de verificación?",
+    "resendButton": "Reenviar",
+    "codeSentTitle": "Código Enviado",
+    "codeSentMessage": "Un nuevo código de verificación ha sido enviado a tu email.",
+    "resendFailedMessage": "Error al reenviar el código de verificación",
+    "title": "Ingresa Código de Verificación",
+    "subtitle": "Hemos enviado un código de 6 dígitos a",
+    "codeExpiresIn": "El código expira en",
+    "verifyButton": "Verificar y Vincular Dispositivo",
+    "infoText": "Esto sincronizará tu historial de restauración entre dispositivos. No afecta tus compras."
+  },
+  "emailSync": {
+    "invalidEmailTitle": "Email Inválido",
+    "invalidEmailMessage": "Por favor ingresa una dirección de email válida",
+    "deviceAlreadyLinkedTitle": "Dispositivo Ya Vinculado",
+    "deviceAlreadyLinkedMessage": "Este dispositivo ya está vinculado a {{email}}",
+    "sendCodeFailed": "Error al enviar el código de verificación",
+    "removeDeviceTitle": "Remover Dispositivo",
+    "removeDeviceConfirmation": "¿Estás seguro de que quieres remover \"{{deviceName}}\" de tus dispositivos sincronizados?",
+    "removeButton": "Remover",
+    "removeDeviceFailed": "Error al remover el dispositivo",
+    "unlinkEmailTitle": "Desvincular Email",
+    "unlinkEmailConfirmation": "Esto detendrá la sincronización de tu historial de restauración. Tus restauraciones permanecerán en este dispositivo.",
+    "unlinkButton": "Desvincular",
+    "title": "Sincronización de Historial",
+    "subtitle": "Sincroniza tu historial de restauración entre dispositivos",
+    "infoText": "Esta es una función opcional para sincronizar tu historial de restauración. No afectará tus compras dentro de la aplicación o tu capacidad de restaurarlas.",
+    "linkEmailSectionTitle": "Vincular Tu Email",
+    "linkEmailDescription": "Ingresa tu email para sincronizar tu historial de restauración en todos tus dispositivos.",
+    "emailPlaceholder": "Ingresa tu email",
+    "sendVerificationCodeButton": "Enviar Código de Verificación",
+    "linkedEmailSectionTitle": "Email Vinculado",
+    "linkedDevicesSectionTitle": "Dispositivos Vinculados ({{count}})",
+    "thisDeviceLabel": "(Este Dispositivo)",
+    "linkedLabel": "Vinculado",
+    "footerText": "Tu historial de compras se administra por separado a través de tu cuenta de la tienda de aplicaciones y no se ve afectado por esta función."
+  },
+  "export": {
+    "photoSaved": "¡Foto guardada en tu galería!",
+    "saveFailed": "Error al guardar la foto. Por favor intenta de nuevo.",
+    "shareFailed": "Error al compartir la foto. Por favor intenta de nuevo.",
+    "watermarkText": "Photo Restoration AI",
+    "watermarkNotice": "⚠️ Esta imagen contiene una marca de agua",
+    "watermarkSubtext": "Compra créditos para remover la marca de agua",
+    "saveToDevice": "Guardar en Dispositivo",
+    "sharePhoto": "Compartir Foto",
+    "removeWatermark": "Remover Marca de Agua"
+  },
+  "videoGallery": {
+    "title": "Galería de Videos IA",
+    "getFullPack": "Obtener Paquete Completo",
+    "premiumBadge": "PRO",
+    "filter": {
+      "all": "Todos"
+    },
+    "categories": {
+      "animateOldPhotos": {
+        "title": "Animar Fotos Antiguas",
+        "description": "Dale vida a tus fotos antiguas con animación IA"
+      },
+      "aiVideoGeneration": {
+        "title": "Generación de Video IA",
+        "description": "Crea videos desde cero con IA"
+      },
+      "motionTemplates": {
+        "title": "Plantillas de Movimiento",
+        "description": "Plantillas de video profesionales y efectos"
+      }
+    },
+    "categoryLabels": {
+      "animation": "Animación",
+      "generation": "Generación",
+      "templates": "Plantillas"
+    },
+    "videos": {
+      "photoToVideo": {
+        "title": "Foto a Video",
+        "description": "Transforma fotos estáticas en memorias en movimiento"
+      },
+      "faceAnimation": {
+        "title": "Animación Facial",
+        "description": "Añade expresiones naturales y movimientos"
+      },
+      "vintageRestoration": {
+        "title": "Restauración Vintage",
+        "description": "Restaura y anima fotos vintage"
+      },
+      "textToVideo": {
+        "title": "Texto a Video",
+        "description": "Convierte tus ideas en videos"
+      },
+      "imageToVideo": {
+        "title": "Imagen a Video",
+        "description": "Transforma imágenes en secuencias de video"
+      },
+      "styleTransfer": {
+        "title": "Transferencia de Estilo",
+        "description": "Aplica estilos artísticos a videos"
+      },
+      "slideshowCreator": {
+        "title": "Creador de Presentaciones",
+        "description": "Crea hermosas presentaciones de fotos"
+      },
+      "socialMedia": {
+        "title": "Redes Sociales",
+        "description": "Optimizado para plataformas sociales"
+      },
+      "businessPresentations": {
+        "title": "Presentaciones Empresariales",
+        "description": "Plantillas de video profesionales"
+      }
+    }
+  },
+  "previewScreen": {
+    "title": "Confirmar Mejora",
+    "subtitle": "Revisa tu foto mejorada",
+    "enhancing": "Mejorando tu foto...",
+    "enhancedPhoto": "Foto Mejorada",
+    "enhancePhoto": "Mejorar Foto",
+    "noCredits": "Sin Créditos Disponibles",
+    "usesCredit": "Usa 1 crédito",
+    "continueToResults": "Continuar a Resultados"
+  }
+}

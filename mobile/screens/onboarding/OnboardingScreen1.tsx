@@ -19,7 +19,7 @@ interface Props {
   onSkip: () => void;
 }
 
-export default function OnboardingScreen1({ onContinue }: Props) {
+export default function OnboardingScreen1({ onContinue, onSkip }: Props) {
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -48,6 +48,24 @@ export default function OnboardingScreen1({ onContinue }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Skip Button at Top */}
+      <Animated.View
+        style={[
+          styles.topSkipSection,
+          {
+            opacity: fadeAnim,
+          }
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.topSkipButton}
+          onPress={onSkip}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.topSkipButtonText}>Skip</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
       <View style={styles.content}>
         {/* Visual Demo */}
         <Animated.View 
@@ -103,6 +121,9 @@ export default function OnboardingScreen1({ onContinue }: Props) {
           <Text style={styles.subtitle}>
             {t('onboarding.screen1.subtitle')}
           </Text>
+          <Text style={styles.permissionNote}>
+            We'll ask for photo access to help restore your images
+          </Text>
         </Animated.View>
 
         {/* Continue Button */}
@@ -135,9 +156,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0a0a0a',
   },
+  topSkipSection: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 32,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  topSkipButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  topSkipButtonText: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontWeight: '500',
+  },
   content: {
     flex: 1,
     paddingHorizontal: 32,
+    paddingBottom: 32,
     justifyContent: 'space-between',
   },
   imageSection: {
@@ -249,6 +286,14 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
     lineHeight: 24,
+  },
+  permissionNote: {
+    fontSize: 14,
+    color: 'rgba(255, 107, 107, 0.8)',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginTop: 12,
+    fontWeight: '500',
   },
   buttonSection: {
     paddingBottom: 32,

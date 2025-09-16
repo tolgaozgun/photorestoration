@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { useAnalytics } from '../contexts/AnalyticsContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../theme';
 import sliderGif from '../assets/slider.gif';
+import { useTranslation } from 'react-i18next';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -43,126 +44,127 @@ interface VideoCategory {
   items: VideoItem[];
 }
 
-const mockVideoCategories: VideoCategory[] = [
-  {
-    id: 'animate-old-photos',
-    title: 'Animate Old Photos',
-    emoji: '📹',
-    description: 'Bring your old photos to life with AI animation',
-    items: [
-      {
-        id: 'animate-1',
-        title: 'Photo to Video',
-        description: 'Transform static photos into moving memories',
-        thumbnail: 'https://picsum.photos/400/225?random=animate1',
-        duration: '0:30',
-        isPremium: true,
-        category: 'Animation',
-        featureId: 'animate-old-photos',
-      },
-      {
-        id: 'animate-2',
-        title: 'Face Animation',
-        description: 'Add natural expressions and movements',
-        thumbnail: 'https://picsum.photos/400/225?random=animate2',
-        duration: '0:15',
-        isPremium: false,
-        category: 'Animation',
-        featureId: 'animate-old-photos',
-      },
-      {
-        id: 'animate-3',
-        title: 'Vintage Restoration',
-        description: 'Restore and animate vintage photos',
-        thumbnail: 'https://picsum.photos/400/225?random=animate3',
-        duration: '1:00',
-        isPremium: true,
-        category: 'Animation',
-        featureId: 'animate-old-photos',
-      },
-    ],
-  },
-  {
-    id: 'ai-video-generation',
-    title: 'AI Video Generation',
-    emoji: '🎬',
-    description: 'Create videos from scratch with AI',
-    items: [
-      {
-        id: 'video-1',
-        title: 'Text to Video',
-        description: 'Turn your ideas into videos',
-        thumbnail: 'https://picsum.photos/400/225?random=video1',
-        duration: '0:45',
-        isPremium: true,
-        category: 'Generation',
-        featureId: 'ai-video-generation',
-      },
-      {
-        id: 'video-2',
-        title: 'Image to Video',
-        description: 'Transform images into video sequences',
-        thumbnail: 'https://picsum.photos/400/225?random=video2',
-        duration: '0:30',
-        isPremium: false,
-        category: 'Generation',
-        featureId: 'ai-video-generation',
-      },
-      {
-        id: 'video-3',
-        title: 'Style Transfer',
-        description: 'Apply artistic styles to videos',
-        thumbnail: 'https://picsum.photos/400/225?random=video3',
-        duration: '1:15',
-        isPremium: true,
-        category: 'Generation',
-        featureId: 'ai-video-generation',
-      },
-    ],
-  },
-  {
-    id: 'motion-templates',
-    title: 'Motion Templates',
-    emoji: '🎭',
-    description: 'Professional video templates and effects',
-    items: [
-      {
-        id: 'motion-1',
-        title: 'Slideshow Creator',
-        description: 'Create beautiful photo slideshows',
-        thumbnail: 'https://picsum.photos/400/225?random=motion1',
-        duration: '2:00',
-        isPremium: false,
-        category: 'Templates',
-        featureId: 'motion-templates',
-      },
-      {
-        id: 'motion-2',
-        title: 'Social Media',
-        description: 'Optimized for social platforms',
-        thumbnail: 'https://picsum.photos/400/225?random=motion2',
-        duration: '0:15',
-        isPremium: true,
-        category: 'Templates',
-        featureId: 'motion-templates',
-      },
-      {
-        id: 'motion-3',
-        title: 'Business Presentations',
-        description: 'Professional video templates',
-        thumbnail: 'https://picsum.photos/400/225?random=motion3',
-        duration: '1:30',
-        isPremium: true,
-        category: 'Templates',
-        featureId: 'motion-templates',
-      },
-    ],
-  },
-];
-
 export default function VideoGalleryScreen() {
   const navigation = useNavigation<VideoGalleryScreenNavigationProp>();
   const { trackEvent } = useAnalytics();
+  const { t } = useTranslation();
+
+  const mockVideoCategories: VideoCategory[] = [
+    {
+      id: 'animate-old-photos',
+      title: t('videoGallery.categories.animateOldPhotos.title'),
+      emoji: '📹',
+      description: t('videoGallery.categories.animateOldPhotos.description'),
+      items: [
+        {
+          id: 'animate-1',
+          title: t('videoGallery.videos.photoToVideo.title'),
+          description: t('videoGallery.videos.photoToVideo.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=animate1',
+          duration: '0:30',
+          isPremium: true,
+          category: t('videoGallery.categoryLabels.animation'),
+          featureId: 'animate-old-photos',
+        },
+        {
+          id: 'animate-2',
+          title: t('videoGallery.videos.faceAnimation.title'),
+          description: t('videoGallery.videos.faceAnimation.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=animate2',
+          duration: '0:15',
+          isPremium: false,
+          category: t('videoGallery.categoryLabels.animation'),
+          featureId: 'animate-old-photos',
+        },
+        {
+          id: 'animate-3',
+          title: t('videoGallery.videos.vintageRestoration.title'),
+          description: t('videoGallery.videos.vintageRestoration.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=animate3',
+          duration: '1:00',
+          isPremium: true,
+          category: t('videoGallery.categoryLabels.animation'),
+          featureId: 'animate-old-photos',
+        },
+      ],
+    },
+    {
+      id: 'ai-video-generation',
+      title: t('videoGallery.categories.aiVideoGeneration.title'),
+      emoji: '🎬',
+      description: t('videoGallery.categories.aiVideoGeneration.description'),
+      items: [
+        {
+          id: 'video-1',
+          title: t('videoGallery.videos.textToVideo.title'),
+          description: t('videoGallery.videos.textToVideo.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=video1',
+          duration: '0:45',
+          isPremium: true,
+          category: t('videoGallery.categoryLabels.generation'),
+          featureId: 'ai-video-generation',
+        },
+        {
+          id: 'video-2',
+          title: t('videoGallery.videos.imageToVideo.title'),
+          description: t('videoGallery.videos.imageToVideo.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=video2',
+          duration: '0:30',
+          isPremium: false,
+          category: t('videoGallery.categoryLabels.generation'),
+          featureId: 'ai-video-generation',
+        },
+        {
+          id: 'video-3',
+          title: t('videoGallery.videos.styleTransfer.title'),
+          description: t('videoGallery.videos.styleTransfer.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=video3',
+          duration: '1:15',
+          isPremium: true,
+          category: t('videoGallery.categoryLabels.generation'),
+          featureId: 'ai-video-generation',
+        },
+      ],
+    },
+    {
+      id: 'motion-templates',
+      title: t('videoGallery.categories.motionTemplates.title'),
+      emoji: '🎭',
+      description: t('videoGallery.categories.motionTemplates.description'),
+      items: [
+        {
+          id: 'motion-1',
+          title: t('videoGallery.videos.slideshowCreator.title'),
+          description: t('videoGallery.videos.slideshowCreator.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=motion1',
+          duration: '2:00',
+          isPremium: false,
+          category: t('videoGallery.categoryLabels.templates'),
+          featureId: 'motion-templates',
+        },
+        {
+          id: 'motion-2',
+          title: t('videoGallery.videos.socialMedia.title'),
+          description: t('videoGallery.videos.socialMedia.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=motion2',
+          duration: '0:15',
+          isPremium: true,
+          category: t('videoGallery.categoryLabels.templates'),
+          featureId: 'motion-templates',
+        },
+        {
+          id: 'motion-3',
+          title: t('videoGallery.videos.businessPresentations.title'),
+          description: t('videoGallery.videos.businessPresentations.description'),
+          thumbnail: 'https://picsum.photos/400/225?random=motion3',
+          duration: '1:30',
+          isPremium: true,
+          category: t('videoGallery.categoryLabels.templates'),
+          featureId: 'motion-templates',
+        },
+      ],
+    },
+  ];
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -188,14 +190,14 @@ export default function VideoGalleryScreen() {
     ]).start();
   }, []);
 
-  const handleVideoPress = (video: VideoItem) => {
-    trackEvent('video_gallery_action', { 
-      type: 'video_tap', 
+  const handleVideoPress = useCallback((video: VideoItem) => {
+    trackEvent('video_gallery_action', {
+      type: 'video_tap',
       videoId: video.id,
       featureId: video.featureId,
-      isPremium: video.isPremium 
+      isPremium: video.isPremium
     });
-    
+
     if (video.isPremium) {
       // Navigate to purchase screen for premium videos
       navigation.navigate('Purchase');
@@ -208,56 +210,64 @@ export default function VideoGalleryScreen() {
         // navigation.navigate('VideoCreation', { featureId: video.featureId });
       }, 1000);
     }
-  };
+  }, [trackEvent, navigation]);
 
-  const handleGetFullPack = (categoryId: string) => {
-    trackEvent('video_gallery_action', { 
-      type: 'get_full_pack', 
-      categoryId 
+  const handleGetFullPack = useCallback((categoryId: string) => {
+    trackEvent('video_gallery_action', {
+      type: 'get_full_pack',
+      categoryId
     });
     navigation.navigate('Purchase');
-  };
+  }, [trackEvent, navigation]);
 
-  const filteredCategories = selectedCategory === 'all' 
-    ? mockVideoCategories 
-    : mockVideoCategories.filter(cat => cat.id === selectedCategory);
+  const filteredCategories = useMemo(() =>
+    selectedCategory === 'all'
+      ? mockVideoCategories
+      : mockVideoCategories.filter(cat => cat.id === selectedCategory),
+    [selectedCategory]
+  );
 
-  const renderVideoItem = ({ item }: { item: VideoItem }) => (
+  const renderVideoItem = useCallback(({ item }: { item: VideoItem }) => (
     <TouchableOpacity
       style={styles.videoItem}
       onPress={() => handleVideoPress(item)}
       activeOpacity={0.9}
     >
       <Image source={sliderGif} style={styles.videoItemBackground} />
-      <Image source={{ uri: item.thumbnail }} style={styles.videoThumbnail} />
-      
+      <Image
+        source={{ uri: item.thumbnail }}
+        style={styles.videoThumbnail}
+        resizeMode="cover"
+        loadingIndicatorSource={{ uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' }}
+      />
+
       {/* Duration Badge */}
       <View style={styles.durationBadge}>
         <Text style={styles.durationText}>{item.duration}</Text>
       </View>
-      
+
       {/* Premium Badge */}
       {item.isPremium && (
         <View style={styles.premiumBadge}>
-          <Text style={styles.premiumBadgeText}>PRO</Text>
+          <Text style={styles.premiumBadgeText}>{t('videoGallery.premiumBadge')}</Text>
         </View>
       )}
-      
+
       {/* Video Info Overlay */}
       <View style={styles.videoOverlay}>
         <Text style={styles.videoTitle}>{item.title}</Text>
         <Text style={styles.videoDescription}>{item.description}</Text>
         <Text style={styles.videoCategory}>{item.category}</Text>
       </View>
-      
+
       {/* Play Button */}
       <View style={styles.playButton}>
         <Text style={styles.playIcon}>▶</Text>
       </View>
     </TouchableOpacity>
-  );
+  ), [handleVideoPress, t]);
 
-  const renderCategoryPill = (category: string) => (
+  const renderCategoryPill = useCallback((category: string) => (
     <TouchableOpacity
       key={category}
       style={[
@@ -270,12 +280,12 @@ export default function VideoGalleryScreen() {
         styles.categoryPillText,
         selectedCategory === category && styles.categoryPillTextActive
       ]}>
-        {category === 'all' ? 'All' : mockVideoCategories.find(c => c.id === category)?.title || category}
+        {category === 'all' ? t('videoGallery.filter.all') : mockVideoCategories.find(c => c.id === category)?.title || category}
       </Text>
     </TouchableOpacity>
-  );
+  ), [selectedCategory, t, mockVideoCategories]);
 
-  const renderCategorySection = ({ item: category }: { item: VideoCategory }) => (
+  const renderCategorySection = useCallback(({ item: category }: { item: VideoCategory }) => (
     <View key={category.id} style={styles.categorySection}>
       <View style={styles.categoryHeader}>
         <View style={styles.categoryTitleContainer}>
@@ -289,20 +299,27 @@ export default function VideoGalleryScreen() {
           style={styles.getFullPackButton}
           onPress={() => handleGetFullPack(category.id)}
         >
-          <Text style={styles.getFullPackText}>Get Full Pack</Text>
+          <Text style={styles.getFullPackText}>{t('videoGallery.getFullPack')}</Text>
         </TouchableOpacity>
       </View>
-      
+
       <FlatList
         data={category.items}
         renderItem={renderVideoItem}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        initialNumToRender={2}
+        getItemLayout={(data, index) => (
+          { length: screenWidth - 20, offset: (screenWidth - 20) * index, index }
+        )}
         contentContainerStyle={styles.videoScrollContainer}
       />
     </View>
-  );
+  ), [renderVideoItem, handleGetFullPack, t, screenWidth]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -314,7 +331,7 @@ export default function VideoGalleryScreen() {
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>AI Video Gallery</Text>
+        <Text style={styles.headerTitle}>{t('videoGallery.title')}</Text>
         <TouchableOpacity style={styles.searchButton}>
           <Text style={styles.searchIcon}>🔍</Text>
         </TouchableOpacity>
@@ -342,6 +359,13 @@ export default function VideoGalleryScreen() {
           renderItem={renderCategorySection}
           keyExtractor={(item) => item.id}
           scrollEnabled={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={2}
+          windowSize={3}
+          initialNumToRender={1}
+          getItemLayout={(data, index) => (
+            { length: 280, offset: 280 * index, index }
+          )}
           ListFooterComponent={<View style={styles.bottomSpacing} />}
         />
       </Animated.ScrollView>

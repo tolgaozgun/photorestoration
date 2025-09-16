@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -8,203 +8,151 @@ import {
   TouchableOpacity,
   Animated,
   SafeAreaView,
-  Alert,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 // import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
-  onPhotoSelected: (imageUri: string) => void;
+  onContinue: () => void;
 }
 
-export default function OnboardingScreen3({ onPhotoSelected }: Props) {
+export default function OnboardingScreen3({ onContinue }: Props) {
   const { t } = useTranslation();
+  const [isPressed, setIsPressed] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const featureAnims = [
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+  ];
 
   useEffect(() => {
+    // Reset animations
+    fadeAnim.setValue(0);
+    slideAnim.setValue(30);
+    featureAnims.forEach(anim => anim.setValue(0));
+
+    // Start animations
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 600,
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 20,
-        friction: 7,
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
         useNativeDriver: true,
       }),
-    ]).start();
-
-    // Start pulsing animation for the main button
-    const pulseAnimation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.05,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    
-    pulseAnimation.start();
-
-    return () => pulseAnimation.stop();
+    ]).start(() => {
+      // Animate features sequentially
+      Animated.stagger(150,
+        featureAnims.map(anim =>
+          Animated.spring(anim, {
+            toValue: 1,
+            tension: 20,
+            friction: 7,
+            useNativeDriver: true,
+          })
+        )
+      ).start();
+    });
   }, []);
 
-  const requestPermissionAndPickImage = async () => {
-    try {
-      // Request permissions
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (permissionResult.status !== 'granted') {
-        Alert.alert(
-          t('home.permissionRequired'),
-          t('home.galleryPermission'),
-          [
-            { text: t('restoration.cancel'), style: 'cancel' },
-            { text: t('settings.settingsButton'), onPress: () => {} },
-          ]
-        );
-        return;
-      }
+  const features = [
+    { icon: '✨', title: 'AI Photos', description: 'Generate stunning AI-powered photos' },
+    { icon: '🎨', title: 'AI Filters', description: 'Apply creative filters to your images' },
+    { icon: '🎬', title: 'AI Videos', description: 'Create amazing video content' },
+    { icon: '🔧', title: 'Custom AI', description: 'Use custom AI tools for editing' },
+    { icon: '📸', title: 'Enhance', description: 'Restore and enhance your photos' },
+  ];
 
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: false,
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        onPhotoSelected(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert(t('restoration.error'), t('onboarding.screen3.failedToAccessPhotos'));
+  const handleContinue = () => {
+    if (isPressed) {
+      return;
     }
-  };
-
-  const takePicture = async () => {
-    try {
-      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-      
-      if (permissionResult.status !== 'granted') {
-        Alert.alert(
-          t('home.cameraPermissionRequired'),
-          t('home.cameraPermission'),
-          [
-            { text: t('restoration.cancel'), style: 'cancel' },
-            { text: t('settings.settingsButton'), onPress: () => {} },
-          ]
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: false,
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        onPhotoSelected(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.error('Error taking picture:', error);
-      Alert.alert(t('restoration.error'), t('onboarding.screen3.failedToAccessCamera'));
-    }
+    console.log('OnboardingScreen3: Get Started pressed');
+    setIsPressed(true);
+    onContinue();
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         {/* Header */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.headerSection,
             {
               opacity: fadeAnim,
-              transform: [{ translateY: fadeAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [30, 0]
-              })}]
+              transform: [{ translateY: slideAnim }]
             }
           ]}
         >
           <View style={styles.iconContainer}>
-            <Text style={styles.headerIcon}>📸</Text>
+            <Text style={styles.headerIcon}>🚀</Text>
           </View>
-          <Text style={styles.title}>{t('onboarding.screen3.title')}</Text>
+          <Text style={styles.title}>What You Can Do</Text>
           <Text style={styles.subtitle}>
-            {t('onboarding.screen3.subtitle')}
+            Explore five powerful screens with different AI capabilities
           </Text>
         </Animated.View>
 
-        {/* Action Buttons */}
-        <Animated.View 
+        {/* Features List */}
+        <Animated.View
           style={[
-            styles.actionsSection,
+            styles.featuresSection,
             {
               opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }]
+              transform: [{ translateY: slideAnim }]
             }
           ]}
         >
-          {/* Primary Action - Access Photos */}
-          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={requestPermissionAndPickImage}
-              activeOpacity={0.9}
-            >
-              <View style={styles.primaryGradient}>
-                <Text style={styles.primaryIcon}>🖼️</Text>
-                <Text style={styles.primaryText}>{t('photoInput.chooseFromPhotos')}</Text>
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
+          <View style={styles.featuresList}>
+            {features.map((feature, index) => (
+              <Animated.View
+                key={index}
+                style={[
+                  styles.featureItem,
+                  {
+                    opacity: featureAnims[index],
+                    transform: [{ scale: featureAnims[index] }]
+                  }
+                ]}
+              >
+                <View style={styles.featureIcon}>
+                  <Text style={styles.featureEmoji}>{feature.icon}</Text>
+                </View>
+                <View style={styles.featureContent}>
+                  <Text style={styles.featureTitle}>{feature.title}</Text>
+                  <Text style={styles.featureDescription}>{feature.description}</Text>
+                </View>
+              </Animated.View>
+            ))}
+          </View>
+        </Animated.View>
 
-          {/* Secondary Action - Take Photo */}
+        {/* Continue Button */}
+        <Animated.View
+          style={[
+            styles.buttonSection,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }
+          ]}
+        >
           <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={takePicture}
-            activeOpacity={0.8}
+            style={styles.continueButton}
+            onPress={handleContinue}
+            activeOpacity={0.9}
           >
-            <View style={styles.secondaryContent}>
-              <Text style={styles.secondaryIcon}>📷</Text>
-              <Text style={styles.secondaryText}>{t('photoInput.takeNewPhoto')}</Text>
+            <View style={styles.continueGradient}>
+              <Text style={styles.continueText}>Get Started</Text>
             </View>
           </TouchableOpacity>
-
-          {/* Tertiary Action - Scan Document */}
-          <TouchableOpacity
-            style={styles.tertiaryButton}
-            onPress={requestPermissionAndPickImage} // For now, same as photos
-            activeOpacity={0.7}
-          >
-            <Text style={styles.tertiaryText}>{t('photoInput.scanDocument')}</Text>
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* Helper Text */}
-        <Animated.View 
-          style={[
-            styles.helperSection,
-            {
-              opacity: fadeAnim,
-            }
-          ]}
-        >
-          <Text style={styles.helperText}>
-            {t('onboarding.screen3.helperText')}
-          </Text>
         </Animated.View>
       </View>
     </SafeAreaView>
@@ -218,117 +166,111 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 32,
-    paddingVertical: 32,
-    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
   },
   headerSection: {
     alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
+    marginBottom: 24,
   },
   iconContainer: {
-    width: 100,
-    height: 100,
+    width: 64,
+    height: 64,
     backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderRadius: 50,
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 107, 107, 0.2)',
   },
   headerIcon: {
-    fontSize: 48,
+    fontSize: 28,
   },
   title: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: '700',
     color: '#fff',
     textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 36,
+    marginBottom: 8,
+    lineHeight: 28,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 20,
   },
-  actionsSection: {
-    flex: 1.5,
-    justifyContent: 'center',
-  },
-  primaryButton: {
-    borderRadius: 24,
-    overflow: 'hidden',
-    elevation: 6,
-    shadowColor: '#FF6B6B',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
+  featuresSection: {
+    flex: 1,
     marginBottom: 20,
   },
-  primaryGradient: {
+  featuresList: {
+    paddingVertical: 8,
+  },
+  featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 107, 0.1)',
+  },
+  featureIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(255, 107, 107, 0.1)',
+    borderRadius: 20,
     justifyContent: 'center',
-    paddingVertical: 20,
+    alignItems: 'center',
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 107, 0.2)',
+  },
+  featureEmoji: {
+    fontSize: 20,
+  },
+  featureContent: {
+    flex: 1,
+  },
+  featureTitle: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  featureDescription: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 13,
+    lineHeight: 16,
+  },
+  buttonSection: {
+    marginTop: 16,
+  },
+  continueButton: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    elevation: 4,
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    marginBottom: 8,
+    minHeight: 48, // Ensure minimum touch target
+  },
+  continueGradient: {
+    paddingVertical: 16,
     paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#FF6B6B',
     borderRadius: 24,
   },
-  primaryIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  primaryText: {
-    fontSize: 18,
+  continueText: {
+    fontSize: 17,
     fontWeight: '600',
     color: '#fff',
-  },
-  secondaryButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    marginBottom: 16,
-  },
-  secondaryContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 32,
-  },
-  secondaryIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  secondaryText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#fff',
-  },
-  tertiaryButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-  },
-  tertiaryText: {
-    fontSize: 16,
-    color: '#FF6B6B',
-    fontWeight: '500',
-  },
-  helperSection: {
-    alignItems: 'center',
-    paddingBottom: 16,
-  },
-  helperText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.5)',
-    textAlign: 'center',
-    lineHeight: 20,
-    paddingHorizontal: 16,
   },
 });

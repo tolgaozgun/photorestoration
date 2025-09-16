@@ -143,7 +143,14 @@
     "back": "Back",
     "home": "Restore",
     "recents": "Recent",
-    "settings": "Settings"
+    "settings": "Settings",
+    "tabs": {
+      "enhance": "Enhance",
+      "aiPhotos": "AI Photos",
+      "aiFilters": "AI Filters",
+      "aiVideos": "AI Videos",
+      "customAI": "Custom AI"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -186,6 +193,7 @@
       "en": "English (English)",
       "tr": "Turkish (Türkçe)",
       "de": "German (Deutsch)",
+      "es": "Spanish (Español)",
       "zh": "Chinese (中文)"
     },
     "disableSyncTitle": "Disable Sync?",
@@ -196,7 +204,174 @@
     "yourUniqueId": "Your Unique ID",
     "syncAcrossDevices": "Sync Across Devices",
     "syncYourHistory": "Sync your restoration history",
-    "syncedTo": "Synced to {{email}}"
+    "syncedTo": "Synced to {{email}}",
+    "managePreferences": "Manage your preferences",
+    "signedIn": "Signed in",
+    "notSignedIn": "Not signed in",
+    "signInToSync": "Sign in to sync across devices",
+    "goPro": "Go Pro",
+    "unlockPremiumFeatures": "Unlock all premium features",
+    "unlimitedAI": "Unlimited AI generations",
+    "hdQuality": "HD quality outputs",
+    "priorityProcessing": "Priority processing",
+    "premiumFilters": "All premium filters",
+    "noWatermarks": "No watermarks",
+    "tryProNow": "Try Pro Now",
+    "appSettings": "App Settings",
+    "replayOnboarding": "Replay Onboarding",
+    "seeIntroAgain": "See the app introduction again",
+    "viewManageDevices": "View and manage connected devices",
+    "signInToManageDevices": "Sign in to manage devices",
+    "purchaseAdditionalCredits": "Purchase additional credits",
+    "shareApp": "Share App",
+    "tellFriendsAboutUs": "Tell friends about us",
+    "relaunchOnboardingTitle": "Relaunch Onboarding",
+    "relaunchOnboardingMessage": "This will reset the onboarding process and show you the app introduction again. Continue?",
+    "continue": "Continue",
+    "shareAppMessage": "Check out this amazing photo restoration app!"
+  },
+  "tabs": {
+    "enhance": {
+      "title": "Enhance Photos",
+      "subtitle": "Select a photo to start enhancing",
+      "selectPhotoToEnhance": "Select a photo to enhance",
+      "tapToChooseFromGalleryOrCamera": "Tap to choose from gallery or camera",
+      "recentPhotos": "Recent Photos",
+      "loadingRecentPhotos": "Loading recent photos...",
+      "noRecentPhotosFound": "No recent photos found",
+      "takeSomePhotosToSeeThemHere": "Take some photos to see them here",
+      "galleryPermissionDenied": "Gallery permission denied. Please enable access in device settings to see your recent photos.",
+      "mediaLibraryPermissionRequired": "Media library permission required to access recent photos",
+      "failedToLoadRecentPhotos": "Failed to load recent photos. Please try again.",
+      "pleaseGrantGalleryPermission": "Please grant gallery permission to select photos",
+      "failedToPickImage": "Failed to pick image. Please try again."
+    },
+    "aiPhotos": {
+      "title": "AI Photos",
+      "subtitle": "Generate AI-powered photos"
+    },
+    "aiVideos": {
+      "title": "AI Videos",
+      "subtitle": "Generate AI-powered videos"
+    },
+    "aiFilters": {
+      "title": "AI Filters",
+      "subtitle": "Transform your photos with AI filters",
+      "pickAPhoto": "Pick a photo",
+      "transformYourPhotoWithAIFilters": "Transform your photo with AI filters",
+      "selectPhoto": "Select Photo",
+      "pleaseGrantGalleryPermission": "Please grant gallery permission to select photos",
+      "failedToPickImage": "Failed to pick image. Please try again."
+    },
+    "customAI": {
+      "title": "Custom AI Edits",
+      "subtitle": "Transform photos with custom AI",
+      "uploadAnImage": "Upload an image",
+      "transformYourPhotoWithCustomAIEdits": "Transform your photo with custom AI edits",
+      "describeAnyEditYouWant": "Describe any edit you want",
+      "useNaturalLanguageDescription": "Use natural language to describe changes you want to make to your photo. For example: \"Remove the background\", \"Change hair color to blonde\", \"Add sunset lighting\"",
+      "popularEdits": "Popular edits:",
+      "pleaseGrantGalleryPermission": "Please grant gallery permission to select photos",
+      "failedToPickImage": "Failed to pick image. Please try again."
+    }
+  },
+  "common": {
+    "seeAll": "See All",
+    "pro": "PRO",
+    "permissionRequired": "Permission Required",
+    "error": "Error",
+    "grantPermission": "Grant Permission"
+  },
+  "content": {
+    "aiPhotos": {
+      "futureBaby": {
+        "title": "Future Baby",
+        "description": "See what your future baby might look like",
+        "babyPrediction": "Baby Prediction",
+        "familyPreview": "Family Preview",
+        "childGenerator": "Child Generator"
+      },
+      "digitalTwin": {
+        "title": "Digital Twin",
+        "description": "Create your digital avatar",
+        "avatar3d": "3D Avatar",
+        "virtualClone": "Virtual Clone",
+        "digitalPersona": "Digital Persona"
+      },
+      "professionalHeadshots": {
+        "title": "Professional Headshots",
+        "description": "Business photo enhancement",
+        "corporate": "Corporate",
+        "linkedin": "LinkedIn",
+        "portfolio": "Portfolio"
+      },
+      "vintagePortraits": {
+        "title": "Vintage Portraits",
+        "description": "Classic styling",
+        "victorian": "Victorian",
+        "renaissance": "Renaissance",
+        "retro": "Retro"
+      },
+      "fantasyCharacters": {
+        "title": "Fantasy Characters",
+        "description": "Costume and character photos",
+        "wizard": "Wizard",
+        "knight": "Knight",
+        "elf": "Elf"
+      }
+    },
+    "aiVideos": {
+      "animateOldPhotos": {
+        "title": "Animate Old Photos",
+        "description": "Bring your old photos to life",
+        "faceAnimation": "Face Animation",
+        "subtleMotion": "Subtle Motion",
+        "expressionChanges": "Expression Changes"
+      },
+      "cinemagraphs": {
+        "title": "Cinemagraph Creation",
+        "description": "Subtle motion effects",
+        "waterFlow": "Water Flow",
+        "hairMovement": "Hair Movement",
+        "cloudMotion": "Cloud Motion"
+      },
+      "portraitAnimation": {
+        "title": "Portrait Animation",
+        "description": "Facial expressions and movement",
+        "smileAnimation": "Smile Animation",
+        "talkingEffect": "Talking Effect",
+        "eyeMovement": "Eye Movement"
+      },
+      "backgroundAnimation": {
+        "title": "Background Animation",
+        "description": "Dynamic backgrounds",
+        "skyChanges": "Sky Changes",
+        "weatherEffects": "Weather Effects",
+        "lightTransitions": "Light Transitions"
+      }
+    },
+    "aiFilters": {
+      "3dPhotos": "3D Photos",
+      "muscles": "Muscles",
+      "flash": "Flash",
+      "fairyToon": "Fairy Toon",
+      "nineties": "90s Anime",
+      "chibi": "Chibi",
+      "pixel": "Pixel",
+      "animalToon": "Animal Toon",
+      "animated": "Animated",
+      "caricature": "Caricature",
+      "miniToys": "Mini Toys",
+      "doll": "Doll"
+    },
+    "customAI": {
+      "removeBackground": "Remove background",
+      "changeLighting": "Change lighting",
+      "fixSkin": "Fix skin",
+      "addEffects": "Add effects",
+      "changeHairColor": "Change hair color",
+      "enhanceEyes": "Enhance eyes"
+    }
   },
   "onboarding": {
     "skip": "Skip",
@@ -328,5 +503,80 @@
     "saveToDevice": "Save to Device",
     "sharePhoto": "Share Photo",
     "removeWatermark": "Remove Watermark"
+  },
+  "videoGallery": {
+    "title": "AI Video Gallery",
+    "getFullPack": "Get Full Pack",
+    "premiumBadge": "PRO",
+    "filter": {
+      "all": "All"
+    },
+    "categories": {
+      "animateOldPhotos": {
+        "title": "Animate Old Photos",
+        "description": "Bring your old photos to life with AI animation"
+      },
+      "aiVideoGeneration": {
+        "title": "AI Video Generation",
+        "description": "Create videos from scratch with AI"
+      },
+      "motionTemplates": {
+        "title": "Motion Templates",
+        "description": "Professional video templates and effects"
+      }
+    },
+    "categoryLabels": {
+      "animation": "Animation",
+      "generation": "Generation",
+      "templates": "Templates"
+    },
+    "videos": {
+      "photoToVideo": {
+        "title": "Photo to Video",
+        "description": "Transform static photos into moving memories"
+      },
+      "faceAnimation": {
+        "title": "Face Animation",
+        "description": "Add natural expressions and movements"
+      },
+      "vintageRestoration": {
+        "title": "Vintage Restoration",
+        "description": "Restore and animate vintage photos"
+      },
+      "textToVideo": {
+        "title": "Text to Video",
+        "description": "Turn your ideas into videos"
+      },
+      "imageToVideo": {
+        "title": "Image to Video",
+        "description": "Transform images into video sequences"
+      },
+      "styleTransfer": {
+        "title": "Style Transfer",
+        "description": "Apply artistic styles to videos"
+      },
+      "slideshowCreator": {
+        "title": "Slideshow Creator",
+        "description": "Create beautiful photo slideshows"
+      },
+      "socialMedia": {
+        "title": "Social Media",
+        "description": "Optimized for social platforms"
+      },
+      "businessPresentations": {
+        "title": "Business Presentations",
+        "description": "Professional video templates"
+      }
+    }
+  },
+  "previewScreen": {
+    "title": "Confirm Enhancement",
+    "subtitle": "Review your enhanced photo",
+    "enhancing": "Enhancing your photo...",
+    "enhancedPhoto": "Enhanced Photo",
+    "enhancePhoto": "Enhance Photo",
+    "noCredits": "No Credits Available",
+    "usesCredit": "Uses 1 credit",
+    "continueToResults": "Continue to Results"
   }
 }

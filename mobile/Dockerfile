@@ -15,4 +15,4 @@ ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 \
 
 EXPOSE 8081 19000 19001 19002 19006
 # Use npm exec so we don’t depend on global npx
-CMD ["npm","exec","--yes","expo","start","--","--tunnel","--host","0.0.0.0","--non-interactive"]
+CMD ["npx", "expo", "start", "--tunnel", "--non-interactive"]

@@ -143,7 +143,14 @@
     "back": "返回",
     "home": "恢复",
     "recents": "最近",
-    "settings": "设置"
+    "settings": "设置",
+    "tabs": {
+      "enhance": "增强",
+      "aiPhotos": "AI照片",
+      "aiFilters": "AI滤镜",
+      "aiVideos": "AI视频",
+      "customAI": "自定义AI"
+    }
   },
   "settings": {
     "title": "设置",
@@ -185,6 +192,7 @@
       "en": "英语 (English)",
       "tr": "土耳其语 (Türkçe)",
       "de": "德语 (Deutsch)",
+      "es": "西班牙语 (Español)",
       "zh": "中文 (中文)"
     },
     "disableSyncTitle": "禁用同步？",
@@ -195,7 +203,174 @@
     "yourUniqueId": "您的唯一ID",
     "syncAcrossDevices": "跨设备同步",
     "syncYourHistory": "同步您的恢复历史记录",
-    "syncedTo": "已同步到 {{email}}"
+    "syncedTo": "已同步到 {{email}}",
+    "managePreferences": "管理您的偏好设置",
+    "signedIn": "已登录",
+    "notSignedIn": "未登录",
+    "signInToSync": "登录以跨设备同步",
+    "goPro": "升级专业版",
+    "unlockPremiumFeatures": "解锁所有高级功能",
+    "unlimitedAI": "无限AI生成",
+    "hdQuality": "高清质量输出",
+    "priorityProcessing": "优先处理",
+    "premiumFilters": "所有高级滤镜",
+    "noWatermarks": "无水印",
+    "tryProNow": "立即试用专业版",
+    "appSettings": "应用设置",
+    "replayOnboarding": "重播引导",
+    "seeIntroAgain": "再次查看应用介绍",
+    "viewManageDevices": "查看和管理连接的设备",
+    "signInToManageDevices": "登录以管理设备",
+    "purchaseAdditionalCredits": "购买额外积分",
+    "shareApp": "分享应用",
+    "tellFriendsAboutUs": "告诉朋友关于我们",
+    "relaunchOnboardingTitle": "重新启动引导",
+    "relaunchOnboardingMessage": "这将重置引导过程并再次向您显示应用介绍。继续？",
+    "continue": "继续",
+    "shareAppMessage": "看看这个令人惊叹的照片修复应用！"
+  },
+  "tabs": {
+    "enhance": {
+      "title": "增强照片",
+      "subtitle": "选择一张照片开始增强",
+      "selectPhotoToEnhance": "选择一张照片进行增强",
+      "tapToChooseFromGalleryOrCamera": "点击从相册或相机选择",
+      "recentPhotos": "最近的照片",
+      "loadingRecentPhotos": "正在加载最近的照片...",
+      "noRecentPhotosFound": "未找到最近的照片",
+      "takeSomePhotosToSeeThemHere": "拍摄一些照片以在此处查看",
+      "galleryPermissionDenied": "相册权限被拒绝。请在设备设置中启用访问权限以查看您最近的照片。",
+      "mediaLibraryPermissionRequired": "需要媒体库权限才能访问最近的照片",
+      "failedToLoadRecentPhotos": "加载最近照片失败。请重试。",
+      "pleaseGrantGalleryPermission": "请授予相册权限以选择照片",
+      "failedToPickImage": "选择图片失败。请重试。"
+    },
+    "aiPhotos": {
+      "title": "AI照片",
+      "subtitle": "生成AI驱动的照片"
+    },
+    "aiVideos": {
+      "title": "AI视频",
+      "subtitle": "生成AI驱动的视频"
+    },
+    "aiFilters": {
+      "title": "AI滤镜",
+      "subtitle": "用AI滤镜转换您的照片",
+      "pickAPhoto": "选择一张照片",
+      "transformYourPhotoWithAIFilters": "用AI滤镜转换您的照片",
+      "selectPhoto": "选择照片",
+      "pleaseGrantGalleryPermission": "请授予相册权限以选择照片",
+      "failedToPickImage": "选择图片失败。请重试。"
+    },
+    "customAI": {
+      "title": "自定义AI编辑",
+      "subtitle": "用自定义AI转换照片",
+      "uploadAnImage": "上传图片",
+      "transformYourPhotoWithCustomAIEdits": "用自定义AI编辑转换您的照片",
+      "describeAnyEditYouWant": "描述您想要的任何编辑",
+      "useNaturalLanguageDescription": "使用自然语言描述您想要对照片进行的更改。例如：\"删除背景\"，\"将头发颜色改为金色\"，\"添加夕阳光照\"",
+      "popularEdits": "热门编辑：",
+      "pleaseGrantGalleryPermission": "请授予相册权限以选择照片",
+      "failedToPickImage": "选择图片失败。请重试。"
+    }
+  },
+  "common": {
+    "seeAll": "查看全部",
+    "pro": "专业版",
+    "permissionRequired": "需要权限",
+    "error": "错误",
+    "grantPermission": "授予权限"
+  },
+  "content": {
+    "aiPhotos": {
+      "futureBaby": {
+        "title": "未来宝宝",
+        "description": "看看你未来的宝宝可能长什么样",
+        "babyPrediction": "宝宝预测",
+        "familyPreview": "家庭预览",
+        "childGenerator": "儿童生成器"
+      },
+      "digitalTwin": {
+        "title": "数字孪生",
+        "description": "创建你的数字头像",
+        "avatar3d": "3D头像",
+        "virtualClone": "虚拟克隆",
+        "digitalPersona": "数字人格"
+      },
+      "professionalHeadshots": {
+        "title": "专业头像",
+        "description": "商务照片增强",
+        "corporate": "企业",
+        "linkedin": "LinkedIn",
+        "portfolio": "作品集"
+      },
+      "vintagePortraits": {
+        "title": "复古肖像",
+        "description": "经典造型",
+        "victorian": "维多利亚",
+        "renaissance": "文艺复兴",
+        "retro": "复古"
+      },
+      "fantasyCharacters": {
+        "title": "奇幻角色",
+        "description": "服装和角色照片",
+        "wizard": "巫师",
+        "knight": "骑士",
+        "elf": "精灵"
+      }
+    },
+    "aiVideos": {
+      "animateOldPhotos": {
+        "title": "动画化旧照片",
+        "description": "让你的旧照片活起来",
+        "faceAnimation": "面部动画",
+        "subtleMotion": "微妙动作",
+        "expressionChanges": "表情变化"
+      },
+      "cinemagraphs": {
+        "title": "电影图创作",
+        "description": "微妙的动作效果",
+        "waterFlow": "水流",
+        "hairMovement": "头发摆动",
+        "cloudMotion": "云层运动"
+      },
+      "portraitAnimation": {
+        "title": "肖像动画",
+        "description": "面部表情和动作",
+        "smileAnimation": "微笑动画",
+        "talkingEffect": "说话效果",
+        "eyeMovement": "眼部运动"
+      },
+      "backgroundAnimation": {
+        "title": "背景动画",
+        "description": "动态背景",
+        "skyChanges": "天空变化",
+        "weatherEffects": "天气效果",
+        "lightTransitions": "光线转换"
+      }
+    },
+    "aiFilters": {
+      "3dPhotos": "3D照片",
+      "muscles": "肌肉",
+      "flash": "闪光",
+      "fairyToon": "仙女卡通",
+      "nineties": "90年代动漫",
+      "chibi": "Q版",
+      "pixel": "像素",
+      "animalToon": "动物卡通",
+      "animated": "动画",
+      "caricature": "漫画",
+      "miniToys": "迷你玩具",
+      "doll": "娃娃"
+    },
+    "customAI": {
+      "removeBackground": "移除背景",
+      "changeLighting": "改变光照",
+      "fixSkin": "修复皮肤",
+      "addEffects": "添加效果",
+      "changeHairColor": "改变发色",
+      "enhanceEyes": "增强眼部"
+    }
   },
   "onboarding": {
     "skip": "跳过",
@@ -327,5 +502,80 @@
     "saveToDevice": "保存到设备",
     "sharePhoto": "分享照片",
     "removeWatermark": "去除水印"
+  },
+  "videoGallery": {
+    "title": "AI视频画廊",
+    "getFullPack": "获取完整包",
+    "premiumBadge": "专业版",
+    "filter": {
+      "all": "全部"
+    },
+    "categories": {
+      "animateOldPhotos": {
+        "title": "动画老照片",
+        "description": "用AI动画让你的老照片复活"
+      },
+      "aiVideoGeneration": {
+        "title": "AI视频生成",
+        "description": "用AI从头创建视频"
+      },
+      "motionTemplates": {
+        "title": "动作模板",
+        "description": "专业视频模板和效果"
+      }
+    },
+    "categoryLabels": {
+      "animation": "动画",
+      "generation": "生成",
+      "templates": "模板"
+    },
+    "videos": {
+      "photoToVideo": {
+        "title": "照片到视频",
+        "description": "将静态照片转换为动态回忆"
+      },
+      "faceAnimation": {
+        "title": "面部动画",
+        "description": "添加自然表情和动作"
+      },
+      "vintageRestoration": {
+        "title": "复古修复",
+        "description": "修复并动画化复古照片"
+      },
+      "textToVideo": {
+        "title": "文本到视频",
+        "description": "将你的想法转化为视频"
+      },
+      "imageToVideo": {
+        "title": "图片到视频",
+        "description": "将图片转换为视频序列"
+      },
+      "styleTransfer": {
+        "title": "风格迁移",
+        "description": "将艺术风格应用于视频"
+      },
+      "slideshowCreator": {
+        "title": "幻灯片创建器",
+        "description": "创建美丽的照片幻灯片"
+      },
+      "socialMedia": {
+        "title": "社交媒体",
+        "description": "为社交平台优化"
+      },
+      "businessPresentations": {
+        "title": "商务演示",
+        "description": "专业视频模板"
+      }
+    }
+  },
+  "previewScreen": {
+    "title": "确认增强",
+    "subtitle": "查看你的增强照片",
+    "enhancing": "正在增强你的照片...",
+    "enhancedPhoto": "增强照片",
+    "enhancePhoto": "增强照片",
+    "noCredits": "没有可用积分",
+    "usesCredit": "使用1个积分",
+    "continueToResults": "继续查看结果"
   }
 }

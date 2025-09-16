@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Share,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -96,7 +97,19 @@ export default function ExportScreen({ navigation, route }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backIcon}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>{t('export.title')}</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
       <View style={styles.imageContainer}>
         <Image source={{ uri: enhancedUri }} style={styles.image} resizeMode="contain" />
         {watermark && (
@@ -165,7 +178,7 @@ export default function ExportScreen({ navigation, route }: Props) {
       >
         <Text style={styles.doneButtonText}>{t('common.done')}</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -173,13 +186,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#000',
+    marginBottom: 20,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    flex: 1,
+  },
+  headerSpacer: {
+    width: 44,
   },
   imageContainer: {
     flex: 1,
     backgroundColor: '#1a1a1a',
     borderRadius: 12,
     overflow: 'hidden',
+    marginHorizontal: 20,
     marginBottom: 20,
     position: 'relative',
   },
@@ -218,6 +260,8 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     gap: 15,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   button: {
     flexDirection: 'row',

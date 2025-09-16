@@ -28,23 +28,24 @@ import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
 
-type CustomAIEDitsScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'CustomAIEDits'> & 
+type CustomAIEDitsScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'CustomAIEDits'> &
   StackNavigationProp<RootStackParamList>;
-
-// Mock edit examples
-const editExamples = [
-  { id: 'remove-bg', title: 'Remove background', icon: '✂️' },
-  { id: 'change-lighting', title: 'Change lighting', icon: '💡' },
-  { id: 'fix-skin', title: 'Fix skin', icon: '✨' },
-  { id: 'add-effects', title: 'Add effects', icon: '🎨' },
-  { id: 'change-hair', title: 'Change hair color', icon: '💇' },
-  { id: 'enhance-eyes', title: 'Enhance eyes', icon: '👁️' },
-];
 
 export default function CustomAIEDitsScreen() {
   const navigation = useNavigation<CustomAIEDitsScreenNavigationProp>();
+  const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Edit examples using translations
+  const editExamples = [
+    { id: 'remove-bg', title: t('content.customAI.removeBackground'), icon: '✂️' },
+    { id: 'change-lighting', title: t('content.customAI.changeLighting'), icon: '💡' },
+    { id: 'fix-skin', title: t('content.customAI.fixSkin'), icon: '✨' },
+    { id: 'add-effects', title: t('content.customAI.addEffects'), icon: '🎨' },
+    { id: 'change-hair', title: t('content.customAI.changeHairColor'), icon: '💇' },
+    { id: 'enhance-eyes', title: t('content.customAI.enhanceEyes'), icon: '👁️' },
+  ];
 
   const handleSettingsPress = () => {
     navigation.navigate('Settings');
@@ -65,7 +66,7 @@ export default function CustomAIEDitsScreen() {
 
   const pickImageFromGallery = async () => {
     if (!hasGalleryPermission) {
-      Alert.alert('Permission Required', 'Please grant gallery permission to select photos');
+      Alert.alert(t('common.permissionRequired'), t('tabs.customAI.pleaseGrantGalleryPermission'));
       return;
     }
 
@@ -87,7 +88,7 @@ export default function CustomAIEDitsScreen() {
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      Alert.alert(t('common.error'), t('tabs.customAI.failedToPickImage'));
     }
   };
 
@@ -116,8 +117,8 @@ export default function CustomAIEDitsScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>Custom AI Edits</Text>
-            <Text style={styles.screenSubtitle}>Transform photos with custom AI</Text>
+            <Text style={styles.screenTitle}>{t('tabs.customAI.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('tabs.customAI.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
             <Text style={styles.settingsIcon}>⚙️</Text>
@@ -129,8 +130,8 @@ export default function CustomAIEDitsScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Top Section - Upload Area */}
         <View style={styles.uploadSection}>
-          <Text style={styles.uploadTitle}>Upload an image</Text>
-          <Text style={styles.uploadSubtitle}>Transform your photo with custom AI edits</Text>
+          <Text style={styles.uploadTitle}>{t('tabs.customAI.uploadAnImage')}</Text>
+          <Text style={styles.uploadSubtitle}>{t('tabs.customAI.transformYourPhotoWithCustomAIEdits')}</Text>
           
           <Image 
             source={{ uri: 'https://picsum.photos/200/200?random=example' }} 
@@ -142,19 +143,19 @@ export default function CustomAIEDitsScreen() {
             onPress={pickImageFromGallery}
             activeOpacity={0.8}
           >
-            <Text style={styles.uploadButtonText}>Upload an image</Text>
+            <Text style={styles.uploadButtonText}>{t('tabs.customAI.uploadAnImage')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Bottom Section - Description Area */}
         <View style={styles.descriptionSection}>
-          <Text style={styles.descriptionTitle}>Describe any edit you want</Text>
+          <Text style={styles.descriptionTitle}>{t('tabs.customAI.describeAnyEditYouWant')}</Text>
           <Text style={styles.descriptionText}>
-            Use natural language to describe changes you want to make to your photo. For example: "Remove the background", "Change hair color to blonde", "Add sunset lighting"
+            {t('tabs.customAI.useNaturalLanguageDescription')}
           </Text>
           
           {/* Example Pills */}
-          <Text style={styles.examplesTitle}>Popular edits:</Text>
+          <Text style={styles.examplesTitle}>{t('tabs.customAI.popularEdits')}</Text>
           <View style={styles.examplesContainer}>
             {editExamples.map(renderExamplePill)}
           </View>

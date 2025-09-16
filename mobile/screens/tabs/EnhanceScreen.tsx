@@ -43,14 +43,14 @@ type EnhanceScreenNavigationProp = StackNavigationProp<EnhanceStackParamList> & 
 
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
-// import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardSize = (screenWidth - 32 - 16) / 3; // 3 columns with margins
 
 export default function EnhanceScreen() {
   const navigation = useNavigation<EnhanceScreenNavigationProp>();
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
@@ -68,7 +68,7 @@ export default function EnhanceScreen() {
     if (hasGalleryPermission) {
       loadRecentPhotos();
     } else if (hasGalleryPermission === false) {
-      setPhotosError('Gallery permission denied. Please enable access in device settings to see your recent photos.');
+      setPhotosError(t('tabs.enhance.galleryPermissionDenied'));
     }
   }, [hasGalleryPermission]);
 
@@ -88,7 +88,7 @@ export default function EnhanceScreen() {
       const mediaPermission = await MediaLibrary.requestPermissionsAsync();
 
       if (mediaPermission.status !== 'granted') {
-        setPhotosError('Media library permission required to access recent photos');
+        setPhotosError(t('tabs.enhance.mediaLibraryPermissionRequired'));
         return;
       }
 
@@ -119,7 +119,7 @@ export default function EnhanceScreen() {
       setRecentPhotos(photos);
     } catch (error) {
       console.error('Error loading recent photos:', error);
-      setPhotosError('Failed to load recent photos. Please try again.');
+      setPhotosError(t('tabs.enhance.failedToLoadRecentPhotos'));
     } finally {
       setIsLoadingPhotos(false);
     }
@@ -127,7 +127,7 @@ export default function EnhanceScreen() {
 
   const pickImageFromSource = async (source: 'camera' | 'gallery') => {
     if (!hasGalleryPermission && source === 'gallery') {
-      Alert.alert('Permission Required', 'Please grant gallery permission to select photos');
+      Alert.alert(t('common.permissionRequired'), t('tabs.enhance.pleaseGrantGalleryPermission'));
       return;
     }
 
@@ -156,7 +156,7 @@ export default function EnhanceScreen() {
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      Alert.alert(t('common.error'), t('tabs.enhance.failedToPickImage'));
     }
   };
 
@@ -172,8 +172,8 @@ export default function EnhanceScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>Enhance Photos</Text>
-            <Text style={styles.screenSubtitle}>Select a photo to start enhancing</Text>
+            <Text style={styles.screenTitle}>{t('tabs.enhance.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('tabs.enhance.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
             <Text style={styles.settingsIcon}>⚙️</Text>
@@ -191,14 +191,14 @@ export default function EnhanceScreen() {
         >
           <View style={styles.uploadArea}>
             <Text style={styles.cameraIcon}>📷</Text>
-            <Text style={styles.uploadTitle}>Select a photo to enhance</Text>
-            <Text style={styles.uploadSubtitle}>Tap to choose from gallery or camera</Text>
+            <Text style={styles.uploadTitle}>{t('tabs.enhance.selectPhotoToEnhance')}</Text>
+            <Text style={styles.uploadSubtitle}>{t('tabs.enhance.tapToChooseFromGalleryOrCamera')}</Text>
           </View>
         </TouchableOpacity>
 
         {/* Recent Photos Grid */}
         <View style={styles.recentSection}>
-          <Text style={styles.recentTitle}>Recent Photos</Text>
+          <Text style={styles.recentTitle}>{t('tabs.enhance.recentPhotos')}</Text>
           {photosError ? (
             <View style={styles.errorContainer}>
               <Text style={styles.errorIcon}>📱</Text>
@@ -207,19 +207,19 @@ export default function EnhanceScreen() {
                 style={styles.retryButton}
                 onPress={requestPermissions}
               >
-                <Text style={styles.retryButtonText}>Grant Permission</Text>
+                <Text style={styles.retryButtonText}>{t('common.grantPermission')}</Text>
               </TouchableOpacity>
             </View>
           ) : isLoadingPhotos ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#FF6B6B" />
-              <Text style={styles.loadingText}>Loading recent photos...</Text>
+              <Text style={styles.loadingText}>{t('tabs.enhance.loadingRecentPhotos')}</Text>
             </View>
           ) : recentPhotos.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyIcon}>📷</Text>
-              <Text style={styles.emptyText}>No recent photos found</Text>
-              <Text style={styles.emptySubtitle}>Take some photos to see them here</Text>
+              <Text style={styles.emptyText}>{t('tabs.enhance.noRecentPhotosFound')}</Text>
+              <Text style={styles.emptySubtitle}>{t('tabs.enhance.takeSomePhotosToSeeThemHere')}</Text>
             </View>
           ) : (
             <View style={styles.photosGrid}>

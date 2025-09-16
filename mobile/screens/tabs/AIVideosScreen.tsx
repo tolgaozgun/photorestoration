@@ -37,58 +37,59 @@ interface VideoCategory {
 type AIVideosScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'AIVideos'> &
   StackNavigationProp<RootStackParamList>;
 
-// Mock video content data
-const videoCategories = [
-  {
-    id: 'animate-old-photos',
-    title: 'Animate Old Photos',
-    emoji: '📹',
-    description: 'Bring your old photos to life',
-    items: [
-      { id: '1', title: 'Face Animation', duration: '0:15', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=video1' },
-      { id: '2', title: 'Subtle Motion', duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=video2' },
-      { id: '3', title: 'Expression Changes', duration: '0:20', imageUrl: 'https://picsum.photos/300/169?random=video3' },
-    ],
-  },
-  {
-    id: 'cinemagraphs',
-    title: 'Cinemagraph Creation',
-    emoji: '🌊',
-    description: 'Subtle motion effects',
-    items: [
-      { id: '1', title: 'Water Flow', duration: '0:30', imageUrl: 'https://picsum.photos/300/169?random=cinema1' },
-      { id: '2', title: 'Hair Movement', duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=cinema2' },
-      { id: '3', title: 'Cloud Motion', duration: '0:45', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=cinema3' },
-    ],
-  },
-  {
-    id: 'portrait-animation',
-    title: 'Portrait Animation',
-    emoji: '😊',
-    description: 'Facial expressions and movement',
-    items: [
-      { id: '1', title: 'Smile Animation', duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=portrait1' },
-      { id: '2', title: 'Talking Effect', duration: '0:25', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=portrait2' },
-      { id: '3', title: 'Eye Movement', duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=portrait3' },
-    ],
-  },
-  {
-    id: 'background-animation',
-    title: 'Background Animation',
-    emoji: '🎬',
-    description: 'Dynamic backgrounds',
-    items: [
-      { id: '1', title: 'Sky Changes', duration: '0:45', imageUrl: 'https://picsum.photos/300/169?random=bg1' },
-      { id: '2', title: 'Weather Effects', duration: '0:30', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=bg2' },
-      { id: '3', title: 'Light Transitions', duration: '1:00', imageUrl: 'https://picsum.photos/300/169?random=bg3' },
-    ],
-  },
-];
-
 export default function AIVideosScreen() {
   const navigation = useNavigation<AIVideosScreenNavigationProp>();
+  const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Video data using translations
+  const videoCategories = [
+    {
+      id: 'animate-old-photos',
+      title: t('content.aiVideos.animateOldPhotos.title'),
+      emoji: '📹',
+      description: t('content.aiVideos.animateOldPhotos.description'),
+      items: [
+        { id: '1', title: t('content.aiVideos.animateOldPhotos.faceAnimation'), duration: '0:15', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=video1' },
+        { id: '2', title: t('content.aiVideos.animateOldPhotos.subtleMotion'), duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=video2' },
+        { id: '3', title: t('content.aiVideos.animateOldPhotos.expressionChanges'), duration: '0:20', imageUrl: 'https://picsum.photos/300/169?random=video3' },
+      ],
+    },
+    {
+      id: 'cinemagraphs',
+      title: t('content.aiVideos.cinemagraphs.title'),
+      emoji: '🌊',
+      description: t('content.aiVideos.cinemagraphs.description'),
+      items: [
+        { id: '1', title: t('content.aiVideos.cinemagraphs.waterFlow'), duration: '0:30', imageUrl: 'https://picsum.photos/300/169?random=cinema1' },
+        { id: '2', title: t('content.aiVideos.cinemagraphs.hairMovement'), duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=cinema2' },
+        { id: '3', title: t('content.aiVideos.cinemagraphs.cloudMotion'), duration: '0:45', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=cinema3' },
+      ],
+    },
+    {
+      id: 'portrait-animation',
+      title: t('content.aiVideos.portraitAnimation.title'),
+      emoji: '😊',
+      description: t('content.aiVideos.portraitAnimation.description'),
+      items: [
+        { id: '1', title: t('content.aiVideos.portraitAnimation.smileAnimation'), duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=portrait1' },
+        { id: '2', title: t('content.aiVideos.portraitAnimation.talkingEffect'), duration: '0:25', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=portrait2' },
+        { id: '3', title: t('content.aiVideos.portraitAnimation.eyeMovement'), duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=portrait3' },
+      ],
+    },
+    {
+      id: 'background-animation',
+      title: t('content.aiVideos.backgroundAnimation.title'),
+      emoji: '🎬',
+      description: t('content.aiVideos.backgroundAnimation.description'),
+      items: [
+        { id: '1', title: t('content.aiVideos.backgroundAnimation.skyChanges'), duration: '0:45', imageUrl: 'https://picsum.photos/300/169?random=bg1' },
+        { id: '2', title: t('content.aiVideos.backgroundAnimation.weatherEffects'), duration: '0:30', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=bg2' },
+        { id: '3', title: t('content.aiVideos.backgroundAnimation.lightTransitions'), duration: '1:00', imageUrl: 'https://picsum.photos/300/169?random=bg3' },
+      ],
+    },
+  ];
 
   useEffect(() => {
     trackEvent('screen_view', { screen: 'ai_videos' });
@@ -122,7 +123,7 @@ export default function AIVideosScreen() {
         </View>
         {item.isPremium && (
           <View style={styles.premiumBadge}>
-            <Text style={styles.premiumBadgeText}>PRO</Text>
+            <Text style={styles.premiumBadgeText}>{t('common.pro')}</Text>
           </View>
         )}
       </View>
@@ -137,7 +138,7 @@ export default function AIVideosScreen() {
           style={styles.seeAllButton}
           onPress={() => handleVideoPress(category.id, category.id)}
         >
-          <Text style={styles.seeAllText}>See All</Text>
+          <Text style={styles.seeAllText}>{t('common.seeAll')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -159,8 +160,8 @@ export default function AIVideosScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>AI Videos</Text>
-            <Text style={styles.screenSubtitle}>Generate AI-powered videos</Text>
+            <Text style={styles.screenTitle}>{t('tabs.aiVideos.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('tabs.aiVideos.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
             <Text style={styles.settingsIcon}>⚙️</Text>

@@ -143,7 +143,14 @@
     "back": "Zurück",
     "home": "Wiederherstellen",
     "recents": "Letzte",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "tabs": {
+      "enhance": "Verbessern",
+      "aiPhotos": "KI-Fotos",
+      "aiFilters": "KI-Filter",
+      "aiVideos": "KI-Videos",
+      "customAI": "Benutzerdefinierte KI"
+    }
   },
   "settings": {
     "title": "Einstellungen",
@@ -185,6 +192,7 @@
       "en": "Englisch (English)",
       "tr": "Türkisch (Türkçe)",
       "de": "Deutsch (Deutsch)",
+      "es": "Spanisch (Español)",
       "zh": "Chinesisch (中文)"
     },
     "disableSyncTitle": "Synchronisierung deaktivieren?",
@@ -195,7 +203,174 @@
     "yourUniqueId": "Ihre eindeutige ID",
     "syncAcrossDevices": "Geräteübergreifend synchronisieren",
     "syncYourHistory": "Ihren Wiederherstellungsverlauf synchronisieren",
-    "syncedTo": "Synchronisiert mit {{email}}"
+    "syncedTo": "Synchronisiert mit {{email}}",
+    "managePreferences": "Verwalten Sie Ihre Einstellungen",
+    "signedIn": "Angemeldet",
+    "notSignedIn": "Nicht angemeldet",
+    "signInToSync": "Anmelden, um geräteübergreifend zu synchronisieren",
+    "goPro": "Pro Werden",
+    "unlockPremiumFeatures": "Alle Premium-Funktionen freischalten",
+    "unlimitedAI": "Unbegrenzte KI-Generierungen",
+    "hdQuality": "HD-Qualitäts-Ausgaben",
+    "priorityProcessing": "Prioritätsverarbeitung",
+    "premiumFilters": "Alle Premium-Filter",
+    "noWatermarks": "Keine Wasserzeichen",
+    "tryProNow": "Pro Jetzt Testen",
+    "appSettings": "App-Einstellungen",
+    "replayOnboarding": "Einführung Wiederholen",
+    "seeIntroAgain": "Die App-Einführung erneut ansehen",
+    "viewManageDevices": "Verbundene Geräte anzeigen und verwalten",
+    "signInToManageDevices": "Anmelden, um Geräte zu verwalten",
+    "purchaseAdditionalCredits": "Zusätzliches Guthaben kaufen",
+    "shareApp": "App Teilen",
+    "tellFriendsAboutUs": "Erzählen Sie Ihren Freunden von uns",
+    "relaunchOnboardingTitle": "Einführung Neu Starten",
+    "relaunchOnboardingMessage": "Dies wird den Einführungsprozess zurücksetzen und Ihnen die App-Einführung erneut zeigen. Fortfahren?",
+    "continue": "Fortfahren",
+    "shareAppMessage": "Schauen Sie sich diese erstaunliche Fotowiederherstellungs-App an!"
+  },
+  "tabs": {
+    "enhance": {
+      "title": "Fotos Verbessern",
+      "subtitle": "Wählen Sie ein Foto zum Verbessern aus",
+      "selectPhotoToEnhance": "Wählen Sie ein Foto zum Verbessern",
+      "tapToChooseFromGalleryOrCamera": "Tippen Sie, um aus Galerie oder Kamera zu wählen",
+      "recentPhotos": "Aktuelle Fotos",
+      "loadingRecentPhotos": "Aktuelle Fotos werden geladen...",
+      "noRecentPhotosFound": "Keine aktuellen Fotos gefunden",
+      "takeSomePhotosToSeeThemHere": "Machen Sie einige Fotos, um sie hier zu sehen",
+      "galleryPermissionDenied": "Galerie-Berechtigung verweigert. Bitte aktivieren Sie den Zugriff in den Geräteeinstellungen, um Ihre aktuellen Fotos zu sehen.",
+      "mediaLibraryPermissionRequired": "Mediathek-Berechtigung erforderlich für den Zugriff auf aktuelle Fotos",
+      "failedToLoadRecentPhotos": "Fehler beim Laden der aktuellen Fotos. Bitte versuchen Sie es erneut.",
+      "pleaseGrantGalleryPermission": "Bitte gewähren Sie Galerie-Berechtigung zur Fotoauswahl",
+      "failedToPickImage": "Fehler bei der Bildauswahl. Bitte versuchen Sie es erneut."
+    },
+    "aiPhotos": {
+      "title": "KI-Fotos",
+      "subtitle": "KI-gestützte Fotos generieren"
+    },
+    "aiVideos": {
+      "title": "KI-Videos",
+      "subtitle": "KI-gestützte Videos generieren"
+    },
+    "aiFilters": {
+      "title": "KI-Filter",
+      "subtitle": "Verwandeln Sie Ihre Fotos mit KI-Filtern",
+      "pickAPhoto": "Foto auswählen",
+      "transformYourPhotoWithAIFilters": "Verwandeln Sie Ihr Foto mit KI-Filtern",
+      "selectPhoto": "Foto Auswählen",
+      "pleaseGrantGalleryPermission": "Bitte gewähren Sie Galerie-Berechtigung zur Fotoauswahl",
+      "failedToPickImage": "Fehler bei der Bildauswahl. Bitte versuchen Sie es erneut."
+    },
+    "customAI": {
+      "title": "Benutzerdefinierte KI-Bearbeitungen",
+      "subtitle": "Verwandeln Sie Fotos mit benutzerdefinierter KI",
+      "uploadAnImage": "Ein Bild hochladen",
+      "transformYourPhotoWithCustomAIEdits": "Verwandeln Sie Ihr Foto mit benutzerdefinierten KI-Bearbeitungen",
+      "describeAnyEditYouWant": "Beschreiben Sie jede gewünschte Bearbeitung",
+      "useNaturalLanguageDescription": "Verwenden Sie natürliche Sprache, um Änderungen zu beschreiben, die Sie an Ihrem Foto vornehmen möchten. Zum Beispiel: \"Hintergrund entfernen\", \"Haarfarbe zu blond ändern\", \"Sonnenuntergangsbeleuchtung hinzufügen\"",
+      "popularEdits": "Beliebte Bearbeitungen:",
+      "pleaseGrantGalleryPermission": "Bitte gewähren Sie Galerie-Berechtigung zur Fotoauswahl",
+      "failedToPickImage": "Fehler bei der Bildauswahl. Bitte versuchen Sie es erneut."
+    }
+  },
+  "common": {
+    "seeAll": "Alle Anzeigen",
+    "pro": "PRO",
+    "permissionRequired": "Berechtigung Erforderlich",
+    "error": "Fehler",
+    "grantPermission": "Berechtigung Gewähren"
+  },
+  "content": {
+    "aiPhotos": {
+      "futureBaby": {
+        "title": "Zukünftiges Baby",
+        "description": "Sehen Sie, wie Ihr zukünftiges Baby aussehen könnte",
+        "babyPrediction": "Baby-Vorhersage",
+        "familyPreview": "Familienvorschau",
+        "childGenerator": "Kindergenerator"
+      },
+      "digitalTwin": {
+        "title": "Digitaler Zwilling",
+        "description": "Erstellen Sie Ihren digitalen Avatar",
+        "avatar3d": "3D-Avatar",
+        "virtualClone": "Virtueller Klon",
+        "digitalPersona": "Digitale Persona"
+      },
+      "professionalHeadshots": {
+        "title": "Professionelle Porträts",
+        "description": "Geschäftsfoto-Verbesserung",
+        "corporate": "Unternehmen",
+        "linkedin": "LinkedIn",
+        "portfolio": "Portfolio"
+      },
+      "vintagePortraits": {
+        "title": "Vintage-Porträts",
+        "description": "Klassisches Styling",
+        "victorian": "Viktorianisch",
+        "renaissance": "Renaissance",
+        "retro": "Retro"
+      },
+      "fantasyCharacters": {
+        "title": "Fantasy-Charaktere",
+        "description": "Kostüm- und Charakterfotos",
+        "wizard": "Zauberer",
+        "knight": "Ritter",
+        "elf": "Elf"
+      }
+    },
+    "aiVideos": {
+      "animateOldPhotos": {
+        "title": "Alte Fotos Animieren",
+        "description": "Erwecken Sie Ihre alten Fotos zum Leben",
+        "faceAnimation": "Gesichtsanimation",
+        "subtleMotion": "Subtile Bewegung",
+        "expressionChanges": "Ausdrucksveränderungen"
+      },
+      "cinemagraphs": {
+        "title": "Cinemagraph-Erstellung",
+        "description": "Subtile Bewegungseffekte",
+        "waterFlow": "Wasserfluss",
+        "hairMovement": "Haarbewegung",
+        "cloudMotion": "Wolkenbewegung"
+      },
+      "portraitAnimation": {
+        "title": "Porträtanimation",
+        "description": "Gesichtsausdrücke und Bewegung",
+        "smileAnimation": "Lächeln-Animation",
+        "talkingEffect": "Sprech-Effekt",
+        "eyeMovement": "Augenbewegung"
+      },
+      "backgroundAnimation": {
+        "title": "Hintergrund-Animation",
+        "description": "Dynamische Hintergründe",
+        "skyChanges": "Himmelsveränderungen",
+        "weatherEffects": "Wettereffekte",
+        "lightTransitions": "Lichtübergänge"
+      }
+    },
+    "aiFilters": {
+      "3dPhotos": "3D-Fotos",
+      "muscles": "Muskeln",
+      "flash": "Blitz",
+      "fairyToon": "Fee-Cartoon",
+      "nineties": "90er-Anime",
+      "chibi": "Chibi",
+      "pixel": "Pixel",
+      "animalToon": "Tier-Cartoon",
+      "animated": "Animiert",
+      "caricature": "Karikatur",
+      "miniToys": "Mini-Spielzeug",
+      "doll": "Puppe"
+    },
+    "customAI": {
+      "removeBackground": "Hintergrund entfernen",
+      "changeLighting": "Beleuchtung ändern",
+      "fixSkin": "Haut korrigieren",
+      "addEffects": "Effekte hinzufügen",
+      "changeHairColor": "Haarfarbe ändern",
+      "enhanceEyes": "Augen verbessern"
+    }
   },
   "onboarding": {
     "skip": "Überspringen",
@@ -327,5 +502,80 @@
     "saveToDevice": "Auf Gerät speichern",
     "sharePhoto": "Foto teilen",
     "removeWatermark": "Wasserzeichen entfernen"
+  },
+  "videoGallery": {
+    "title": "KI-Video-Galerie",
+    "getFullPack": "Vollpaket erhalten",
+    "premiumBadge": "PRO",
+    "filter": {
+      "all": "Alle"
+    },
+    "categories": {
+      "animateOldPhotos": {
+        "title": "Alte Fotos animieren",
+        "description": "Erwecke deine alten Fotos mit KI-Animation zum Leben"
+      },
+      "aiVideoGeneration": {
+        "title": "KI-Video-Generierung",
+        "description": "Erstelle Videos von Grund auf mit KI"
+      },
+      "motionTemplates": {
+        "title": "Bewegungsvorlagen",
+        "description": "Professionelle Videovorlagen und Effekte"
+      }
+    },
+    "categoryLabels": {
+      "animation": "Animation",
+      "generation": "Generierung",
+      "templates": "Vorlagen"
+    },
+    "videos": {
+      "photoToVideo": {
+        "title": "Foto zu Video",
+        "description": "Verwandle statische Fotos in bewegende Erinnerungen"
+      },
+      "faceAnimation": {
+        "title": "Gesichtsanimation",
+        "description": "Füge natürliche Ausdrücke und Bewegungen hinzu"
+      },
+      "vintageRestoration": {
+        "title": "Vintage-Restaurierung",
+        "description": "Restauriere und animiere Vintage-Fotos"
+      },
+      "textToVideo": {
+        "title": "Text zu Video",
+        "description": "Verwandle deine Ideen in Videos"
+      },
+      "imageToVideo": {
+        "title": "Bild zu Video",
+        "description": "Verwandle Bilder in Videosequenzen"
+      },
+      "styleTransfer": {
+        "title": "Stil-Transfer",
+        "description": "Wende künstlerische Stile auf Videos an"
+      },
+      "slideshowCreator": {
+        "title": "Diashow-Ersteller",
+        "description": "Erstelle schöne Foto-Diashows"
+      },
+      "socialMedia": {
+        "title": "Soziale Medien",
+        "description": "Optimiert für soziale Plattformen"
+      },
+      "businessPresentations": {
+        "title": "Geschäftspräsentationen",
+        "description": "Professionelle Videovorlagen"
+      }
+    }
+  },
+  "previewScreen": {
+    "title": "Verbesserung Bestätigen",
+    "subtitle": "Überprüfe dein verbessertes Foto",
+    "enhancing": "Verbessere dein Foto...",
+    "enhancedPhoto": "Verbessertes Foto",
+    "enhancePhoto": "Foto Verbessern",
+    "noCredits": "Keine Guthaben Verfügbar",
+    "usesCredit": "Verwendet 1 Guthaben",
+    "continueToResults": "Weiter zu Ergebnissen"
   }
 }

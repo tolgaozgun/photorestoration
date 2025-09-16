@@ -143,7 +143,14 @@
     "back": "Geri",
     "home": "Geri Yükle",
     "recents": "Son",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "tabs": {
+      "enhance": "İyileştir",
+      "aiPhotos": "AI Fotoğrafları",
+      "aiFilters": "AI Filtreleri",
+      "aiVideos": "AI Videoları",
+      "customAI": "Özel AI"
+    }
   },
   "settings": {
     "title": "Ayarlar",
@@ -185,6 +192,7 @@
       "en": "İngilizce (English)",
       "tr": "Türkçe (Türkçe)",
       "de": "Almanca (Deutsch)",
+      "es": "İspanyolca (Español)",
       "zh": "Çince (中文)"
     },
     "disableSyncTitle": "Senkronizasyonu Devre Dışı Bırak?",
@@ -195,7 +203,174 @@
     "yourUniqueId": "Benzersiz Kimliğiniz",
     "syncAcrossDevices": "Cihazlar Arasında Senkronize Et",
     "syncYourHistory": "Restorasyon geçmişinizi senkronize edin",
-    "syncedTo": "{{email}} ile senkronize edildi"
+    "syncedTo": "{{email}} ile senkronize edildi",
+    "managePreferences": "Tercihlerinizi yönetin",
+    "signedIn": "Oturum açıldı",
+    "notSignedIn": "Oturum açılmadı",
+    "signInToSync": "Cihazlar arasında senkronize etmek için oturum açın",
+    "goPro": "Pro Ol",
+    "unlockPremiumFeatures": "Tüm premium özellikleri açın",
+    "unlimitedAI": "Sınırsız AI üretimi",
+    "hdQuality": "HD kalite çıktıları",
+    "priorityProcessing": "Öncelikli işlem",
+    "premiumFilters": "Tüm premium filtreler",
+    "noWatermarks": "Filigran yok",
+    "tryProNow": "Pro'yu Şimdi Dene",
+    "appSettings": "Uygulama Ayarları",
+    "replayOnboarding": "Tanıtımı Tekrarla",
+    "seeIntroAgain": "Uygulama tanıtımını tekrar görün",
+    "viewManageDevices": "Bağlı cihazları görüntüle ve yönet",
+    "signInToManageDevices": "Cihazları yönetmek için oturum açın",
+    "purchaseAdditionalCredits": "Ek kredi satın alın",
+    "shareApp": "Uygulamayı Paylaş",
+    "tellFriendsAboutUs": "Arkadaşlarına bizden bahset",
+    "relaunchOnboardingTitle": "Tanıtımı Yeniden Başlat",
+    "relaunchOnboardingMessage": "Bu, tanıtım sürecini sıfırlayacak ve size uygulama tanıtımını tekrar gösterecektir. Devam et?",
+    "continue": "Devam Et",
+    "shareAppMessage": "Bu harika fotoğraf restore uygulamasını inceleyin!"
+  },
+  "tabs": {
+    "enhance": {
+      "title": "Fotoğrafları İyileştir",
+      "subtitle": "İyileştirmeye başlamak için bir fotoğraf seçin",
+      "selectPhotoToEnhance": "İyileştirmek için bir fotoğraf seçin",
+      "tapToChooseFromGalleryOrCamera": "Galeri veya kameradan seçmek için dokunun",
+      "recentPhotos": "Son Fotoğraflar",
+      "loadingRecentPhotos": "Son fotoğraflar yükleniyor...",
+      "noRecentPhotosFound": "Son fotoğraf bulunamadı",
+      "takeSomePhotosToSeeThemHere": "Burada görmek için bazı fotoğraflar çekin",
+      "galleryPermissionDenied": "Galeri izni reddedildi. Son fotoğraflarınızı görmek için lütfen cihaz ayarlarından erişimi etkinleştirin.",
+      "mediaLibraryPermissionRequired": "Son fotoğraflara erişmek için medya kütüphanesi izni gerekli",
+      "failedToLoadRecentPhotos": "Son fotoğraflar yüklenemedi. Lütfen tekrar deneyin.",
+      "pleaseGrantGalleryPermission": "Fotoğraf seçmek için lütfen galeri izni verin",
+      "failedToPickImage": "Resim seçilemedi. Lütfen tekrar deneyin."
+    },
+    "aiPhotos": {
+      "title": "AI Fotoğrafları",
+      "subtitle": "AI destekli fotoğraflar üretin"
+    },
+    "aiVideos": {
+      "title": "AI Videoları",
+      "subtitle": "AI destekli videolar üretin"
+    },
+    "aiFilters": {
+      "title": "AI Filtreleri",
+      "subtitle": "Fotoğraflarınızı AI filtreleriyle dönüştürün",
+      "pickAPhoto": "Bir fotoğraf seçin",
+      "transformYourPhotoWithAIFilters": "Fotoğrafınızı AI filtreleriyle dönüştürün",
+      "selectPhoto": "Fotoğraf Seç",
+      "pleaseGrantGalleryPermission": "Fotoğraf seçmek için lütfen galeri izni verin",
+      "failedToPickImage": "Resim seçilemedi. Lütfen tekrar deneyin."
+    },
+    "customAI": {
+      "title": "Özel AI Düzenlemeleri",
+      "subtitle": "Fotoğrafları özel AI ile dönüştürün",
+      "uploadAnImage": "Bir resim yükleyin",
+      "transformYourPhotoWithCustomAIEdits": "Fotoğrafınızı özel AI düzenlemeleriyle dönüştürün",
+      "describeAnyEditYouWant": "İstediğiniz herhangi bir düzenlemeyi açıklayın",
+      "useNaturalLanguageDescription": "Fotoğrafınızda yapmak istediğiniz değişiklikleri açıklamak için doğal dil kullanın. Örneğin: \"Arka planı kaldır\", \"Saç rengini sarıya değiştir\", \"Gün batımı aydınlatması ekle\"",
+      "popularEdits": "Popüler düzenlemeler:",
+      "pleaseGrantGalleryPermission": "Fotoğraf seçmek için lütfen galeri izni verin",
+      "failedToPickImage": "Resim seçilemedi. Lütfen tekrar deneyin."
+    }
+  },
+  "common": {
+    "seeAll": "Tümünü Gör",
+    "pro": "PRO",
+    "permissionRequired": "İzin Gerekli",
+    "error": "Hata",
+    "grantPermission": "İzin Ver"
+  },
+  "content": {
+    "aiPhotos": {
+      "futureBaby": {
+        "title": "Gelecekteki Bebek",
+        "description": "Gelecekteki bebeğinizin nasıl görünebileceğini görün",
+        "babyPrediction": "Bebek Tahmini",
+        "familyPreview": "Aile Önizlemesi",
+        "childGenerator": "Çocuk Üreticisi"
+      },
+      "digitalTwin": {
+        "title": "Dijital İkiz",
+        "description": "Dijital avatarınızı oluşturun",
+        "avatar3d": "3D Avatar",
+        "virtualClone": "Sanal Klon",
+        "digitalPersona": "Dijital Kişilik"
+      },
+      "professionalHeadshots": {
+        "title": "Profesyonel Portreler",
+        "description": "İş fotoğrafı geliştirme",
+        "corporate": "Kurumsal",
+        "linkedin": "LinkedIn",
+        "portfolio": "Portföy"
+      },
+      "vintagePortraits": {
+        "title": "Vintage Portreler",
+        "description": "Klasik stil",
+        "victorian": "Viktorya Dönemi",
+        "renaissance": "Rönesans",
+        "retro": "Retro"
+      },
+      "fantasyCharacters": {
+        "title": "Fantezi Karakterler",
+        "description": "Kostüm ve karakter fotoğrafları",
+        "wizard": "Büyücü",
+        "knight": "Şövalye",
+        "elf": "Elf"
+      }
+    },
+    "aiVideos": {
+      "animateOldPhotos": {
+        "title": "Eski Fotoğrafları Canlandır",
+        "description": "Eski fotoğraflarınızı hayata döndürün",
+        "faceAnimation": "Yüz Animasyonu",
+        "subtleMotion": "İnce Hareket",
+        "expressionChanges": "İfade Değişiklikleri"
+      },
+      "cinemagraphs": {
+        "title": "Sinemagraf Oluşturma",
+        "description": "İnce hareket efektleri",
+        "waterFlow": "Su Akışı",
+        "hairMovement": "Saç Hareketi",
+        "cloudMotion": "Bulut Hareketi"
+      },
+      "portraitAnimation": {
+        "title": "Portre Animasyonu",
+        "description": "Yüz ifadeleri ve hareket",
+        "smileAnimation": "Gülümseme Animasyonu",
+        "talkingEffect": "Konuşma Efekti",
+        "eyeMovement": "Göz Hareketi"
+      },
+      "backgroundAnimation": {
+        "title": "Arka Plan Animasyonu",
+        "description": "Dinamik arka planlar",
+        "skyChanges": "Gökyüzü Değişiklikleri",
+        "weatherEffects": "Hava Durumu Efektleri",
+        "lightTransitions": "Işık Geçişleri"
+      }
+    },
+    "aiFilters": {
+      "3dPhotos": "3D Fotoğraflar",
+      "muscles": "Kaslar",
+      "flash": "Flash",
+      "fairyToon": "Peri Çizgi Film",
+      "nineties": "90'lar Animesi",
+      "chibi": "Chibi",
+      "pixel": "Piksel",
+      "animalToon": "Hayvan Çizgi Film",
+      "animated": "Animasyon",
+      "caricature": "Karikatür",
+      "miniToys": "Mini Oyuncaklar",
+      "doll": "Bebek"
+    },
+    "customAI": {
+      "removeBackground": "Arka planı kaldır",
+      "changeLighting": "Aydınlatmayı değiştir",
+      "fixSkin": "Cildi düzelt",
+      "addEffects": "Efekt ekle",
+      "changeHairColor": "Saç rengini değiştir",
+      "enhanceEyes": "Gözleri güçlendir"
+    }
   },
   "onboarding": {
     "skip": "Atla",
@@ -327,5 +502,80 @@
     "saveToDevice": "Cihaza Kaydet",
     "sharePhoto": "Fotoğrafı Paylaş",
     "removeWatermark": "Filigranı Kaldır"
+  },
+  "videoGallery": {
+    "title": "AI Video Galerisi",
+    "getFullPack": "Tam Paketi Al",
+    "premiumBadge": "PRO",
+    "filter": {
+      "all": "Tümü"
+    },
+    "categories": {
+      "animateOldPhotos": {
+        "title": "Eski Fotoğrafları Hareketlendir",
+        "description": "Eski fotoğraflarınızı AI animasyonuyla hayata döndürün"
+      },
+      "aiVideoGeneration": {
+        "title": "AI Video Üretimi",
+        "description": "AI ile sıfırdan videolar oluşturun"
+      },
+      "motionTemplates": {
+        "title": "Hareket Şablonları",
+        "description": "Profesyonel video şablonları ve efektler"
+      }
+    },
+    "categoryLabels": {
+      "animation": "Animasyon",
+      "generation": "Üretim",
+      "templates": "Şablonlar"
+    },
+    "videos": {
+      "photoToVideo": {
+        "title": "Fotoğraftan Videoya",
+        "description": "Statik fotoğrafları hareketli anılara dönüştürün"
+      },
+      "faceAnimation": {
+        "title": "Yüz Animasyonu",
+        "description": "Doğal ifadeler ve hareketler ekleyin"
+      },
+      "vintageRestoration": {
+        "title": "Vintage Restorasyon",
+        "description": "Vintage fotoğrafları restore edin ve hareketlendirin"
+      },
+      "textToVideo": {
+        "title": "Metinden Videoya",
+        "description": "Fikirlerinizi videolara dönüştürün"
+      },
+      "imageToVideo": {
+        "title": "Görüntüden Videoya",
+        "description": "Görüntüleri video dizilerine dönüştürün"
+      },
+      "styleTransfer": {
+        "title": "Stil Aktarımı",
+        "description": "Videolara sanatsal stiller uygulayın"
+      },
+      "slideshowCreator": {
+        "title": "Slayt Gösterisi Oluşturucu",
+        "description": "Güzel fotoğraf slayt gösterileri oluşturun"
+      },
+      "socialMedia": {
+        "title": "Sosyal Medya",
+        "description": "Sosyal platformlar için optimize edilmiş"
+      },
+      "businessPresentations": {
+        "title": "İş Sunumları",
+        "description": "Profesyonel video şablonları"
+      }
+    }
+  },
+  "previewScreen": {
+    "title": "İyileştirmeyi Onayla",
+    "subtitle": "İyileştirilmiş fotoğrafınızı inceleyin",
+    "enhancing": "Fotoğrafınız iyileştiriliyor...",
+    "enhancedPhoto": "İyileştirilmiş Fotoğraf",
+    "enhancePhoto": "Fotoğrafı İyileştir",
+    "noCredits": "Kullanılabilir Kredi Yok",
+    "usesCredit": "1 kredi kullanır",
+    "continueToResults": "Sonuçlara Devam Et"
   }
 }

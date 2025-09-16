@@ -12,12 +12,12 @@ const { width: screenWidth } = Dimensions.get('window');
 
 interface Props {
   onComplete: () => void;
-  onPhotoSelected: (imageUri: string) => void;
 }
 
-export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
+export default function OnboardingFlow({ onComplete }: Props) {
   const { t } = useTranslation();
   const [currentScreen, setCurrentScreen] = useState(0);
+  const [isCompleting, setIsCompleting] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const goToNextScreen = () => {
@@ -30,6 +30,8 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
       }).start(() => {
         // Change screen
         setCurrentScreen(currentScreen + 1);
+        // Reset fade animation for new screen
+        fadeAnim.setValue(0);
         // Fade in new screen
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -50,6 +52,8 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
       }).start(() => {
         // Change screen
         setCurrentScreen(currentScreen - 1);
+        // Reset fade animation for new screen
+        fadeAnim.setValue(0);
         // Fade in new screen
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -61,11 +65,20 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
   };
 
   const handleSkip = () => {
+    if (isCompleting) {
+      return;
+    }
+    console.log('OnboardingFlow: Skip pressed, calling onComplete');
+    setIsCompleting(true);
     onComplete();
   };
 
-  const handlePhotoSelected = (imageUri: string) => {
-    onPhotoSelected(imageUri);
+  const handleComplete = () => {
+    if (isCompleting) {
+      return;
+    }
+    console.log('OnboardingFlow: Get Started pressed, calling onComplete');
+    setIsCompleting(true);
     onComplete();
   };
 
@@ -76,7 +89,7 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
 
   // Progress dots
   const renderProgressDots = () => (
-    <View style={styles.progressContainer}>
+    <>
       {[0, 1, 2].map((index) => (
         <TouchableOpacity
           key={index}
@@ -92,6 +105,8 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
                 useNativeDriver: true,
               }).start(() => {
                 setCurrentScreen(index);
+                // Reset fade animation for new screen
+                fadeAnim.setValue(0);
                 Animated.timing(fadeAnim, {
                   toValue: 1,
                   duration: 300,
@@ -102,7 +117,7 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
           }}
         />
       ))}
-    </View>
+    </>
   );
 
   // Render current screen only
@@ -125,7 +140,7 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
       case 2:
         return (
           <OnboardingScreen3
-            onPhotoSelected={handlePhotoSelected}
+            onContinue={handleComplete}
           />
         );
       default:
@@ -135,36 +150,28 @@ export default function OnboardingFlow({ onComplete, onPhotoSelected }: Props) {
 
   return (
     <View style={styles.container}>
+      {/* Navigation Controls */}
+      {currentScreen < 2 && currentScreen > 0 && (
+        <View style={styles.navigationContainer}>
+          {/* Back Button */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={goToPreviousScreen}
+          >
+            <Text style={styles.backButtonText}>‹ {t('navigation.back')}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Current Screen */}
       <Animated.View style={[styles.screenContainer, { opacity: fadeAnim }]}>
         {renderCurrentScreen()}
       </Animated.View>
 
-      {/* Navigation Controls */}
-      {currentScreen < 2 && (
-        <View style={styles.navigationContainer}>
-          {/* Back Button */}
-          {currentScreen > 0 && (
-            <TouchableOpacity 
-              style={styles.backButton}
-              onPress={goToPreviousScreen}
-            >
-              <Text style={styles.backButtonText}>‹ {t('navigation.back')}</Text>
-            </TouchableOpacity>
-          )}
-          
-          {/* Skip Button */}
-          <TouchableOpacity 
-            style={styles.skipButton}
-            onPress={handleSkip}
-          >
-            <Text style={styles.skipButtonText}>{t('onboarding.skip')}</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
       {/* Progress Dots */}
-      {renderProgressDots()}
+      <View style={styles.progressContainer}>
+        {renderProgressDots()}
+      </View>
     </View>
   );
 }
@@ -176,10 +183,11 @@ const styles = StyleSheet.create({
   },
   screenContainer: {
     flex: 1,
+    paddingBottom: 80, // Make room for progress dots
   },
   navigationContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
@@ -197,24 +205,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  skipButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  skipButtonText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 16,
-    fontWeight: '500',
-  },
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 20,
-    position: 'absolute',
-    bottom: 50,
-    left: 0,
-    right: 0,
+    paddingHorizontal: 20,
+    backgroundColor: '#0a0a0a',
   },
   progressDot: {
     width: 10,

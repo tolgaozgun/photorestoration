@@ -16,7 +16,7 @@ interface Props {
   onSkip: () => void;
 }
 
-export default function OnboardingScreen2({ onContinue }: Props) {
+export default function OnboardingScreen2({ onContinue, onSkip }: Props) {
   const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -27,6 +27,12 @@ export default function OnboardingScreen2({ onContinue }: Props) {
   ];
 
   useEffect(() => {
+    // Reset animations
+    fadeAnim.setValue(0);
+    slideAnim.setValue(30);
+    iconAnims.forEach(anim => anim.setValue(0));
+
+    // Start animations
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -40,7 +46,7 @@ export default function OnboardingScreen2({ onContinue }: Props) {
       }),
     ]).start(() => {
       // Animate icons sequentially
-      Animated.stagger(200, 
+      Animated.stagger(200,
         iconAnims.map(anim =>
           Animated.spring(anim, {
             toValue: 1,
@@ -55,82 +61,27 @@ export default function OnboardingScreen2({ onContinue }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {/* Process Flow */}
-        <Animated.View 
-          style={[
-            styles.processSection,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }]
-            }
-          ]}
+      {/* Skip Button at Top */}
+      <Animated.View
+        style={[
+          styles.topSkipSection,
+          {
+            opacity: fadeAnim,
+          }
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.topSkipButton}
+          onPress={onSkip}
+          activeOpacity={0.8}
         >
-          <View style={styles.processFlow}>
-            {/* Step 1 */}
-            <Animated.View 
-              style={[
-                styles.processStep,
-                {
-                  opacity: iconAnims[0],
-                  transform: [{ scale: iconAnims[0] }]
-                }
-              ]}
-            >
-              <View style={styles.stepIcon}>
-                <Text style={styles.stepEmoji}>📱</Text>
-              </View>
-              <Text style={styles.stepText}>{t('onboarding.screen2.step1')}</Text>
-            </Animated.View>
+          <Text style={styles.topSkipButtonText}>Skip</Text>
+        </TouchableOpacity>
+      </Animated.View>
 
-            {/* Connector */}
-            <View style={styles.connector}>
-              <View style={styles.connectorLine} />
-              <Text style={styles.connectorArrow}>→</Text>
-            </View>
-
-            {/* Step 2 */}
-            <Animated.View 
-              style={[
-                styles.processStep,
-                {
-                  opacity: iconAnims[1],
-                  transform: [{ scale: iconAnims[1] }]
-                }
-              ]}
-            >
-              <View style={styles.stepIcon}>
-                <Text style={styles.stepEmoji}>✨</Text>
-              </View>
-              <Text style={styles.stepText}>{t('onboarding.screen2.step2')}</Text>
-            </Animated.View>
-
-            {/* Connector */}
-            <View style={styles.connector}>
-              <View style={styles.connectorLine} />
-              <Text style={styles.connectorArrow}>→</Text>
-            </View>
-
-            {/* Step 3 */}
-            <Animated.View 
-              style={[
-                styles.processStep,
-                {
-                  opacity: iconAnims[2],
-                  transform: [{ scale: iconAnims[2] }]
-                }
-              ]}
-            >
-              <View style={styles.stepIcon}>
-                <Text style={styles.stepEmoji}>💾</Text>
-              </View>
-              <Text style={styles.stepText}>{t('onboarding.screen2.step3')}</Text>
-            </Animated.View>
-          </View>
-        </Animated.View>
-
+      <View style={styles.content}>
         {/* Text Content */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.textSection,
             {
@@ -139,14 +90,90 @@ export default function OnboardingScreen2({ onContinue }: Props) {
             }
           ]}
         >
-          <Text style={styles.title}>{t('onboarding.screen2.title')}</Text>
+          <Text style={styles.title}>Photo Access Permissions</Text>
           <Text style={styles.subtitle}>
-            {t('onboarding.screen2.subtitle')}
+            We need these permissions to provide the best photo restoration experience
           </Text>
         </Animated.View>
 
+        {/* Permissions List */}
+        <Animated.View
+          style={[
+            styles.permissionsSection,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }]
+            }
+          ]}
+        >
+          <View style={styles.permissionsList}>
+            {/* Photo Library Permission */}
+            <Animated.View
+              style={[
+                styles.permissionItem,
+                {
+                  opacity: iconAnims[0],
+                  transform: [{ scale: iconAnims[0] }]
+                }
+              ]}
+            >
+              <View style={styles.permissionIcon}>
+                <Text style={styles.permissionEmoji}>🖼️</Text>
+              </View>
+              <View style={styles.permissionContent}>
+                <Text style={styles.permissionTitle}>Photo Library Access</Text>
+                <Text style={styles.permissionDescription}>
+                  Access your photos to restore and enhance them
+                </Text>
+              </View>
+            </Animated.View>
+
+            {/* Camera Permission */}
+            <Animated.View
+              style={[
+                styles.permissionItem,
+                {
+                  opacity: iconAnims[1],
+                  transform: [{ scale: iconAnims[1] }]
+                }
+              ]}
+            >
+              <View style={styles.permissionIcon}>
+                <Text style={styles.permissionEmoji}>📷</Text>
+              </View>
+              <View style={styles.permissionContent}>
+                <Text style={styles.permissionTitle}>Camera Access</Text>
+                <Text style={styles.permissionDescription}>
+                  Take new photos to restore them instantly
+                </Text>
+              </View>
+            </Animated.View>
+
+            {/* Storage Permission */}
+            <Animated.View
+              style={[
+                styles.permissionItem,
+                {
+                  opacity: iconAnims[2],
+                  transform: [{ scale: iconAnims[2] }]
+                }
+              ]}
+            >
+              <View style={styles.permissionIcon}>
+                <Text style={styles.permissionEmoji}>💾</Text>
+              </View>
+              <View style={styles.permissionContent}>
+                <Text style={styles.permissionTitle}>Save Restored Photos</Text>
+                <Text style={styles.permissionDescription}>
+                  Save your enhanced photos to your device
+                </Text>
+              </View>
+            </Animated.View>
+          </View>
+        </Animated.View>
+
         {/* Continue Button */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.buttonSection,
             {
@@ -161,7 +188,7 @@ export default function OnboardingScreen2({ onContinue }: Props) {
             activeOpacity={0.9}
           >
             <View style={styles.continueGradient}>
-              <Text style={styles.continueText}>{t('onboarding.getStarted')}</Text>
+              <Text style={styles.continueText}>Grant Permissions</Text>
             </View>
           </TouchableOpacity>
         </Animated.View>
@@ -175,66 +202,78 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0a0a0a',
   },
+  topSkipSection: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  topSkipButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  topSkipButtonText: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontWeight: '500',
+  },
   content: {
     flex: 1,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
     justifyContent: 'space-between',
   },
-  processSection: {
+  permissionsSection: {
     flex: 2,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 20,
   },
-  processFlow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+  permissionsList: {
     width: '100%',
   },
-  processStep: {
+  permissionItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 107, 0.1)',
   },
-  stepIcon: {
-    width: 80,
-    height: 80,
+  permissionIcon: {
+    width: 60,
+    height: 60,
     backgroundColor: 'rgba(255, 107, 107, 0.1)',
-    borderRadius: 40,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginRight: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 107, 107, 0.2)',
   },
-  stepEmoji: {
-    fontSize: 36,
+  permissionEmoji: {
+    fontSize: 28,
   },
-  stepText: {
+  permissionContent: {
+    flex: 1,
+  },
+  permissionTitle: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-    textAlign: 'center',
-  },
-  connector: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-  },
-  connectorLine: {
-    width: 30,
-    height: 2,
-    backgroundColor: 'rgba(255, 107, 107, 0.3)',
     marginBottom: 4,
   },
-  connectorArrow: {
-    fontSize: 16,
-    color: '#FF6B6B',
+  permissionDescription: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 14,
+    lineHeight: 20,
   },
   textSection: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
+    paddingBottom: 20,
   },
   title: {
     fontSize: 22,
@@ -251,7 +290,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   buttonSection: {
-    paddingBottom: 32,
+    paddingBottom: 16,
+    paddingTop: 16,
   },
   continueButton: {
     borderRadius: 24,

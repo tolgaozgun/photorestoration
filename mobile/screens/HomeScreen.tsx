@@ -228,7 +228,7 @@ export default function HomeScreen() {
   const handleSectionPress = async (sectionId: string) => {
     trackEvent('action', { type: 'section_tap', section: sectionId });
     setSelectedSection(sectionId);
-    
+
     // Navigate to AI generation flow for person-specific features
     const aiFeatures = ['future-baby', 'digital-twin', 'outfit-tryon'];
     if (aiFeatures.includes(sectionId)) {
@@ -240,16 +240,18 @@ export default function HomeScreen() {
           featureDescription: section.description,
         });
       }
-const navigationService = NavigationService.getInstance();
-    const item = navigationService.getNavigationItemById(sectionId);
-    if (item) {
-      await navigationService.navigateToItem(item, navigation);
+    } else {
+      const navigationService = NavigationService.getInstance();
+      const item = navigationService.getNavigationItemById(sectionId);
+      if (item) {
+        await navigationService.navigateToItem(item, navigation);
+      }
     }
   };
 
   const handleSeeAllPress = async (sectionId: string) => {
     trackEvent('action', { type: 'see_all_tap', section: sectionId });
-    
+
     // Navigate to selfie upload for AI features
     const aiFeatures = ['future-baby', 'digital-twin', 'outfit-tryon'];
     if (aiFeatures.includes(sectionId)) {
@@ -261,10 +263,12 @@ const navigationService = NavigationService.getInstance();
           featureDescription: section.description,
         });
       }
-const navigationService = NavigationService.getInstance();
-    const item = navigationService.getNavigationItemById(sectionId);
-    if (item) {
-      await navigationService.navigateToItem(item, navigation);
+    } else {
+      const navigationService = NavigationService.getInstance();
+      const item = navigationService.getNavigationItemById(sectionId);
+      if (item) {
+        await navigationService.navigateToItem(item, navigation);
+      }
     }
   };
 

@@ -177,7 +177,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
         {isProcessing ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#FF6B6B" />
-            <Text style={styles.loadingText}>Enhancing your photo...</Text>
+            <Text style={styles.loadingText}>{t('previewScreen.enhancing')}</Text>
           </View>
         ) : (
           <Image
@@ -187,7 +187,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
           />
         )}
         {enhancedImage && !isProcessing && (
-          <Text style={styles.enhancedLabel}>Enhanced Photo</Text>
+          <Text style={styles.enhancedLabel}>{t('previewScreen.enhancedPhoto')}</Text>
         )}
       </View>
     );
@@ -204,8 +204,8 @@ export default function PreviewScreen({ navigation, route }: Props) {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>Confirm Enhancement</Text>
-            <Text style={styles.screenSubtitle}>Review your enhanced photo</Text>
+            <Text style={styles.screenTitle}>{t('previewScreen.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('previewScreen.subtitle')}</Text>
           </View>
         </View>
       </View>
@@ -227,11 +227,11 @@ export default function PreviewScreen({ navigation, route }: Props) {
             disabled={!canProcess()}
           >
             <Text style={styles.processButtonText}>
-              {canProcess() ? 'Enhance Photo' : 'No Credits Available'}
+              {canProcess() ? t('previewScreen.enhancePhoto') : t('previewScreen.noCredits')}
             </Text>
             {canProcess() && (
               <Text style={styles.processSubtext}>
-                Uses 1 credit
+                {t('previewScreen.usesCredit')}
               </Text>
             )}
           </TouchableOpacity>
@@ -242,7 +242,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
             style={styles.continueButton}
             onPress={handleContinue}
           >
-            <Text style={styles.continueButtonText}>Continue to Results</Text>
+            <Text style={styles.continueButtonText}>{t('previewScreen.continueToResults')}</Text>
           </TouchableOpacity>
         )}
       </View>
