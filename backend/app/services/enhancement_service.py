@@ -16,11 +16,11 @@ class EnhancementService:
         except Exception as e:
             print(f"Warning: Failed to initialize image enhancer: {e}")
     
-    async def enhance_image(self, image_data: bytes, resolution: str = "standard", mode: str = "enhance") -> bytes:
+    async def enhance_image(self, image_data: bytes, resolution: str = "standard", mode: str = "enhance", filter_type: str = None, custom_prompt: str = None) -> bytes:
         if not self.enhancer:
             raise HTTPException(status_code=503, detail="Image enhancement service not available")
         
-        enhanced_data = await self.enhancer.enhance(image_data, resolution, mode)
+        enhanced_data = await self.enhancer.enhance(image_data, resolution, mode, filter_type, custom_prompt)
         return enhanced_data
     
     def convert_to_png(self, image_data: bytes) -> bytes:

@@ -27,30 +27,31 @@ type AIFiltersScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, '
   StackNavigationProp<RootStackParamList>;
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-const topSectionHeight = screenHeight * 0.6;
-const bottomSectionMinHeight = screenHeight * 0.4;
-const bottomSectionMaxHeight = screenHeight * 0.8;
-
-// Mock filter variations data
-const filterVariations = [
-  { id: '3d-photos', title: '3D Photos', imageUrl: 'https://picsum.photos/200/200?random=3d' },
-  { id: 'muscles', title: 'Muscles', imageUrl: 'https://picsum.photos/200/200?random=muscles' },
-  { id: 'flash', title: 'Flash', imageUrl: 'https://picsum.photos/200/200?random=flash' },
-  { id: 'fairy-toon', title: 'Fairy Toon', imageUrl: 'https://picsum.photos/200/200?random=fairy' },
-  { id: '90s-anime', title: '90s Anime', imageUrl: 'https://picsum.photos/200/200?random=anime' },
-  { id: 'chibi', title: 'Chibi', imageUrl: 'https://picsum.photos/200/200?random=chibi' },
-  { id: 'pixel', title: 'Pixel', imageUrl: 'https://picsum.photos/200/200?random=pixel' },
-  { id: 'animal-toon', title: 'Animal Toon', imageUrl: 'https://picsum.photos/200/200?random=animal' },
-  { id: 'animated', title: 'Animated', imageUrl: 'https://picsum.photos/200/200?random=animated' },
-  { id: 'caricature', title: 'Caricature', imageUrl: 'https://picsum.photos/200/200?random=caricature' },
-  { id: 'mini-toys', title: 'Mini Toys', imageUrl: 'https://picsum.photos/200/200?random=toys' },
-  { id: 'doll', title: 'Doll', imageUrl: 'https://picsum.photos/200/200?random=doll' },
-];
+// Calculate heights to minimize empty space
+const bottomSectionMinHeight = screenHeight * 0.45; // Start higher up on screen (45% of screen height)
+const bottomSectionMaxHeight = screenHeight * 0.8; // Maximum 80% of screen height
 
 export default function AIFiltersScreen() {
   const navigation = useNavigation<AIFiltersScreenNavigationProp>();
+  const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Filter data using translations
+  const filterVariations = [
+    { id: '3d-photos', title: t('content.aiFilters.3dPhotos'), imageUrl: 'https://picsum.photos/200/200?random=3d' },
+    { id: 'muscles', title: t('content.aiFilters.muscles'), imageUrl: 'https://picsum.photos/200/200?random=muscles' },
+    { id: 'flash', title: t('content.aiFilters.flash'), imageUrl: 'https://picsum.photos/200/200?random=flash' },
+    { id: 'fairy-toon', title: t('content.aiFilters.fairyToon'), imageUrl: 'https://picsum.photos/200/200?random=fairy' },
+    { id: '90s-anime', title: t('content.aiFilters.nineties'), imageUrl: 'https://picsum.photos/200/200?random=anime' },
+    { id: 'chibi', title: t('content.aiFilters.chibi'), imageUrl: 'https://picsum.photos/200/200?random=chibi' },
+    { id: 'pixel', title: t('content.aiFilters.pixel'), imageUrl: 'https://picsum.photos/200/200?random=pixel' },
+    { id: 'animal-toon', title: t('content.aiFilters.animalToon'), imageUrl: 'https://picsum.photos/200/200?random=animal' },
+    { id: 'animated', title: t('content.aiFilters.animated'), imageUrl: 'https://picsum.photos/200/200?random=animated' },
+    { id: 'caricature', title: t('content.aiFilters.caricature'), imageUrl: 'https://picsum.photos/200/200?random=caricature' },
+    { id: 'mini-toys', title: t('content.aiFilters.miniToys'), imageUrl: 'https://picsum.photos/200/200?random=toys' },
+    { id: 'doll', title: t('content.aiFilters.doll'), imageUrl: 'https://picsum.photos/200/200?random=doll' },
+  ];
 
   const handleSettingsPress = () => {
     navigation.navigate('Settings');
@@ -58,44 +59,165 @@ export default function AIFiltersScreen() {
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('3d-photos');
   const [loading] = useState(false);
+  const [debugTouch, setDebugTouch] = useState(false);
   
   // Bottom sheet animation
   const bottomSheetHeight = useRef(new Animated.Value(bottomSectionMinHeight)).current;
   const [isBottomSheetExpanded, setIsBottomSheetExpanded] = useState(false);
+  const currentHeightRef = useRef(bottomSectionMinHeight);
+
+  // Track the animated value
+  useEffect(() => {
+    console.log('📊 Setting up animated value listener');
+    console.log('Initial height values:');
+    console.log('- bottomSectionMinHeight:', bottomSectionMinHeight);
+    console.log('- bottomSectionMaxHeight:', bottomSectionMaxHeight);
+    console.log('- screenHeight:', screenHeight);
+
+    const listener = bottomSheetHeight.addListener(({ value }) => {
+      console.log('📈 Animated value changed to:', value);
+      currentHeightRef.current = value;
+
+      // Update expanded state based on actual height
+      const threshold = (bottomSectionMinHeight + bottomSectionMaxHeight) / 2;
+      const shouldBeExpanded = value > threshold;
+      if (shouldBeExpanded !== isBottomSheetExpanded) {
+        console.log('🔄 Updating expanded state to:', shouldBeExpanded);
+        setIsBottomSheetExpanded(shouldBeExpanded);
+      }
+    });
+
+    // Set initial height and state correctly
+    const initialHeight = bottomSectionMinHeight;
+    bottomSheetHeight.setValue(initialHeight);
+    currentHeightRef.current = initialHeight;
+    setIsBottomSheetExpanded(false);
+    console.log('🎯 Set initial height to:', initialHeight);
+
+    return () => {
+      console.log('🧹 Removing animated value listener');
+      bottomSheetHeight.removeListener(listener);
+    };
+  }, []);
 
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, gestureState) => {
-        const newHeight = bottomSectionMinHeight - gestureState.dy;
-        if (newHeight >= bottomSectionMinHeight && newHeight <= bottomSectionMaxHeight) {
-          bottomSheetHeight.setValue(newHeight);
-        }
+      onStartShouldSetPanResponder: (evt, gestureState) => {
+        console.log('🟡 onStartShouldSetPanResponder called');
+        console.log('Event:', evt.nativeEvent);
+        console.log('GestureState:', gestureState);
+        return true;
       },
-      onPanResponderRelease: (_, gestureState) => {
-        const velocityThreshold = 0.3;
-        const positionThreshold = bottomSectionMinHeight + 100;
-        
-        if (gestureState.vy > velocityThreshold || bottomSheetHeight._value < positionThreshold) {
-          // Collapse
-          Animated.spring(bottomSheetHeight, {
-            toValue: bottomSectionMinHeight,
-            useNativeDriver: false,
-          }).start();
-          setIsBottomSheetExpanded(false);
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        const shouldRespond = Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 5;
+        console.log('🔵 onMoveShouldSetPanResponder called');
+        console.log('dx:', gestureState.dx, 'dy:', gestureState.dy);
+        console.log('Should respond:', shouldRespond);
+        return shouldRespond;
+      },
+      onPanResponderGrant: (evt, gestureState) => {
+        console.log('🟢 onPanResponderGrant - Gesture granted');
+        console.log('Current height:', currentHeightRef.current);
+        console.log('Is expanded:', isBottomSheetExpanded);
+        setDebugTouch(true);
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        console.log('🔄 onPanResponderMove');
+        console.log('dx:', gestureState.dx, 'dy:', gestureState.dy);
+        console.log('Current height before:', currentHeightRef.current);
+
+        // Start from the initial height when gesture began, not current animated value
+        // gestureState.dy is cumulative from start of gesture
+        // Negative dy = dragging up = expand (increase height)
+        // Positive dy = dragging down = collapse (decrease height)
+        const baseHeight = isBottomSheetExpanded ? bottomSectionMaxHeight : bottomSectionMinHeight;
+        const newHeight = baseHeight - gestureState.dy;
+        const clampedHeight = Math.max(bottomSectionMinHeight, Math.min(bottomSectionMaxHeight, newHeight));
+
+        console.log('Base height:', baseHeight);
+        console.log('New height calculated:', newHeight);
+        console.log('Clamped height:', clampedHeight);
+        console.log('Min height:', bottomSectionMinHeight);
+        console.log('Max height:', bottomSectionMaxHeight);
+
+        bottomSheetHeight.setValue(clampedHeight);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        console.log('🔴 onPanResponderRelease');
+        console.log('Final gesture state:', gestureState);
+        console.log('Velocity Y:', gestureState.vy);
+        console.log('Current height:', currentHeightRef.current);
+
+        const velocityThreshold = 300; // Lower threshold for better responsiveness
+        const positionThreshold = (bottomSectionMinHeight + bottomSectionMaxHeight) / 2;
+        const currentHeight = currentHeightRef.current;
+
+        console.log('Velocity threshold:', velocityThreshold);
+        console.log('Position threshold:', positionThreshold);
+        console.log('Total dy:', gestureState.dy);
+        console.log('Was expanded when started:', isBottomSheetExpanded);
+
+        // Decision logic:
+        // 1. Strong upward velocity = expand
+        // 2. Strong downward velocity = collapse
+        // 3. Otherwise, use position and gesture distance
+        let shouldExpand;
+
+        if (Math.abs(gestureState.vy) > velocityThreshold) {
+          // Use velocity for decision
+          shouldExpand = gestureState.vy < 0; // Negative velocity = upward = expand
+          console.log('Decision by velocity: shouldExpand =', shouldExpand);
+        } else if (Math.abs(gestureState.dy) > 50) {
+          // Use gesture distance for decision
+          shouldExpand = gestureState.dy < 0; // Negative dy = dragged up = expand
+          console.log('Decision by gesture distance: shouldExpand =', shouldExpand);
         } else {
+          // Use current position for decision
+          shouldExpand = currentHeight > positionThreshold;
+          console.log('Decision by position: shouldExpand =', shouldExpand);
+        }
+
+        console.log('Final decision - Should expand:', shouldExpand);
+
+        if (shouldExpand) {
+          console.log('🚀 Expanding to:', bottomSectionMaxHeight);
           // Expand
           Animated.spring(bottomSheetHeight, {
             toValue: bottomSectionMaxHeight,
             useNativeDriver: false,
+            tension: 120,
+            friction: 8,
           }).start();
           setIsBottomSheetExpanded(true);
+        } else {
+          console.log('⬇️ Collapsing to:', bottomSectionMinHeight);
+          // Collapse
+          Animated.spring(bottomSheetHeight, {
+            toValue: bottomSectionMinHeight,
+            useNativeDriver: false,
+            tension: 120,
+            friction: 8,
+          }).start();
+          setIsBottomSheetExpanded(false);
         }
+        setDebugTouch(false);
+      },
+      onPanResponderTerminate: (evt, gestureState) => {
+        console.log('❌ onPanResponderTerminate - Gesture terminated');
       },
     })
   ).current;
 
   useEffect(() => {
+    console.log('🎬 AIFiltersScreen mounted');
+    console.log('Screen dimensions:', { screenWidth, screenHeight });
+    console.log('Section heights:', {
+      bottomSectionMinHeight,
+      bottomSectionMaxHeight,
+      'Min as % of screen': (bottomSectionMinHeight / screenHeight * 100).toFixed(1) + '%',
+      'Max as % of screen': (bottomSectionMaxHeight / screenHeight * 100).toFixed(1) + '%'
+    });
+
     trackEvent('screen_view', { screen: 'ai_filters' });
     refreshUser();
     requestPermissions();
@@ -108,7 +230,7 @@ export default function AIFiltersScreen() {
 
   const pickImageFromGallery = async () => {
     if (!hasGalleryPermission) {
-      Alert.alert('Permission Required', 'Please grant gallery permission to select photos');
+      Alert.alert(t('common.permissionRequired'), t('tabs.aiFilters.pleaseGrantGalleryPermission'));
       return;
     }
 
@@ -123,15 +245,15 @@ export default function AIFiltersScreen() {
 
       if (!result.canceled) {
         trackEvent('action', { type: 'image_selected_gallery', filter: selectedFilter });
-        // Navigate to processing with selected filter
-        navigation.navigate('ModeSelection', { 
+        // Navigate to filter preview screen
+        navigation.navigate('FilterPreview', {
           imageUri: result.assets[0].uri,
-          // We'll pass the filter type as part of the mode or add it to the navigation params
+          filterType: selectedFilter
         });
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      Alert.alert(t('common.error'), t('tabs.aiFilters.failedToPickImage'));
     }
   };
 
@@ -141,12 +263,22 @@ export default function AIFiltersScreen() {
   };
 
   const toggleBottomSheet = () => {
+    console.log('🔄 toggleBottomSheet called');
+    console.log('Current state - isBottomSheetExpanded:', isBottomSheetExpanded);
+    console.log('Current height:', currentHeightRef.current);
+
     const targetHeight = isBottomSheetExpanded ? bottomSectionMinHeight : bottomSectionMaxHeight;
+    console.log('Target height:', targetHeight);
+
     Animated.spring(bottomSheetHeight, {
       toValue: targetHeight,
       useNativeDriver: false,
-    }).start();
+    }).start(() => {
+      console.log('✅ Animation completed to:', targetHeight);
+    });
+
     setIsBottomSheetExpanded(!isBottomSheetExpanded);
+    console.log('New state will be:', !isBottomSheetExpanded);
   };
 
   const renderFilterGrid = () => {
@@ -184,8 +316,8 @@ export default function AIFiltersScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>AI Filters</Text>
-            <Text style={styles.screenSubtitle}>Transform your photos with AI filters</Text>
+            <Text style={styles.screenTitle}>{t('tabs.aiFilters.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('tabs.aiFilters.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
             <Text style={styles.settingsIcon}>⚙️</Text>
@@ -193,42 +325,64 @@ export default function AIFiltersScreen() {
         </View>
       </View>
 
-      {/* Top Section - Photo Selection */}
-      <View style={styles.topSection}>
+      {/* Main Content Area - Photo Selection */}
+      <View style={styles.mainContent}>
         <View style={styles.topContent}>
-          <Text style={styles.topTitle}>Pick a photo</Text>
-          <Text style={styles.topSubtitle}>Transform your photo with AI filters</Text>
-          
-          <Image 
-            source={{ uri: 'https://picsum.photos/160/160?random=preview' }} 
-            style={styles.previewImage} 
+          <Text style={styles.topTitle}>{t('tabs.aiFilters.pickAPhoto')}</Text>
+          <Text style={styles.topSubtitle}>{t('tabs.aiFilters.transformYourPhotoWithAIFilters')}</Text>
+
+          <Image
+            source={{ uri: 'https://picsum.photos/160/160?random=preview' }}
+            style={styles.previewImage}
           />
-          
+
           <TouchableOpacity
             style={styles.selectPhotoButton}
             onPress={pickImageFromGallery}
             activeOpacity={0.8}
           >
-            <Text style={styles.selectPhotoText}>Select Photo</Text>
+            <Text style={styles.selectPhotoText}>{t('tabs.aiFilters.selectPhoto')}</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Bottom Section - Variations Panel */}
-      <Animated.View 
+      {/* Bottom Section - Variations Panel (Absolutely Positioned) */}
+      <Animated.View
         style={[
           styles.bottomSection,
           { height: bottomSheetHeight }
         ]}
       >
         {/* Pull Handle */}
-        <TouchableOpacity 
+        <View
           style={styles.pullHandle}
-          onPress={toggleBottomSheet}
           {...panResponder.panHandlers}
         >
-          <View style={styles.pullHandleBar} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.pullHandleTouchable,
+              debugTouch && { backgroundColor: 'rgba(255, 0, 0, 0.3)' }
+            ]}
+            onPress={() => {
+              console.log('🔘 Pull handle touched (tap)');
+              toggleBottomSheet();
+            }}
+            onPressIn={() => {
+              console.log('👇 Pull handle press in');
+              setDebugTouch(true);
+            }}
+            onPressOut={() => {
+              console.log('👆 Pull handle press out');
+              setDebugTouch(false);
+            }}
+            activeOpacity={0.7}
+          >
+            <View style={[
+              styles.pullHandleBar,
+              debugTouch && { backgroundColor: '#FF0000' }
+            ]} />
+          </TouchableOpacity>
+        </View>
 
         {/* Filter Grid */}
         <ScrollView 
@@ -252,7 +406,7 @@ const styles = StyleSheet.create({
   titleSection: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 16,
+    paddingBottom: 8,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -284,12 +438,13 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   
-  // Top Section Styles
-  topSection: {
-    height: topSectionHeight,
+  // Main Content Styles
+  mainContent: {
+    flex: 1,
     backgroundColor: '#000000',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    paddingTop: 20,
   },
   topContent: {
     alignItems: 'center',
@@ -300,19 +455,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   topSubtitle: {
     fontSize: 16,
     color: '#8E8E93',
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
   },
   previewImage: {
     width: 160,
     height: 160,
     borderRadius: 16,
-    marginBottom: 32,
+    marginBottom: 20,
     resizeMode: 'cover',
   },
   selectPhotoButton: {
@@ -331,6 +486,10 @@ const styles = StyleSheet.create({
   
   // Bottom Section Styles
   bottomSection: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#1C1C1E',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -338,13 +497,19 @@ const styles = StyleSheet.create({
   },
   pullHandle: {
     alignItems: 'center',
+    paddingVertical: 8,
+  },
+  pullHandleTouchable: {
+    alignItems: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 40,
+    minHeight: 44, // Ensure minimum touch target size
   },
   pullHandleBar: {
-    width: 32,
-    height: 4,
+    width: 40,
+    height: 5,
     backgroundColor: '#8E8E93',
-    borderRadius: 2,
+    borderRadius: 3,
   },
   filterScroll: {
     flex: 1,

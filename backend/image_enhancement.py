@@ -17,7 +17,7 @@ class ImageEnhancer:
             self.client = genai.Client(api_key=api_key)
             self.model = "gemini-2.5-flash-image-preview"
     
-    async def enhance(self, image_data: bytes, resolution: str, mode: str = "enhance") -> bytes:
+    async def enhance(self, image_data: bytes, resolution: str, mode: str = "enhance", filter_type: Optional[str] = None, custom_prompt: Optional[str] = None) -> bytes:
         """
         Enhance image using Gemini's image generation model
         """
@@ -38,8 +38,13 @@ class ImageEnhancer:
             if img.mode != 'RGB':
                 img = img.convert('RGB')
             
-            # Get the appropriate prompt for the mode
-            prompt = self._get_prompt_for_mode(mode)
+            # Get the appropriate prompt for the mode, filter, or custom edit
+            if mode == "filter" and filter_type:
+                prompt = self._get_filter_prompt(filter_type)
+            elif mode == "custom-edit" and custom_prompt:
+                prompt = self._get_custom_edit_prompt(custom_prompt)
+            else:
+                prompt = self._get_prompt_for_mode(mode)
             
             # Generate enhanced image using the correct API pattern
             response = self.client.models.generate_content(
@@ -83,3 +88,53 @@ class ImageEnhancer:
         }
         
         return mode_prompts.get(mode, mode_prompts["enhance"])
+
+    def _get_filter_prompt(self, filter_type: str) -> str:
+        """Get the appropriate prompt based on the filter type"""
+
+        filter_prompts = {
+            "3d-photos": "Transform this photograph into a stunning 3D rendered version while maintaining all original facial features and details. Apply realistic depth, lighting, and dimensional effects to make it appear as a high-quality 3D rendering. Keep all people, clothing, and background elements intact but give them a three-dimensional appearance with proper shadows and depth perception.",
+
+            "muscles": "Enhance the muscle definition and body tone in this photograph naturally and realistically. Improve the definition of arms, chest, abs, and other muscle groups while maintaining natural proportions and skin texture. Do not create unrealistic or exaggerated muscles - focus on bringing out existing muscle tone in a believable way that looks like the person has been working out consistently.",
+
+            "flash": "Apply a dynamic flash photography effect to this image, creating dramatic lighting with strong highlights and defined shadows. Enhance the contrast and make colors more vibrant and saturated. The result should look like a professional flash photograph taken in ideal lighting conditions, with crisp details and a slight glossy finish.",
+
+            "fairy-toon": "Transform this photograph into a whimsical fairy-tale cartoon style while preserving the person's recognizable features. Apply soft, dreamy colors with a magical atmosphere. Add subtle fantasy elements like sparkles or soft glows, but keep the original composition and facial structure intact. The style should be enchanting and cartoon-like but still clearly recognizable as the original person.",
+
+            "90s-anime": "Convert this photograph into a 1990s anime art style while maintaining the person's distinctive facial features and expression. Apply the characteristic large eyes, defined facial contours, and vibrant colors typical of 90s anime. Keep the original pose and composition but render it in the classic hand-drawn anime aesthetic with clean lines and cel-shading effects.",
+
+            "chibi": "Transform this photograph into an adorable chibi anime style with cute, oversized head proportions and large expressive eyes. Maintain the person's recognizable features but make them super cute and kawaii. Use soft, pastel colors and give the character a sweet, innocent expression. The style should be endearing and child-like while keeping the person identifiable.",
+
+            "pixel": "Convert this photograph into a detailed pixel art style reminiscent of 16-bit video games. Use a limited color palette and create clear pixel boundaries while maintaining the recognizability of the person. The result should look like a high-quality sprite from a classic video game, with defined pixel blocks and retro gaming aesthetics.",
+
+            "animal-toon": "Transform this person into a cute anthropomorphic animal character while keeping their facial structure and expression recognizable. Choose an appropriate animal that matches their features (cat, dog, fox, etc.) and apply cartoon styling with soft fur textures and big expressive eyes. The character should be adorable and friendly while maintaining the person's essence.",
+
+            "animated": "Convert this photograph into a high-quality animated movie character style similar to Pixar or Disney animation. Maintain the person's facial features and expression but apply the characteristic smooth, polished 3D animation look with perfect lighting and vibrant colors. The result should look like a professional animated film character.",
+
+            "caricature": "Create a playful caricature of this person by gently exaggerating their most distinctive facial features while keeping it flattering and recognizable. Enhance unique characteristics like smile, eyes, or hair in a fun, cartoon-like way. The style should be humorous but kind, emphasizing personality traits through artistic exaggeration.",
+
+            "mini-toys": "Transform this person into an adorable miniature toy figure style, like a collectible figurine or action figure. Apply a smooth, plastic-like texture with bright, vivid colors and perfect proportions. The result should look like a high-quality toy version of the person that you might find in a store display case.",
+
+            "doll": "Convert this photograph into a beautiful porcelain doll aesthetic while preserving the person's facial features. Apply smooth, flawless skin with a subtle glossy finish, perfectly styled hair, and dress them in elegant doll-like clothing. The eyes should be particularly striking and doll-like, with long lashes and a gentle expression."
+        }
+
+        return filter_prompts.get(filter_type, filter_prompts["3d-photos"])
+
+    def _get_custom_edit_prompt(self, user_description: str) -> str:
+        """Generate a prompt for custom edits based on user's natural language description"""
+
+        base_prompt = f"""Apply the following custom edit to this photograph: "{user_description}"
+
+Follow these guidelines:
+1. Preserve the person's identity and recognizable facial features
+2. Make realistic and natural-looking changes
+3. Maintain high image quality and proper lighting
+4. Keep the original composition and pose unless specifically requested to change
+5. Apply the edit in a professional, polished way
+6. If the request involves changing colors, skin tone, or lighting, make it look natural
+7. If adding or removing elements, blend them seamlessly with the existing photo
+8. Do not create unrealistic or impossible changes
+
+The result should look like a professionally edited photograph that fulfills the user's request while maintaining authenticity and visual quality."""
+
+        return base_prompt

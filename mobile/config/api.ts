@@ -7,7 +7,11 @@ export const API_ENDPOINTS = {
   analytics: '/api/analytics',
   image: '/api/image',
   enhancements: '/api/enhancements',
-  
+
+  // New AI features
+  filter: '/api/filter',
+  customEdit: '/api/custom-edit',
+
   // Email sync endpoints
   sendVerification: '/api/email/send-verification',
   verifyCode: '/api/email/verify-code',

@@ -19,6 +19,9 @@ import { RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
+import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 
 type CustomAIEditInputScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CustomAIEditInput'>;
 
@@ -45,7 +48,7 @@ const editExamples = [
 export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScreenProps) {
   const navigation = useNavigation<CustomAIEditInputScreenNavigationProp>();
   const { t } = useTranslation();
-  const { user, refreshUser } = useUser();
+  const { user, refreshUser, updateCredits } = useUser();
   const { trackEvent } = useAnalytics();
   const [editText, setEditText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -56,28 +59,100 @@ export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScre
     trackEvent('screen_view', { screen: 'custom_ai_edit_input' });
   }, []);
 
-  const handleGenerateEdit = () => {
+  const canProcess = () => {
+    if (!user) return false;
+    return user.credits > 0 || user.remainingToday > 0;
+  };
+
+  const handleGenerateEdit = async () => {
     if (!editText.trim()) {
       Alert.alert('Please describe your edit', 'Enter a description of what you want to change in your photo.');
       return;
     }
 
+    if (!user) {
+      Alert.alert('Error', 'User not initialized');
+      return;
+    }
+
+    if (!canProcess()) {
+      Alert.alert(
+        'No Credits',
+        'You have no credits remaining. Purchase more to apply custom edits.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Purchase', onPress: () => navigation.navigate('Purchase') },
+        ]
+      );
+      return;
+    }
+
     trackEvent('action', { type: 'generate_edit', description: editText });
-    
-    // Simulate processing - in real app, this would call an API
+
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    const startTime = Date.now();
+
+    try {
+      const userId = await SecureStore.getItemAsync('userId');
+
+      const formData = new FormData();
+      formData.append('user_id', userId!);
+      formData.append('resolution', 'standard');
+      formData.append('edit_description', editText.trim());
+
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      formData.append('file', {
+        uri: imageUri,
+        type: 'image/png',
+        name: 'photo.png',
+      } as any);
+
+      const customEditResponse = await axios.post(
+        `${API_BASE_URL}${API_ENDPOINTS.customEdit}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      const processingTime = Date.now() - startTime;
+      const editedUrl = `${API_BASE_URL}${customEditResponse.data.enhanced_url}`;
+
+      // Update credits
+      if (user) {
+        updateCredits(customEditResponse.data.remaining_credits);
+      }
+
+      trackEvent('action', {
+        type: 'custom_edit_completed',
+        processing_time: processingTime,
+        description: editText
+      });
+
       // Navigate to result screen
       navigation.navigate('UniversalResult', {
         originalUri: imageUri,
-        enhancedUri: imageUri, // In real app, this would be the edited image
-        enhancementId: 'custom-edit',
-        watermark: false,
+        enhancedUri: editedUrl,
+        enhancementId: customEditResponse.data.enhancement_id,
+        watermark: customEditResponse.data.watermark,
         mode: 'custom-edit',
-        processingTime: 30,
+        processingTime,
       });
-    }, 2000);
+
+    } catch (error) {
+      console.error('Custom edit error:', error);
+      Alert.alert('Error', 'Failed to apply custom edit. Please try again.');
+      trackEvent('action', {
+        type: 'custom_edit_failed',
+        error: error.message,
+        description: editText
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleExamplePress = (example: any) => {
@@ -142,14 +217,16 @@ export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScre
         <TouchableOpacity
           style={[
             styles.generateButton,
-            !editText.trim() && styles.generateButtonDisabled
+            (!editText.trim() || !canProcess() || loading) && styles.generateButtonDisabled
           ]}
           onPress={handleGenerateEdit}
-          disabled={!editText.trim() || loading}
+          disabled={!editText.trim() || loading || !canProcess()}
           activeOpacity={0.8}
         >
           {loading ? (
             <Text style={styles.generateButtonText}>Processing...</Text>
+          ) : !canProcess() ? (
+            <Text style={styles.generateButtonText}>No Credits Available</Text>
           ) : (
             <Text style={styles.generateButtonText}>Generate Edit</Text>
           )}
