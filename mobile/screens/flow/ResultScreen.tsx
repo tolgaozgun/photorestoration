@@ -6,21 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  SafeAreaView,
   Alert,
   Animated,
   Dimensions,
-  Share,
+  Platform,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -39,51 +38,38 @@ export default function ResultScreen({ navigation, route }: Props) {
     mode: string;
     processingTime: number;
   };
-  const { 
-    originalUri, 
-    enhancedUri, 
-    enhancementId, 
-    watermark, 
-    mode, 
-    processingTime 
+  const {
+    originalUri,
+    enhancedUri,
+    enhancementId,
+    watermark,
+    mode,
+    processingTime
   } = params;
   const { trackEvent } = useAnalytics();
-  
+
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
   const [showBefore, setShowBefore] = useState(false);
-
-  const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.replace('PhotoInput');
-  };
+  const [comparisonPosition] = useState(50); // percentage for slider
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const successAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    trackEvent('screen_view', { 
-      screen: 'result', 
-      mode, 
+    trackEvent('screen_view', {
+      screen: 'result',
+      mode,
       processing_time: processingTime,
-      has_watermark: watermark 
+      has_watermark: watermark
     });
-    
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 20,
-        friction: 7,
-        useNativeDriver: true,
-      }),
-    ]).start();
+
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const saveToGallery = async () => {
@@ -91,38 +77,41 @@ export default function ResultScreen({ navigation, route }: Props) {
       setIsSaving(true);
       trackEvent('action', { type: 'save_to_gallery', mode });
 
-      // Request permissions
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(t('home.permissionRequired'), t('home.galleryPermission'));
         return;
       }
 
-      // Download and save the image
       const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.png`;
       await FileSystem.downloadAsync(enhancedUri, fileUri);
-      
+
       await MediaLibrary.saveToLibraryAsync(fileUri);
-      
+
       setSavedSuccessfully(true);
-      
-      // Success animation
+
       Animated.spring(successAnim, {
         toValue: 1,
-        tension: 20,
+        tension: 50,
         friction: 7,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setTimeout(() => {
+          Animated.timing(successAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }).start(() => setSavedSuccessfully(false));
+        }, 1500);
+      });
 
       trackEvent('action', { type: 'save_success', mode });
-      
-      // Clean up temp file
       await FileSystem.deleteAsync(fileUri, { idempotent: true });
-      
+
     } catch (error) {
       console.error('Save error:', error);
       Alert.alert(t('restoration.error'), t('result.saveErrorMessage'));
-      trackEvent('action', { type: 'save_failed', mode, error: error.message });
+      trackEvent('action', { type: 'save_failed', mode, error: (error as Error)?.message });
     } finally {
       setIsSaving(false);
     }
@@ -132,13 +121,11 @@ export default function ResultScreen({ navigation, route }: Props) {
     try {
       trackEvent('action', { type: 'share_image', mode });
 
-      // Check if sharing is available
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert(t('restoration.error'), t('result.shareNotAvailableMessage'));
         return;
       }
 
-      // Download image to temp location
       const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.png`;
       await FileSystem.downloadAsync(enhancedUri, fileUri);
 
@@ -148,107 +135,90 @@ export default function ResultScreen({ navigation, route }: Props) {
       });
 
       trackEvent('action', { type: 'share_success', mode });
-
-      // Clean up temp file
       await FileSystem.deleteAsync(fileUri, { idempotent: true });
-      
+
     } catch (error) {
       console.error('Share error:', error);
       Alert.alert(t('restoration.error'), t('result.shareErrorMessage'));
-      trackEvent('action', { type: 'share_failed', mode, error: error.message });
+      trackEvent('action', { type: 'share_failed', mode, error: (error as Error)?.message });
     }
   };
 
-  const tryAnotherPhoto = () => {
-    trackEvent('action', { type: 'start_new_restoration' });
-    navigation.navigate('PhotoInput');
-  };
-
-  const viewHistory = () => {
-    trackEvent('action', { type: 'view_history_from_result' });
-    navigation.navigate('History');
-  };
-
-  const formatProcessingTime = (ms: number) => {
-    const seconds = Math.round(ms / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.goBack();
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <Animated.View 
-        style={[
-          styles.header,
-          { opacity: fadeAnim }
-        ]}
-      >
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>‹</Text>
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={styles.title}>{t('result.title')}</Text>
-          <Text style={styles.subtitle}>
-            {t('result.subtitle', { mode: t(`modes.${mode}.title`), time: formatProcessingTime(processingTime) })}
-          </Text>
-        </View>
-      </Animated.View>
+    <View style={styles.container}>
+      {/* Full-screen Image */}
+      <View style={styles.imageContainer}>
+        {/* Before/After Comparison Slider */}
+        {showBefore ? (
+          <View style={styles.comparisonContainer}>
+            {/* After Image (background) */}
+            <Image
+              source={{ uri: enhancedUri }}
+              style={styles.fullImage}
+              resizeMode="contain"
+            />
 
-      {/* Result Image */}
-      <Animated.View 
-        style={[
-          styles.imageContainer,
-          {
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }]
-          }
-        ]}
-      >
-        <Image 
-          source={{ uri: showBefore ? originalUri : enhancedUri }} 
-          style={styles.resultImage} 
-          resizeMode="contain"
-        />
-        
-        {/* Before/After Toggle */}
-        <View style={styles.toggleContainer}>
-          <TouchableOpacity 
-            style={[styles.toggleButton, showBefore && styles.toggleButtonActive]}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setShowBefore(true);
-            }}
-          >
-            <Text style={[styles.toggleText, showBefore && styles.toggleTextActive]}>
-              {t('result.before')}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.toggleButton, !showBefore && styles.toggleButtonActive]}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setShowBefore(false);
-            }}
-          >
-            <Text style={[styles.toggleText, !showBefore && styles.toggleTextActive]}>
-              {t('result.after')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Watermark indicator */}
-        {watermark && (
+            {/* Before Image (clipped) */}
+            <View
+              style={[
+                styles.beforeImageContainer,
+                { width: `${comparisonPosition}%` }
+              ]}
+            >
+              <Image
+                source={{ uri: originalUri }}
+                style={[
+                  styles.fullImage,
+                  { width: screenWidth }
+                ]}
+                resizeMode="contain"
+              />
+            </View>
+
+            {/* Slider Line */}
+            <View
+              style={[
+                styles.sliderLine,
+                { left: `${comparisonPosition}%` }
+              ]}
+            >
+              <View style={styles.sliderHandle}>
+                <Ionicons name="swap-horizontal" size={24} color="#FFFFFF" />
+              </View>
+            </View>
+
+            {/* Labels */}
+            <View style={styles.comparisonLabels}>
+              <View style={styles.labelBadge}>
+                <Text style={styles.labelText}>{t('result.before')}</Text>
+              </View>
+              <View style={styles.labelBadge}>
+                <Text style={styles.labelText}>{t('result.after')}</Text>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <Image
+            source={{ uri: enhancedUri }}
+            style={styles.fullImage}
+            resizeMode="contain"
+          />
+        )}
+
+        {watermark && !showBefore && (
           <View style={styles.watermarkBadge}>
             <Text style={styles.watermarkText}>{t('result.watermarkText')}</Text>
           </View>
         )}
 
-        {/* Success checkmark */}
+        {/* Success Overlay */}
         {savedSuccessfully && (
-          <Animated.View 
+          <Animated.View
             style={[
               styles.successOverlay,
               {
@@ -258,181 +228,143 @@ export default function ResultScreen({ navigation, route }: Props) {
             ]}
           >
             <View style={styles.successCircle}>
-              <Text style={styles.successCheck}>✓</Text>
+              <Ionicons name="checkmark" size={48} color="#FFFFFF" />
             </View>
             <Text style={styles.successText}>{t('result.savedToPhotos')}</Text>
           </Animated.View>
         )}
-      </Animated.View>
+      </View>
 
-      {/* Action Buttons */}
-      <Animated.View 
-        style={[
-          styles.actionsContainer,
-          { opacity: fadeAnim }
-        ]}
-      >
-        {/* Primary Actions */}
-        <View style={styles.primaryActions}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.saveButton]}
-            onPress={saveToGallery}
-            disabled={isSaving}
-            activeOpacity={0.9}
-          >
-            <LinearGradient
-              colors={savedSuccessfully ? ['#28A745', '#20C997'] : ['#FF6B6B', '#FF8E53']}
-              style={styles.actionGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+      {/* Minimal Top Bar */}
+      <Animated.View style={[styles.topBar, { opacity: fadeAnim }]}>
+        <View style={styles.topBarContent}>
+          <TouchableOpacity onPress={handleBack} style={styles.topBarButton}>
+            <Ionicons name="close" size={28} color="#FFFFFF" />
+          </TouchableOpacity>
+
+          <View style={styles.topBarActions}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowBefore(!showBefore);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              style={styles.topBarButton}
+            >
+              <Ionicons
+                name={showBefore ? "images" : "images-outline"}
+                size={24}
+                color="#FFFFFF"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={shareImage}
+              style={styles.topBarButton}
+            >
+              <Ionicons name="share-outline" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={saveToGallery}
+              style={styles.topBarButton}
+              disabled={isSaving}
             >
               {isSaving ? (
-                <>
-                  <Text style={styles.actionIcon}>⏳</Text>
-                  <Text style={styles.actionText}>{t('result.saving')}</Text>
-                </>
+                <Ionicons name="hourglass-outline" size={24} color="#FFFFFF" />
               ) : savedSuccessfully ? (
-                <>
-                  <Text style={styles.actionIcon}>✓</Text>
-                  <Text style={styles.actionText}>{t('result.saved')}</Text>
-                </>
+                <Ionicons name="checkmark-circle" size={24} color="#28A745" />
               ) : (
-                <>
-                  <Text style={styles.actionIcon}>💾</Text>
-                  <Text style={styles.actionText}>{t('result.saveToPhotos')}</Text>
-                </>
+                <Ionicons name="download-outline" size={24} color="#FFFFFF" />
               )}
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.shareButton]}
-            onPress={shareImage}
-            activeOpacity={0.9}
-          >
-            <View style={styles.secondaryAction}>
-              <Text style={styles.secondaryIcon}>📤</Text>
-              <Text style={styles.secondaryText}>{t('result.share')}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Secondary Actions */}
-        <View style={styles.secondaryActions}>
-          <TouchableOpacity
-            style={styles.restartButton}
-            onPress={tryAnotherPhoto}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']}
-              style={styles.restartGradient}
-            >
-              <Text style={styles.restartIcon}>🔄</Text>
-              <Text style={styles.restartText}>{t('result.tryAnother')}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.historyButton}
-            onPress={viewHistory}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.historyText}>📋 {t('result.viewHistory')}</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-
-      {/* Stats */}
-      <Animated.View 
-        style={[
-          styles.statsContainer,
-          { opacity: fadeAnim }
-        ]}
-      >
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{mode}</Text>
-            <Text style={styles.statLabel}>{t('result.modeUsed')}</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{formatProcessingTime(processingTime)}</Text>
-            <Text style={styles.statLabel}>{t('result.processingTime')}</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{watermark ? t('result.qualityDemo') : t('result.qualityFull')}</Text>
-            <Text style={styles.statLabel}>{t('result.quality')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 12,
-  },
-  backButtonText: {
-    fontSize: 28,
-    color: '#007AFF',
-    fontWeight: '600',
-  },
-  headerContent: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
+    backgroundColor: '#000000',
   },
   imageContainer: {
     flex: 1,
-    marginHorizontal: 20,
-    marginVertical: 20,
-    borderRadius: 16,
-    overflow: 'hidden',
-    backgroundColor: '#1a1a1a',
     position: 'relative',
   },
-  resultImage: {
+  fullImage: {
     width: '100%',
     height: '100%',
   },
+  comparisonContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  beforeImageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    overflow: 'hidden',
+  },
+  sliderLine: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 3,
+    backgroundColor: '#FFFFFF',
+    transform: [{ translateX: -1.5 }],
+  },
+  sliderHandle: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 48,
+    height: 48,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{ translateX: -24 }, { translateY: -24 }],
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  comparisonLabels: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 100 : 80,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  labelBadge: {
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  labelText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
   watermarkBadge: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: 'rgba(255, 193, 7, 0.9)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    top: Platform.OS === 'ios' ? 100 : 80,
+    right: 20,
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   watermarkText: {
-    color: '#000',
-    fontSize: 10,
+    color: '#FFFFFF',
+    fontSize: 12,
     fontWeight: '600',
   },
   successOverlay: {
@@ -441,177 +373,50 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   successCircle: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     backgroundColor: '#28A745',
-    borderRadius: 40,
+    borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-  },
-  successCheck: {
-    color: '#fff',
-    fontSize: 32,
-    fontWeight: '600',
+    marginBottom: 20,
   },
   successText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  actionsContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
-  primaryActions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
-  actionButton: {
-    flex: 1,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  saveButton: {
-    flex: 2,
-  },
-  shareButton: {
-    flex: 1,
-  },
-  actionGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-  },
-  actionIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  actionText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryAction: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-  },
-  secondaryIcon: {
-    fontSize: 18,
-    marginRight: 8,
-  },
-  secondaryText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  secondaryActions: {
-    alignItems: 'center',
-  },
-  restartButton: {
-    width: '100%',
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 12,
-  },
-  restartGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  restartIcon: {
-    fontSize: 18,
-    marginRight: 8,
-  },
-  restartText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  historyButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-  },
-  historyText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  statsContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
-    padding: 16,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginHorizontal: 12,
-  },
-  statValue: {
-    color: '#FF6B6B',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-    textTransform: 'capitalize',
-  },
-  statLabel: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 12,
-  },
-  toggleContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    flexDirection: 'row',
-    backgroundColor: 'rgba(26, 26, 26, 0.9)',
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  toggleButton: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    backgroundColor: 'rgba(26, 26, 26, 0.9)',
-  },
-  toggleButtonActive: {
-    backgroundColor: '#007AFF',
-  },
-  toggleText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.6)',
-  },
-  toggleTextActive: {
     color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    paddingTop: Platform.OS === 'ios' ? 50 : 40,
+  },
+  topBarContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  topBarActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  topBarButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
