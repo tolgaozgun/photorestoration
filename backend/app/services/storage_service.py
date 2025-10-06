@@ -88,3 +88,38 @@ class StorageService:
         enhanced_key = self.upload_image(enhanced_data, "enhanced")
         logger.info(f"Upload completed - Original key: {original_key}, Enhanced key: {enhanced_key}")
         return original_key, enhanced_key
+
+    def upload_multi_size_images(self, original_data: bytes, enhanced_sizes: dict[str, bytes]) -> dict[str, str]:
+        """Upload original and multiple sizes of enhanced image (thumbnail, preview, full)"""
+        file_id = str(uuid.uuid4())
+
+        keys = {}
+
+        # Upload original
+        original_key = f"original/{file_id}.png"
+        self.client.put_object(self.bucket, original_key, io.BytesIO(original_data), len(original_data))
+        keys['original_url'] = original_key
+        logger.info(f"Uploaded original: {original_key}")
+
+        # Upload thumbnail
+        if 'thumbnail' in enhanced_sizes:
+            thumbnail_key = f"thumbnails/{file_id}.png"
+            self.client.put_object(self.bucket, thumbnail_key, io.BytesIO(enhanced_sizes['thumbnail']), len(enhanced_sizes['thumbnail']))
+            keys['thumbnail_url'] = thumbnail_key
+            logger.info(f"Uploaded thumbnail: {thumbnail_key} ({len(enhanced_sizes['thumbnail'])} bytes)")
+
+        # Upload preview
+        if 'preview' in enhanced_sizes:
+            preview_key = f"previews/{file_id}.png"
+            self.client.put_object(self.bucket, preview_key, io.BytesIO(enhanced_sizes['preview']), len(enhanced_sizes['preview']))
+            keys['preview_url'] = preview_key
+            logger.info(f"Uploaded preview: {preview_key} ({len(enhanced_sizes['preview'])} bytes)")
+
+        # Upload full
+        if 'full' in enhanced_sizes:
+            full_key = f"enhanced/{file_id}.png"
+            self.client.put_object(self.bucket, full_key, io.BytesIO(enhanced_sizes['full']), len(enhanced_sizes['full']))
+            keys['enhanced_url'] = full_key
+            logger.info(f"Uploaded full: {full_key} ({len(enhanced_sizes['full'])} bytes)")
+
+        return keys

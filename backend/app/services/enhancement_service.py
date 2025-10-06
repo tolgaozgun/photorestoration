@@ -72,9 +72,61 @@ class EnhancementService:
     def generate_thumbnail(self, image_data: bytes, size: tuple[int, int] = (200, 200)) -> bytes:
         img = Image.open(io.BytesIO(image_data))
         img.thumbnail(size, Image.Resampling.LANCZOS)
-        
+
         thumb_io = io.BytesIO()
         img.save(thumb_io, format='PNG')
         thumb_io.seek(0)
-        
+
         return thumb_io.getvalue()
+
+    def generate_multiple_sizes(self, image_data: bytes) -> dict[str, bytes]:
+        """Generate thumbnail, preview, and full size images"""
+        img = Image.open(io.BytesIO(image_data))
+        original_size = img.size
+
+        sizes = {}
+
+        # Thumbnail (200x200) - for lists
+        thumb_img = img.copy()
+        thumb_img.thumbnail((200, 200), Image.Resampling.LANCZOS)
+        thumb_io = io.BytesIO()
+        thumb_img.save(thumb_io, format='PNG')
+        thumb_io.seek(0)
+        sizes['thumbnail'] = thumb_io.getvalue()
+
+        # Preview (1080x1080) - for preview screens
+        preview_img = img.copy()
+        preview_img.thumbnail((1080, 1080), Image.Resampling.LANCZOS)
+        preview_io = io.BytesIO()
+        preview_img.save(preview_io, format='PNG')
+        preview_io.seek(0)
+        sizes['preview'] = preview_io.getvalue()
+
+        # Full (original size) - for final viewing/download
+        full_io = io.BytesIO()
+        img.save(full_io, format='PNG')
+        full_io.seek(0)
+        sizes['full'] = full_io.getvalue()
+
+        return sizes
+
+    def generate_blurhash(self, image_data: bytes, x_components: int = 4, y_components: int = 3) -> str:
+        """Generate blurhash for an image"""
+        try:
+            import blurhash
+            img = Image.open(io.BytesIO(image_data))
+
+            # Resize to small size for faster blurhash generation
+            img.thumbnail((100, 100), Image.Resampling.LANCZOS)
+
+            # Convert to RGB if necessary
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+
+            # Generate blurhash
+            hash_str = blurhash.encode(img, x_components=x_components, y_components=y_components)
+            return hash_str
+        except Exception as e:
+            logger.error(f"Blurhash generation failed: {e}")
+            # Return a default gray blurhash on failure
+            return 'L6PZfSi_.AyE_3t7t7R**0o#DgR4'

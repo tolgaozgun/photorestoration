@@ -5,6 +5,9 @@ from datetime import datetime
 class EnhancementResponse(BaseModel):
     enhancement_id: str
     enhanced_url: str
+    thumbnail_url: Optional[str] = None
+    preview_url: Optional[str] = None
+    blurhash: Optional[str] = None
     watermark: bool
     processing_time: float
     remaining_credits: int
