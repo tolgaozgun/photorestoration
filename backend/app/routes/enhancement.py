@@ -43,12 +43,18 @@ async def enhance_image(
         
         try:
             enhanced_data = await enhancement_service.enhance_image(image_data, resolution, mode)
-            
+
             UserService.deduct_credits(user)
-            
+
             try:
-                original_key, enhanced_key = storage_service.upload_original_and_enhanced(image_data, enhanced_data)
-                logger.info(f"Image saved to storage successfully.")
+                # Generate multiple sizes and blurhash
+                enhanced_sizes = enhancement_service.generate_multiple_sizes(enhanced_data)
+                blurhash = enhancement_service.generate_blurhash(enhanced_data)
+
+                # Upload all sizes
+                image_keys = storage_service.upload_multi_size_images(image_data, enhanced_sizes)
+
+                logger.info(f"Multi-size images and blurhash generated successfully.")
             except Exception as e:
                 logger.error(f"Storage error for user {user_id}, file {file.filename}: {e}", exc_info=True)
                 UserService.refund_credits(user)
@@ -64,8 +70,11 @@ async def enhance_image(
             
             enhancement = Enhancement(
                 user_id=user_id,
-                original_url=original_key,
-                enhanced_url=enhanced_key,
+                original_url=image_keys['original_url'],
+                enhanced_url=image_keys['enhanced_url'],
+                thumbnail_url=image_keys.get('thumbnail_url'),
+                preview_url=image_keys.get('preview_url'),
+                blurhash=blurhash,
                 resolution=resolution,
                 mode=mode,
                 processing_time=processing_time,
@@ -83,7 +92,10 @@ async def enhance_image(
             
             return EnhancementResponse(
                 enhancement_id=enhancement.id,
-                enhanced_url=f"/api/image/{enhanced_key}",
+                enhanced_url=f"/api/image/{image_keys['enhanced_url']}",
+                thumbnail_url=f"/api/image/{image_keys['thumbnail_url']}" if image_keys.get('thumbnail_url') else None,
+                preview_url=f"/api/image/{image_keys['preview_url']}" if image_keys.get('preview_url') else None,
+                blurhash=blurhash,
                 watermark=watermark,
                 processing_time=processing_time,
                 remaining_credits=credits_info["total_credits"],
