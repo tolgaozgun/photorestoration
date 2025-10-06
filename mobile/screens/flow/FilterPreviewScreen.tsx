@@ -21,6 +21,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { useProcessing } from '../../contexts/ProcessingContext';
 import { API_BASE_URL, API_ENDPOINTS } from '../../config/api';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -35,6 +36,7 @@ export default function FilterPreviewScreen({ navigation, route }: Props) {
   const { imageUri, filterType } = route.params as { imageUri: string; filterType: string; };
   const { user, updateCredits } = useUser();
   const { trackEvent } = useAnalytics();
+  const { startProcessing, completeProcessing, failProcessing } = useProcessing();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [filteredImage, setFilteredImage] = useState<string | null>(null);
@@ -89,8 +91,22 @@ export default function FilterPreviewScreen({ navigation, route }: Props) {
       return;
     }
 
-    setIsProcessing(true);
+    const jobId = `filter_${Date.now()}`;
     const startTime = Date.now();
+
+    // Start background processing notification
+    startProcessing({
+      id: jobId,
+      type: 'filter',
+      originalUri: imageUri,
+    });
+
+    // Navigate back to home immediately
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainTabs' }],
+    });
+
     trackEvent('filter_process', {
       started: true,
       filter: filterType,
@@ -124,11 +140,7 @@ export default function FilterPreviewScreen({ navigation, route }: Props) {
       );
 
       const processingDuration = Date.now() - startTime;
-      setProcessingTime(processingDuration);
-
       const filteredUrl = `${API_BASE_URL}${filterResponse.data.enhanced_url}`;
-      setFilteredImage(filteredUrl);
-      setWatermark(filterResponse.data.watermark);
 
       // Update credits using the unified response
       if (user) {
@@ -142,16 +154,26 @@ export default function FilterPreviewScreen({ navigation, route }: Props) {
         resolution: selectedResolution
       });
 
+      // Complete background processing
+      completeProcessing(jobId, {
+        type: 'filter',
+        enhancedUri: filteredUrl,
+        originalUri: imageUri,
+        enhancementId: Date.now().toString(),
+        watermark: filterResponse.data.watermark,
+        processingTime: processingDuration,
+      });
+
     } catch (error) {
       console.error('Filter error:', error);
-      Alert.alert(t('restoration.error'), t('tabs.aiFilters.filterFailed'));
       trackEvent('filter_process', {
         failed: true,
-        error: error.message,
+        error: (error as Error).message,
         filter: filterType
       });
-    } finally {
-      setIsProcessing(false);
+
+      // Fail background processing
+      failProcessing(jobId, t('tabs.aiFilters.filterFailed'));
     }
   };
 

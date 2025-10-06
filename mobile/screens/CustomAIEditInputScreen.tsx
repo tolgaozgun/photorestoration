@@ -18,6 +18,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
+import { useProcessing } from '../contexts/ProcessingContext';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
@@ -50,6 +51,7 @@ export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScre
   const { t } = useTranslation();
   const { user, refreshUser, updateCredits } = useUser();
   const { trackEvent } = useAnalytics();
+  const { startProcessing, completeProcessing, failProcessing } = useProcessing();
   const [editText, setEditText] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -87,10 +89,23 @@ export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScre
       return;
     }
 
-    trackEvent('action', { type: 'generate_edit', description: editText });
-
-    setLoading(true);
+    const jobId = `custom_edit_${Date.now()}`;
     const startTime = Date.now();
+
+    // Start background processing notification
+    startProcessing({
+      id: jobId,
+      type: 'custom-edit',
+      originalUri: imageUri,
+    });
+
+    // Navigate back to home immediately
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainTabs' }],
+    });
+
+    trackEvent('action', { type: 'generate_edit', description: editText });
 
     try {
       const userId = await SecureStore.getItemAsync('userId');
@@ -132,26 +147,26 @@ export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScre
         description: editText
       });
 
-      // Navigate to result screen
-      navigation.navigate('UniversalResult', {
-        originalUri: imageUri,
+      // Complete background processing
+      completeProcessing(jobId, {
+        type: 'custom-edit',
         enhancedUri: editedUrl,
+        originalUri: imageUri,
         enhancementId: customEditResponse.data.enhancement_id,
         watermark: customEditResponse.data.watermark,
-        mode: 'custom-edit',
         processingTime,
       });
 
     } catch (error) {
       console.error('Custom edit error:', error);
-      Alert.alert('Error', 'Failed to apply custom edit. Please try again.');
       trackEvent('action', {
         type: 'custom_edit_failed',
-        error: error.message,
+        error: (error as Error).message,
         description: editText
       });
-    } finally {
-      setLoading(false);
+
+      // Fail background processing
+      failProcessing(jobId, 'Failed to apply custom edit. Please try again.');
     }
   };
 

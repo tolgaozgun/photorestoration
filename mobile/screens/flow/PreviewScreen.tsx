@@ -21,6 +21,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { useProcessing } from '../../contexts/ProcessingContext';
 import { API_BASE_URL, API_ENDPOINTS } from '../../config/api';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -35,6 +36,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
   const { imageUri, selectedMode } = route.params as { imageUri: string; selectedMode: string; };
   const { user, updateCredits } = useUser();
   const { trackEvent } = useAnalytics();
+  const { startProcessing, completeProcessing, failProcessing } = useProcessing();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [enhancedImage, setEnhancedImage] = useState<string | null>(null);
@@ -84,14 +86,28 @@ export default function PreviewScreen({ navigation, route }: Props) {
         t('restoration.noCreditsMessage'),
         [
           { text: t('restoration.cancel'), style: 'cancel' },
-          { text: t('restoration.purchase'), onPress: () => navigation.navigate('PhotoInput') },
+          { text: t('restoration.purchase'), onPress: () => navigation.navigate('Purchase') },
         ]
       );
       return;
     }
 
-    setIsProcessing(true);
+    const jobId = `enhance_${Date.now()}`;
     const startTime = Date.now();
+
+    // Start background processing notification
+    startProcessing({
+      id: jobId,
+      type: 'enhance',
+      originalUri: imageUri,
+    });
+
+    // Navigate back to home immediately
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainTabs' }],
+    });
+
     trackEvent(`restore_${selectedResolution}`, {
       started: true,
       mode: selectedMode,
@@ -126,11 +142,7 @@ export default function PreviewScreen({ navigation, route }: Props) {
       );
 
       const processingDuration = Date.now() - startTime;
-      setProcessingTime(processingDuration);
-
       const enhancedUrl = `${API_BASE_URL}${enhanceResponse.data.enhanced_url}`;
-      setEnhancedImage(enhancedUrl);
-      setWatermark(enhanceResponse.data.watermark);
 
       // Update credits using the unified response
       if (user) {
@@ -144,16 +156,26 @@ export default function PreviewScreen({ navigation, route }: Props) {
         quality_level: qualityLevel
       });
 
+      // Complete background processing
+      completeProcessing(jobId, {
+        type: 'enhance',
+        enhancedUri: enhancedUrl,
+        originalUri: imageUri,
+        enhancementId: Date.now().toString(),
+        watermark: enhanceResponse.data.watermark,
+        processingTime: processingDuration,
+      });
+
     } catch (error) {
       console.error('Enhancement error:', error);
-      Alert.alert(t('restoration.error'), t('restoration.enhanceFailed'));
       trackEvent(`restore_${selectedResolution}`, {
         failed: true,
-        error: error.message,
+        error: (error as Error).message,
         mode: selectedMode
       });
-    } finally {
-      setIsProcessing(false);
+
+      // Fail background processing
+      failProcessing(jobId, t('restoration.enhanceFailed'));
     }
   };
 
