@@ -27,6 +27,8 @@ interface Enhancement {
   original_url: string;
   enhanced_url: string;
   thumbnail_url: string;
+  preview_url?: string;
+  blurhash?: string;
   resolution: string;
   mode: string;
   created_at: string;
@@ -94,6 +96,8 @@ export default function HistoryScreen() {
     navigation.navigate('UniversalResult', {
       originalUri: `${API_BASE_URL}${item.original_url}`,
       enhancedUri: `${API_BASE_URL}${item.enhanced_url}`,
+      previewUri: item.preview_url ? `${API_BASE_URL}${item.preview_url}` : undefined,
+      blurhash: item.blurhash,
       enhancementId: item.id,
       watermark: item.watermark,
       mode: item.mode as any,
@@ -145,7 +149,7 @@ export default function HistoryScreen() {
         contentFit="cover"
         transition={200}
         cachePolicy="memory-disk"
-        placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+        placeholder={item.blurhash ? { blurhash: item.blurhash } : { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
         priority="high"
       />
       <View style={styles.itemContent}>

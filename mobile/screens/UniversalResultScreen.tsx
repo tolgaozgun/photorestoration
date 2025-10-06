@@ -5,13 +5,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   Alert,
   Animated,
   Dimensions,
   Platform,
 } from 'react-native';
+import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -27,6 +27,8 @@ type UniversalResultScreenNavigationProp = StackNavigationProp<{
   UniversalResult: {
     originalUri: string;
     enhancedUri: string;
+    previewUri?: string;
+    blurhash?: string;
     enhancementId: string;
     watermark: boolean;
     mode: 'enhance' | 'filter' | 'video' | 'custom-edit' | 'ai-generation';
@@ -40,6 +42,8 @@ interface UniversalResultScreenProps {
     params: {
       originalUri: string;
       enhancedUri: string;
+      previewUri?: string;
+      blurhash?: string;
       enhancementId: string;
       watermark: boolean;
       mode: 'enhance' | 'filter' | 'video' | 'custom-edit' | 'ai-generation';
@@ -56,6 +60,8 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
   const {
     originalUri,
     enhancedUri,
+    previewUri,
+    blurhash,
     enhancementId,
     watermark,
     mode,
@@ -66,6 +72,10 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
   const [showBefore, setShowBefore] = useState(false);
   const [comparisonPosition, setComparisonPosition] = useState(50); // percentage
+  const [showFullHD, setShowFullHD] = useState(false); // Toggle for full HD
+
+  // Determine which URI to display
+  const displayUri = showFullHD ? enhancedUri : (previewUri || enhancedUri);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -172,9 +182,13 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
           <View style={styles.comparisonContainer}>
             {/* After Image (background) */}
             <Image
-              source={{ uri: enhancedUri }}
+              source={{ uri: displayUri }}
               style={styles.fullImage}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
+              placeholder={blurhash ? { blurhash } : undefined}
+              priority="high"
+              transition={300}
             />
 
             {/* Before Image (clipped) */}
@@ -190,7 +204,9 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
                   styles.fullImage,
                   { width: screenWidth }
                 ]}
-                resizeMode="contain"
+                contentFit="contain"
+                cachePolicy="memory-disk"
+                priority="high"
               />
             </View>
 
@@ -218,9 +234,13 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
           </View>
         ) : (
           <Image
-            source={{ uri: enhancedUri }}
+            source={{ uri: displayUri }}
             style={styles.fullImage}
-            resizeMode="contain"
+            contentFit="contain"
+            cachePolicy="memory-disk"
+            placeholder={blurhash ? { blurhash } : undefined}
+            priority="high"
+            transition={300}
           />
         )}
 
@@ -270,6 +290,28 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
                 color="#FFFFFF"
               />
             </TouchableOpacity>
+
+            {/* HD Toggle Button */}
+            {previewUri && (
+              <TouchableOpacity
+                onPress={() => {
+                  setShowFullHD(!showFullHD);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                style={styles.topBarButton}
+              >
+                <View style={styles.hdButtonContainer}>
+                  <Ionicons
+                    name={showFullHD ? "hd" : "hd-outline"}
+                    size={20}
+                    color={showFullHD ? "#4FC3F7" : "#FFFFFF"}
+                  />
+                  <Text style={[styles.hdButtonText, showFullHD && styles.hdButtonTextActive]}>
+                    HD
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               onPress={shareImage}
@@ -404,6 +446,23 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '600',
+  },
+  hdButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  hdButtonText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '600',
+    marginLeft: 2,
+  },
+  hdButtonTextActive: {
+    color: '#4FC3F7',
   },
   topBar: {
     position: 'absolute',

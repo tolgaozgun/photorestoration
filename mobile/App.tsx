@@ -81,9 +81,11 @@ export type RootStackParamList = {
     processingType: 'enhance' | 'filter' | 'video' | 'custom-edit' | 'ai-generation';
     estimatedTime?: number;
   };
-  UniversalResult: { 
+  UniversalResult: {
     originalUri: string;
     enhancedUri: string;
+    previewUri?: string;
+    blurhash?: string;
     enhancementId: string;
     watermark: boolean;
     mode: 'enhance' | 'filter' | 'video' | 'custom-edit' | 'ai-generation';
