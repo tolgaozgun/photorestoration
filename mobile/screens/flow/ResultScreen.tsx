@@ -16,7 +16,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as MediaLibrary from 'expo-media-library';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -83,10 +83,14 @@ export default function ResultScreen({ navigation, route }: Props) {
         return;
       }
 
-      const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.png`;
-      await FileSystem.downloadAsync(enhancedUri, fileUri);
+      const fileName = `restored_photo_${enhancementId}.png`;
+      const tempDir = FileSystem.cacheDirectory;
+      const filePath = `${tempDir}${fileName}`;
 
-      await MediaLibrary.saveToLibraryAsync(fileUri);
+      // Download the file using the new API
+      const { uri } = await FileSystem.downloadAsync(enhancedUri, filePath);
+
+      await MediaLibrary.saveToLibraryAsync(uri);
 
       setSavedSuccessfully(true);
 
@@ -106,7 +110,9 @@ export default function ResultScreen({ navigation, route }: Props) {
       });
 
       trackEvent('action', { type: 'save_success', mode });
-      await FileSystem.deleteAsync(fileUri, { idempotent: true });
+
+      // Clean up the temp file
+      await FileSystem.deleteAsync(filePath, { idempotent: true });
 
     } catch (error) {
       console.error('Save error:', error);
@@ -126,16 +132,22 @@ export default function ResultScreen({ navigation, route }: Props) {
         return;
       }
 
-      const fileUri = FileSystem.documentDirectory + `restored_photo_${enhancementId}.png`;
-      await FileSystem.downloadAsync(enhancedUri, fileUri);
+      const fileName = `restored_photo_${enhancementId}.png`;
+      const tempDir = FileSystem.cacheDirectory;
+      const filePath = `${tempDir}${fileName}`;
 
-      await Sharing.shareAsync(fileUri, {
+      // Download the file using the new API
+      const { uri } = await FileSystem.downloadAsync(enhancedUri, filePath);
+
+      await Sharing.shareAsync(uri, {
         mimeType: 'image/jpeg',
         dialogTitle: 'Share Restored Photo',
       });
 
       trackEvent('action', { type: 'share_success', mode });
-      await FileSystem.deleteAsync(fileUri, { idempotent: true });
+
+      // Clean up the temp file
+      await FileSystem.deleteAsync(filePath, { idempotent: true });
 
     } catch (error) {
       console.error('Share error:', error);

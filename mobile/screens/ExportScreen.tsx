@@ -47,10 +47,14 @@ export default function ExportScreen({ navigation, route }: Props) {
         return;
       }
 
-      const fileUri = FileSystem.documentDirectory + `enhanced_${enhancementId}.png`;
-      await FileSystem.downloadAsync(enhancedUri, fileUri);
+      const fileName = `enhanced_${enhancementId}.png`;
+      const tempDir = FileSystem.cacheDirectory;
+      const filePath = `${tempDir}${fileName}`;
 
-      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      // Download the file using the new API
+      const { uri } = await FileSystem.downloadAsync(enhancedUri, filePath);
+
+      const asset = await MediaLibrary.createAssetAsync(uri);
       await MediaLibrary.createAlbumAsync('Photo Restoration', asset, false);
 
       Alert.alert(t('settings.success'), t('export.photoSaved'));
@@ -69,15 +73,19 @@ export default function ExportScreen({ navigation, route }: Props) {
     trackEvent('export_action', { type: 'share' });
 
     try {
-      const fileUri = FileSystem.documentDirectory + `enhanced_share_${enhancementId}.png`;
-      await FileSystem.downloadAsync(enhancedUri, fileUri);
+      const fileName = `enhanced_share_${enhancementId}.png`;
+      const tempDir = FileSystem.cacheDirectory;
+      const filePath = `${tempDir}${fileName}`;
+
+      // Download the file using the new API
+      const { uri } = await FileSystem.downloadAsync(enhancedUri, filePath);
 
       if (Platform.OS === 'ios') {
         await Share.share({
-          url: fileUri,
+          url: uri,
         });
       } else {
-        await Sharing.shareAsync(fileUri);
+        await Sharing.shareAsync(uri);
       }
 
       trackEvent('export_success', { type: 'share' });

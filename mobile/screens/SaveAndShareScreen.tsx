@@ -44,9 +44,13 @@ export default function SaveAndShareScreen({ navigation, route }: Props) {
         return;
       }
 
-      const filename = FileSystem.documentDirectory + 'restored_photo.png';
-      await FileSystem.downloadAsync(enhancedImageUri, filename);
-      await MediaLibrary.saveToLibraryAsync(filename);
+      const fileName = 'restored_photo.png';
+      const tempDir = FileSystem.cacheDirectory;
+      const filePath = `${tempDir}${fileName}`;
+
+      // Download the file using the new API
+      const { uri } = await FileSystem.downloadAsync(enhancedImageUri, filePath);
+      await MediaLibrary.saveToLibraryAsync(uri);
       Alert.alert(t('result.saveSuccessTitle'), t('result.saveSuccessMessage'));
     } catch (error) {
       console.error('Save error:', error);
@@ -57,13 +61,17 @@ export default function SaveAndShareScreen({ navigation, route }: Props) {
   const handleShare = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      const filename = FileSystem.cacheDirectory + 'restored_photo_share.png';
-      await FileSystem.downloadAsync(enhancedImageUri, filename);
+      const fileName = 'restored_photo_share.png';
+      const tempDir = FileSystem.cacheDirectory;
+      const filePath = `${tempDir}${fileName}`;
+
+      // Download the file using the new API
+      const { uri } = await FileSystem.downloadAsync(enhancedImageUri, filePath);
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert(t('result.shareErrorTitle'), t('result.shareNotAvailableMessage'));
         return;
       }
-      await Sharing.shareAsync(filename);
+      await Sharing.shareAsync(uri);
     } catch (error) {
       console.error('Share error:', error);
       Alert.alert(t('result.shareErrorTitle'), t('result.shareErrorMessage'));
