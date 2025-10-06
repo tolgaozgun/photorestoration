@@ -50,6 +50,7 @@ import AIGenerationResultScreen from './screens/flow/AIGenerationResultScreen';
 import { UserProvider } from './contexts/UserContext';
 import { AnalyticsProvider } from './contexts/AnalyticsContext';
 import { FlowProvider } from './contexts/FlowContext';
+import { ProcessingProvider } from './contexts/ProcessingContext';
 import { generateUUID } from './utils/uuid';
 
 // Import our custom components
@@ -375,8 +376,9 @@ export default function App() {
         <UserProvider>
           <AnalyticsProvider>
             <FlowProvider>
-                <View style={styles.container}>
-                  <NavigationContainer ref={navigationRef}>
+              <NavigationContainer ref={navigationRef}>
+                <ProcessingProvider>
+                  <View style={styles.container}>
                   <Stack.Navigator
                     initialRouteName={isFirstLaunch ? 'Onboarding' : 'MainTabs'}
                     screenOptions={{
@@ -534,10 +536,11 @@ export default function App() {
                       }}
                     />
 
-                                      </Stack.Navigator>
-                </NavigationContainer>
-                <StatusBar style="light" />
-              </View>
+                  </Stack.Navigator>
+                  <StatusBar style="light" />
+                  </View>
+                </ProcessingProvider>
+              </NavigationContainer>
             </FlowProvider>
           </AnalyticsProvider>
         </UserProvider>
