@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import { useState, useEffect } from 'react';
 import {
   View,
@@ -7,27 +7,20 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
-  FlatList,
+  ScrollView,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import { useTranslation } from 'react-i18next';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useProcessing } from '../contexts/ProcessingContext';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
-import * as Haptics from 'expo-haptics';
-import emptyHistoryImage from '../assets/empty-history.png';
 
-type HistoryScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'History'
->;
-
-interface Props {
-  navigation: HistoryScreenNavigationProp;
-}
+type HistoryScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface Enhancement {
   id: string;
@@ -41,8 +34,10 @@ interface Enhancement {
   watermark: boolean;
 }
 
-export default function HistoryScreen({ navigation }: Props) {
+export default function HistoryScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation<HistoryScreenNavigationProp>();
+  const { currentJob } = useProcessing();
   const [enhancements, setEnhancements] = useState<Enhancement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,7 +50,6 @@ export default function HistoryScreen({ navigation }: Props) {
     try {
       const userId = await SecureStore.getItemAsync('userId');
       if (!userId) {
-        // Handle case where user is not initialized (e.g., navigate to onboarding)
         setIsLoading(false);
         return;
       }
@@ -69,77 +63,145 @@ export default function HistoryScreen({ navigation }: Props) {
     }
   };
 
-  const renderItem = ({ item }: { item: Enhancement }) => (
-    <TouchableOpacity 
+  const getTypeLabel = (type: string) => {
+    const labels = {
+      'enhance': '✨ Enhance',
+      'filter': '🎨 Filter',
+      'custom-edit': '✏️ Custom Edit',
+      'video': '🎬 Video',
+      'colorize': '🎨 Colorize',
+      'de-scratch': '🔧 De-scratch',
+      'enlighten': '💡 Enlighten',
+    };
+    return labels[type] || type;
+  };
+
+  const formatTime = (date: string) => {
+    const now = new Date();
+    const then = new Date(date);
+    const diff = now.getTime() - then.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return 'Just now';
+  };
+
+  const handleHistoryItemPress = (item: Enhancement) => {
+    navigation.navigate('UniversalResult', {
+      originalUri: `${API_BASE_URL}${item.original_url}`,
+      enhancedUri: `${API_BASE_URL}${item.enhanced_url}`,
+      enhancementId: item.id,
+      watermark: item.watermark,
+      mode: item.mode as any,
+      processingTime: item.processing_time,
+    });
+  };
+
+  const renderProcessingItem = () => {
+    if (!currentJob || currentJob.status === 'completed' || currentJob.status === 'failed') {
+      return null;
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.processingItem}
+        activeOpacity={0.9}
+      >
+        <Image
+          source={{ uri: currentJob.originalUri }}
+          style={styles.itemImage}
+        />
+        <View style={styles.itemContent}>
+          <View style={styles.itemHeader}>
+            <Text style={styles.itemType}>{getTypeLabel(currentJob.type)}</Text>
+            <View style={styles.processingBadge}>
+              <ActivityIndicator size="small" color="#FFFFFF" />
+              <Text style={styles.processingText}>Processing</Text>
+            </View>
+          </View>
+          <Text style={styles.itemTime}>Started just now</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderHistoryItem = (item: Enhancement) => (
+    <TouchableOpacity
+      key={item.id}
       style={styles.historyItem}
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        // Navigate to a detail screen or re-process the image
-      }}
+      onPress={() => handleHistoryItemPress(item)}
+      activeOpacity={0.8}
     >
-      <Image source={{ uri: `${API_BASE_URL}${item.thumbnail_url}` }} style={styles.thumbnail} />
-      <View style={styles.itemDetails}>
-        <Text style={styles.itemTitle}>{t(`modes.${item.mode}.title`)}</Text>
-        <Text style={styles.itemSubtitle}>{new Date(item.created_at).toLocaleDateString()}</Text>
+      <Image
+        source={{ uri: `${API_BASE_URL}${item.thumbnail_url}` }}
+        style={styles.itemImage}
+      />
+      <View style={styles.itemContent}>
+        <View style={styles.itemHeader}>
+          <Text style={styles.itemType}>{getTypeLabel(item.mode)}</Text>
+          <View style={styles.completedBadge}>
+            <Text style={styles.completedText}>✓ Done</Text>
+          </View>
+        </View>
+        <Text style={styles.itemTime}>{formatTime(item.created_at)}</Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            if (navigation.canGoBack()) {
-              navigation.goBack();
-            } else {
-              navigation.navigate('PhotoInput');
-            }
-          }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text style={styles.backButton}>‹ {t('navigation.back')}</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>{t('history.title')}</Text>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Screen Title */}
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <View style={styles.titleTextContainer}>
+            <Text style={styles.screenTitle}>History</Text>
+            <Text style={styles.screenSubtitle}>Your processed images</Text>
+          </View>
+        </View>
       </View>
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF6B6B" />
+
+      {/* Main Content */}
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Processing Queue Section */}
+        {currentJob && currentJob.status === 'processing' && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Processing</Text>
+            {renderProcessingItem()}
+          </View>
+        )}
+
+        {/* History Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recent History</Text>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#FF3B30" />
+              <Text style={styles.loadingText}>Loading history...</Text>
+            </View>
+          ) : enhancements.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyIcon}>📷</Text>
+              <Text style={styles.emptyText}>No history yet</Text>
+              <Text style={styles.emptySubtitle}>Your processed images will appear here</Text>
+            </View>
+          ) : (
+            enhancements.map(renderHistoryItem)
+          )}
         </View>
-      ) : enhancements.length === 0 ? (
-        <View style={styles.content}>
-          <Image 
-            source={emptyHistoryImage} 
-            style={styles.illustration}
-          />
-          <Text style={styles.emptyPrimaryText}>{t('history.emptyPrimary')}</Text>
-          <Text style={styles.emptySecondaryText}>{t('history.emptySecondary')}</Text>
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              navigation.navigate('PhotoInput');
-            }}
-          >
-            <LinearGradient
-              colors={['#007AFF', '#0051D5']}
-              style={styles.buttonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.buttonText}>{t('history.cta')}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <FlatList
-          data={enhancements}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.historyList}
-        />
-      )}
+
+        {/* Bottom spacing for tab bar */}
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -147,111 +209,156 @@ export default function HistoryScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#000000',
   },
-  header: {
+
+  // Title Section Styles
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    paddingTop: 40,
   },
-  backButton: {
-    fontSize: 24,
-    color: '#007AFF',
-    marginRight: 10,
+  titleTextContainer: {
+    flex: 1,
   },
-  title: {
-    fontFamily: 'SF Pro Display',
+  screenTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  illustration: {
-    width: 160,
-    height: 160,
-    marginBottom: 24,
-    tintColor: '#8E8E93',
-  },
-  emptyPrimaryText: {
-    fontFamily: 'SF Pro Display',
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  emptySecondaryText: {
-    fontFamily: 'SF Pro Text',
-    fontSize: 17,
-    fontWeight: '400',
-    color: '#8E8E93',
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  button: {
-    width: 280,
-    height: 56,
-    borderRadius: 16,
-    shadowColor: '#007AFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 5,
-  },
-  buttonGradient: {
-    flex: 1,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontFamily: 'SF Pro Text',
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  historyList: {
-    padding: 16,
-  },
-  historyItem: {
-    flexDirection: 'row',
-    backgroundColor: '#1C1C1E',
-    borderRadius: 16,
-    marginBottom: 12,
-    overflow: 'hidden',
-    alignItems: 'center',
-    padding: 12,
-  },
-  thumbnail: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    marginRight: 12,
-  },
-  itemDetails: {
-    flex: 1,
-  },
-  itemTitle: {
-    fontFamily: 'SF Pro Display',
-    fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 4,
   },
-  itemSubtitle: {
-    fontFamily: 'SF Pro Text',
+  screenSubtitle: {
+    fontSize: 16,
+    color: '#8E8E93',
+  },
+
+  // Content Styles
+  content: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
+  scrollContent: {
+    paddingTop: 8,
+  },
+
+  // Section Styles
+  section: {
+    marginBottom: 32,
+    paddingHorizontal: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+
+  // Processing Item Styles
+  processingItem: {
+    flexDirection: 'row',
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    backgroundColor: '#2C2C2E',
+  },
+  itemContent: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: 'space-between',
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemType: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  itemTime: {
     fontSize: 14,
     color: '#8E8E93',
+  },
+
+  // Badge Styles
+  processingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  processingText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  completedBadge: {
+    backgroundColor: '#28A745',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  completedText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+
+  // History Item Styles
+  historyItem: {
+    flexDirection: 'row',
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  },
+
+  // Loading and Empty States
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#8E8E93',
+    marginTop: 12,
+  },
+  emptyContainer: {
+    paddingVertical: 60,
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#8E8E93',
+    textAlign: 'center',
+  },
+
+  // Utility Styles
+  bottomSpacing: {
+    height: 80,
   },
 });

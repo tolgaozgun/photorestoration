@@ -13,12 +13,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Onboarding screens
 import OnboardingFlow from './screens/onboarding/OnboardingFlow';
 
-// New 5-Tab Structure Screens
-import EnhanceScreen from './screens/tabs/EnhanceScreen';
-import AIPhotosScreen from './screens/tabs/AIPhotosScreen';
-import AIFiltersScreen from './screens/tabs/AIFiltersScreen';
-import AIVideosScreen from './screens/tabs/AIVideosScreen';
-import CustomAIEDitsScreen from './screens/tabs/CustomAIEDitsScreen';
+// Main Tab Screens
+import HomeScreen from './screens/HomeScreen';
+import HistoryScreen from './screens/HistoryScreen';
 
 // Essential legacy screens (keeping only what's necessary)
 // import ProfileScreen from './screens/ProfileScreen';
@@ -151,11 +148,9 @@ export type RootStackParamList = {
 };
 
 export type MainTabParamList = {
-  Enhance: undefined;
-  AIPhotos: undefined;
-  AIFilters: undefined;
-  AIVideos: undefined;
-  CustomAIEDits: undefined;
+  Home: undefined;
+  History: undefined;
+  Settings: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -163,80 +158,8 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 
 
-// Enhance Stack Navigator
-function EnhanceStack(_props: any) {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="EnhanceHome"
-        component={EnhanceScreen}
-      />
-      <Stack.Screen
-        name="ModeSelection"
-        component={ModeSelectionScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="PhotoInput"
-        component={PhotoInputScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="RestorationPreview"
-        component={RestorationPreviewScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Preview"
-        component={PreviewScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Result"
-        component={ResultScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="SmartModeSelection"
-        component={SmartModeSelectionScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
 
-// Custom AI Edits Stack Navigator
-function CustomAIEDitsStack(_props: any) {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="CustomAIEDitsHome"
-        component={CustomAIEDitsScreen}
-      />
-      <Stack.Screen
-        name="CustomAIEditInput"
-        component={CustomAIEditInputScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-// Main Tab Navigator with new 5-Tab structure
+// Main Tab Navigator with 3 tabs: Home, History, Settings
 function MainTabNavigator() {
   const { t } = useTranslation();
   return (
@@ -251,61 +174,35 @@ function MainTabNavigator() {
       }}
     >
       <Tab.Screen
-        name="Enhance"
+        name="Home"
+        component={HomeScreen}
         options={{
-          tabBarLabel: t('navigation.tabs.enhance'),
+          tabBarLabel: 'Home',
           tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>✨</Text>
-          ),
-        }}
-      >
-        {(props) => (
-          <EnhanceStack {...props} />
-        )}
-      </Tab.Screen>
-      <Tab.Screen 
-        name="AIPhotos" 
-        component={AIPhotosScreen}
-        options={{
-          tabBarLabel: t('navigation.tabs.aiPhotos'),
-          tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>👤</Text>
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="AIFilters" 
-        component={AIFiltersScreen}
-        options={{
-          tabBarLabel: t('navigation.tabs.aiFilters'),
-          tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>🎨</Text>
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="AIVideos" 
-        component={AIVideosScreen}
-        options={{
-          tabBarLabel: t('navigation.tabs.aiVideos'),
-          tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>🎬</Text>
+            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>🏠</Text>
           ),
         }}
       />
       <Tab.Screen
-        name="CustomAIEDits"
+        name="History"
+        component={HistoryScreen}
         options={{
-          tabBarLabel: t('navigation.tabs.customAI'),
+          tabBarLabel: 'History',
           tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>✏️</Text>
+            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>📚</Text>
           ),
         }}
-      >
-        {(props) => (
-          <CustomAIEDitsStack {...props} />
-        )}
-      </Tab.Screen>
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Settings',
+          tabBarIcon: ({ focused }) => (
+            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>⚙️</Text>
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -399,7 +296,38 @@ export default function App() {
                     {/* Main App with Discovery Hub */}
                     <Stack.Screen name="MainTabs" component={MainTabNavigator} />
 
-                    
+                    {/* Flow Screens */}
+                    <Stack.Screen
+                      name="ModeSelection"
+                      component={ModeSelectionScreen}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="PhotoInput"
+                      component={PhotoInputScreen}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="RestorationPreview"
+                      component={RestorationPreviewScreen}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="Preview"
+                      component={PreviewScreen}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="Result"
+                      component={ResultScreen}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="SmartModeSelection"
+                      component={SmartModeSelectionScreen}
+                      options={{ headerShown: false }}
+                    />
+
                     {/* Export Screen */}
                     <Stack.Screen
                       name="Export"
