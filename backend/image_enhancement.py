@@ -1,10 +1,15 @@
 import io
 import base64
+import logging
 from PIL import Image
 from typing import Optional
 import os
 from google import genai
 from google.genai import types
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class ImageEnhancer:
@@ -22,22 +27,29 @@ class ImageEnhancer:
         Enhance image using Gemini's image generation model
         """
         try:
+            logger.info(f"Starting image enhancement - Mode: {mode}, Resolution: {resolution}, Filter: {filter_type}")
+            logger.debug(f"Input image size: {len(image_data)} bytes")
+
             if not self.client:
                 raise Exception("Gemini client not initialized")
-            
+
             # Open and prepare image
             img = Image.open(io.BytesIO(image_data))
-            
+            logger.info(f"Original image format: {img.format}, mode: {img.mode}, size: {img.size}")
+
             # Determine target size
             target_size = (2048, 2048) if resolution == "hd" else (1024, 1024)
-            
+            logger.debug(f"Target size: {target_size}")
+
             # Resize while maintaining aspect ratio
             img.thumbnail(target_size, Image.Resampling.LANCZOS)
-            
+            logger.debug(f"Resized image size: {img.size}")
+
             # Convert to RGB if needed
             if img.mode != 'RGB':
                 img = img.convert('RGB')
-            
+                logger.debug(f"Converted to RGB mode")
+
             # Get the appropriate prompt for the mode, filter, or custom edit
             if mode == "filter" and filter_type:
                 prompt = self._get_filter_prompt(filter_type)
@@ -45,28 +57,49 @@ class ImageEnhancer:
                 prompt = self._get_custom_edit_prompt(custom_prompt)
             else:
                 prompt = self._get_prompt_for_mode(mode)
-            
+
+            logger.debug(f"Using prompt: {prompt[:100]}...")
+
             # Generate enhanced image using the correct API pattern
+            logger.info("Calling Gemini API...")
             response = self.client.models.generate_content(
                 model=self.model,
                 contents=[prompt, img],
             )
-            
+            logger.info("Gemini API call completed")
+
             # Extract the enhanced image from response
             enhanced_data = None
-            
+
             if response.candidates and response.candidates[0].content:
-                for part in response.candidates[0].content.parts:
+                logger.debug(f"Response has {len(response.candidates[0].content.parts)} parts")
+                for i, part in enumerate(response.candidates[0].content.parts):
+                    logger.debug(f"Part {i}: has inline_data: {part.inline_data is not None}")
                     if part.inline_data is not None:
                         enhanced_data = part.inline_data.data
+                        logger.info(f"Found enhanced image data: {len(enhanced_data)} bytes")
+                        logger.debug(f"Enhanced data first 100 bytes: {enhanced_data[:100]}")
                         break
-            
+            else:
+                logger.warning("No candidates or content in response")
+
             if enhanced_data is None:
+                logger.error("No image data received from Gemini")
                 raise Exception("No image data received from Gemini")
-            
+
+            # Validate the enhanced image data
+            try:
+                test_img = Image.open(io.BytesIO(enhanced_data))
+                logger.info(f"Enhanced image validation successful - format: {test_img.format}, mode: {test_img.mode}, size: {test_img.size}")
+            except Exception as img_error:
+                logger.error(f"Enhanced image validation failed: {img_error}")
+                raise Exception(f"Enhanced image data is corrupted: {img_error}")
+
+            logger.info("Image enhancement completed successfully")
             return enhanced_data
-                
+
         except Exception as e:
+            logger.error(f"Gemini enhancement failed: {str(e)}", exc_info=True)
             # Re-raise the exception to be handled by the API endpoint
             raise Exception(f"Gemini enhancement failed: {str(e)}")
     

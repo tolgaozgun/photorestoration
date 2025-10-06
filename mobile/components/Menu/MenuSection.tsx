@@ -15,6 +15,7 @@ type MenuItem = {
   title: string;
   description?: string;
   icon?: string;
+  imagePath?: string;
   action_type: 'screen' | 'url' | 'action' | 'section';
   action_value?: string;
   is_premium: boolean;
@@ -38,6 +39,7 @@ interface MenuSectionProps {
     title: string;
     description?: string;
     icon?: string;
+    imagePath?: string;
     action_type: 'screen' | 'url' | 'action' | 'section';
     action_value?: string;
     is_premium: boolean;
@@ -60,6 +62,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
       title={item.title}
       description={item.description}
       icon={item.icon}
+      imagePath={item.imagePath}
       actionType={item.action_type}
       actionValue={item.action_value}
       isPremium={item.is_premium}

@@ -32,6 +32,7 @@ interface CategoryItem {
   title: string;
   category: string;
   imageUrl: string;
+  imagePath?: string;
   isPremium?: boolean;
   description?: string;
 }
@@ -57,6 +58,24 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
+  // Utility function to get image source
+  const getImageSource = (item: CategoryItem) => {
+    if (item.imagePath) {
+      // For local assets, we need to handle them differently in Expo
+      // This is a simplified approach - in production you might want to use
+      // a more sophisticated asset management system
+      try {
+        // For Expo, we can try to use require but it needs to be static
+        // So we'll use a fallback for now
+        return { uri: item.imageUrl };
+      } catch (error) {
+        console.warn('Failed to load image asset:', item.imagePath);
+        return { uri: item.imageUrl };
+      }
+    }
+    return { uri: item.imageUrl };
+  };
+
   // Mock category data
   const categoryData: CategoryData[] = [
     {
@@ -66,12 +85,12 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
       description: 'See what your future baby might look like',
       subcategories: ['All', 'Realistic', 'Artistic', 'Ethnic'],
       items: [
-        { id: '1', title: 'Baby Prediction', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=baby1', isPremium: true },
-        { id: '2', title: 'Family Preview', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=family1', isPremium: true },
-        { id: '3', title: 'Child Generator', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=child1', isPremium: true },
-        { id: '4', title: 'Twins Prediction', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=twins1' },
-        { id: '5', title: 'Baby Mix', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=mix1' },
-        { id: '6', title: 'Future Child', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=future1' },
+        { id: '1', title: 'Baby Prediction', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=baby1', imagePath: 'assets/categories/baby-prediction.png', isPremium: true },
+        { id: '2', title: 'Family Preview', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=family1', imagePath: 'assets/categories/family-preview.png', isPremium: true },
+        { id: '3', title: 'Child Generator', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=child1', imagePath: 'assets/categories/child-generator.png', isPremium: true },
+        { id: '4', title: 'Twins Prediction', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=twins1', imagePath: 'assets/categories/twins-prediction.png' },
+        { id: '5', title: 'Baby Mix', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=mix1', imagePath: 'assets/categories/baby-mix.png' },
+        { id: '6', title: 'Future Child', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=future1', imagePath: 'assets/categories/future-child.png' },
       ],
     },
     {
@@ -81,12 +100,12 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
       description: 'Try different outfits on your photos',
       subcategories: ['All', 'Casual', 'Business', 'Evening'],
       items: [
-        { id: '1', title: 'Casual Wear', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=casual1' },
-        { id: '2', title: 'Business Attire', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=business1', isPremium: true },
-        { id: '3', title: 'Evening Dress', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=evening1', isPremium: true },
-        { id: '4', title: 'Street Style', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=street1' },
-        { id: '5', title: 'Summer Look', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=summer1' },
-        { id: '6', title: 'Winter Fashion', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=winter1' },
+        { id: '1', title: 'Casual Wear', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=casual1', imagePath: 'assets/categories/casual-wear.png' },
+        { id: '2', title: 'Business Attire', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=business1', imagePath: 'assets/categories/business-attire.png', isPremium: true },
+        { id: '3', title: 'Evening Dress', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=evening1', imagePath: 'assets/categories/evening-dress.png', isPremium: true },
+        { id: '4', title: 'Street Style', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=street1', imagePath: 'assets/categories/street-style.png' },
+        { id: '5', title: 'Summer Look', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=summer1', imagePath: 'assets/categories/summer-look.png' },
+        { id: '6', title: 'Winter Fashion', category: 'Fashion', imageUrl: 'https://picsum.photos/300/400?random=winter1', imagePath: 'assets/categories/winter-fashion.png' },
       ],
     },
     {
@@ -96,12 +115,12 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
       description: 'Create your digital avatar',
       subcategories: ['All', '3D Model', 'Anime', 'Sci-Fi'],
       items: [
-        { id: '1', title: '3D Avatar', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=avatar1', isPremium: true },
-        { id: '2', title: 'Virtual Clone', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=clone1', isPremium: true },
-        { id: '3', title: 'Digital Persona', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=persona1', isPremium: true },
-        { id: '4', title: 'Cartoon Version', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=cartoon1' },
-        { id: '5', title: 'Pixel Art', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=pixel1' },
-        { id: '6', title: 'Realistic Twin', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=realistic1' },
+        { id: '1', title: '3D Avatar', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=avatar1', imagePath: 'assets/categories/3d-avatar.png', isPremium: true },
+        { id: '2', title: 'Virtual Clone', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=clone1', imagePath: 'assets/categories/virtual-clone.png', isPremium: true },
+        { id: '3', title: 'Digital Persona', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=persona1', imagePath: 'assets/categories/digital-persona.png', isPremium: true },
+        { id: '4', title: 'Cartoon Version', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=cartoon1', imagePath: 'assets/categories/cartoon-version.png' },
+        { id: '5', title: 'Pixel Art', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=pixel1', imagePath: 'assets/categories/pixel-art.png' },
+        { id: '6', title: 'Realistic Twin', category: 'AI', imageUrl: 'https://picsum.photos/300/400?random=realistic1', imagePath: 'assets/categories/realistic-twin.png' },
       ],
     },
   ];
@@ -181,7 +200,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
             styles.premiumPhotoItem,
             { marginRight: (index + 1) % 3 === 0 ? 0 : 8, marginBottom: index < 3 ? 8 : 0 }
           ]}>
-            <Image source={{ uri: item.imageUrl }} style={styles.premiumPhotoImage} />
+            <Image source={getImageSource(item)} style={styles.premiumPhotoImage} />
             {item.isPremium && (
               <View style={styles.premiumPhotoBadge}>
                 <Text style={styles.premiumPhotoBadgeText}>PRO</Text>
@@ -201,7 +220,7 @@ export default function CategoryDetailScreen({ navigation, route }: Props) {
       activeOpacity={0.9}
     >
       <Image source={sliderGif} style={styles.categoryItemBackground} />
-      <Image source={{ uri: item.imageUrl }} style={styles.categoryItemImage} />
+      <Image source={getImageSource(item)} style={styles.categoryItemImage} />
       <View style={styles.categoryItemOverlay}>
         <Text style={styles.categoryItemTitle}>{item.title}</Text>
         <Text style={styles.categoryItemCategory}>{item.category}</Text>

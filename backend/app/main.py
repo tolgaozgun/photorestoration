@@ -21,12 +21,18 @@ except ImportError:
 
 from .models import engine
 from .config import settings
-from .routes import enhancement_router, purchase_router, analytics_router, user_router, email_router, menu_configuration_router, filters_router, custom_edits_router
+from .routes import enhancement_router, purchase_router, analytics_router, user_router, email_router, menu_configuration_router, filters_router, custom_edits_router, debug_router
 from .services import StorageService, EnhancementService
 from .admin import setup_admin
 from .utils import seed_menu_data_if_needed
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()  # Ensures logs go to console/stdout
+    ]
+)
 logger = logging.getLogger(__name__)
 
 class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
@@ -120,6 +126,7 @@ def create_app() -> FastAPI:
     app.include_router(menu_configuration_router, prefix="/api")
     app.include_router(filters_router, prefix="/api")
     app.include_router(custom_edits_router, prefix="/api")
+    app.include_router(debug_router, prefix="/api")
     
     @app.get("/health")
     async def health_check():

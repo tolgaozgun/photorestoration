@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableOpacityProps,
+  Image,
   } from 'react-native';
 import { colors, borderRadius, spacing } from '../../theme';
 import { Text } from '../Text';
@@ -12,6 +13,7 @@ interface MenuItemProps extends TouchableOpacityProps {
   title: string;
   description?: string;
   icon?: string;
+  imagePath?: string;
   actionType: 'screen' | 'url' | 'action' | 'section';
   actionValue?: string;
   isPremium?: boolean;
@@ -24,6 +26,7 @@ export const MenuItemComponent: React.FC<MenuItemProps> = ({
   title,
   description,
   icon,
+  imagePath,
   _actionType,
   _actionValue,
   isPremium = false,
@@ -33,6 +36,8 @@ export const MenuItemComponent: React.FC<MenuItemProps> = ({
   style,
   ...props
 }) => {
+  // Get image source from utility function
+  const imageSource = imagePath ? { uri: imagePath } : null;
   const getItemSize = () => {
     switch (size) {
       case 'small':
@@ -58,11 +63,19 @@ export const MenuItemComponent: React.FC<MenuItemProps> = ({
       {...props}
     >
       {/* Icon */}
-      {icon && (
+      {(icon || imagePath) && (
         <View style={styles.iconContainer}>
-          <Text variant="display" style={styles.icon}>
-            {icon}
-          </Text>
+          {imagePath && imageSource ? (
+            <Image
+              source={imageSource}
+              style={styles.iconImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <Text variant="display" style={styles.icon}>
+              {icon}
+            </Text>
+          )}
         </View>
       )}
 
@@ -135,6 +148,10 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 20,
+  },
+  iconImage: {
+    width: 24,
+    height: 24,
   },
   content: {
     flex: 1,

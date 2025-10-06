@@ -24,6 +24,7 @@ interface VideoItem {
   duration: string;
   isPremium?: boolean;
   imageUrl: string;
+  imagePath?: string;
 }
 
 interface VideoCategory {
@@ -43,6 +44,24 @@ export default function AIVideosScreen() {
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
 
+  // Utility function to get image source
+  const getImageSource = (item: VideoItem) => {
+    if (item.imagePath) {
+      // For local assets, we need to handle them differently in Expo
+      // This is a simplified approach - in production you might want to use
+      // a more sophisticated asset management system
+      try {
+        // For Expo, we can try to use require but it needs to be static
+        // So we'll use a fallback for now
+        return { uri: item.imageUrl };
+      } catch (error) {
+        console.warn('Failed to load image asset:', item.imagePath);
+        return { uri: item.imageUrl };
+      }
+    }
+    return { uri: item.imageUrl };
+  };
+
   // Video data using translations
   const videoCategories = [
     {
@@ -51,9 +70,9 @@ export default function AIVideosScreen() {
       emoji: '📹',
       description: t('content.aiVideos.animateOldPhotos.description'),
       items: [
-        { id: '1', title: t('content.aiVideos.animateOldPhotos.faceAnimation'), duration: '0:15', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=video1' },
-        { id: '2', title: t('content.aiVideos.animateOldPhotos.subtleMotion'), duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=video2' },
-        { id: '3', title: t('content.aiVideos.animateOldPhotos.expressionChanges'), duration: '0:20', imageUrl: 'https://picsum.photos/300/169?random=video3' },
+        { id: '1', title: t('content.aiVideos.animateOldPhotos.faceAnimation'), duration: '0:15', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=video1', imagePath: 'assets/videos/face-animation.png' },
+        { id: '2', title: t('content.aiVideos.animateOldPhotos.subtleMotion'), duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=video2', imagePath: 'assets/videos/subtle-motion.png' },
+        { id: '3', title: t('content.aiVideos.animateOldPhotos.expressionChanges'), duration: '0:20', imageUrl: 'https://picsum.photos/300/169?random=video3', imagePath: 'assets/videos/expression-changes.png' },
       ],
     },
     {
@@ -62,9 +81,9 @@ export default function AIVideosScreen() {
       emoji: '🌊',
       description: t('content.aiVideos.cinemagraphs.description'),
       items: [
-        { id: '1', title: t('content.aiVideos.cinemagraphs.waterFlow'), duration: '0:30', imageUrl: 'https://picsum.photos/300/169?random=cinema1' },
-        { id: '2', title: t('content.aiVideos.cinemagraphs.hairMovement'), duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=cinema2' },
-        { id: '3', title: t('content.aiVideos.cinemagraphs.cloudMotion'), duration: '0:45', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=cinema3' },
+        { id: '1', title: t('content.aiVideos.cinemagraphs.waterFlow'), duration: '0:30', imageUrl: 'https://picsum.photos/300/169?random=cinema1', imagePath: 'assets/videos/water-flow.png' },
+        { id: '2', title: t('content.aiVideos.cinemagraphs.hairMovement'), duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=cinema2', imagePath: 'assets/videos/hair-movement.png' },
+        { id: '3', title: t('content.aiVideos.cinemagraphs.cloudMotion'), duration: '0:45', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=cinema3', imagePath: 'assets/videos/cloud-motion.png' },
       ],
     },
     {
@@ -73,9 +92,9 @@ export default function AIVideosScreen() {
       emoji: '😊',
       description: t('content.aiVideos.portraitAnimation.description'),
       items: [
-        { id: '1', title: t('content.aiVideos.portraitAnimation.smileAnimation'), duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=portrait1' },
-        { id: '2', title: t('content.aiVideos.portraitAnimation.talkingEffect'), duration: '0:25', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=portrait2' },
-        { id: '3', title: t('content.aiVideos.portraitAnimation.eyeMovement'), duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=portrait3' },
+        { id: '1', title: t('content.aiVideos.portraitAnimation.smileAnimation'), duration: '0:10', imageUrl: 'https://picsum.photos/300/169?random=portrait1', imagePath: 'assets/videos/smile-animation.png' },
+        { id: '2', title: t('content.aiVideos.portraitAnimation.talkingEffect'), duration: '0:25', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=portrait2', imagePath: 'assets/videos/talking-effect.png' },
+        { id: '3', title: t('content.aiVideos.portraitAnimation.eyeMovement'), duration: '0:15', imageUrl: 'https://picsum.photos/300/169?random=portrait3', imagePath: 'assets/videos/eye-movement.png' },
       ],
     },
     {
@@ -84,9 +103,9 @@ export default function AIVideosScreen() {
       emoji: '🎬',
       description: t('content.aiVideos.backgroundAnimation.description'),
       items: [
-        { id: '1', title: t('content.aiVideos.backgroundAnimation.skyChanges'), duration: '0:45', imageUrl: 'https://picsum.photos/300/169?random=bg1' },
-        { id: '2', title: t('content.aiVideos.backgroundAnimation.weatherEffects'), duration: '0:30', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=bg2' },
-        { id: '3', title: t('content.aiVideos.backgroundAnimation.lightTransitions'), duration: '1:00', imageUrl: 'https://picsum.photos/300/169?random=bg3' },
+        { id: '1', title: t('content.aiVideos.backgroundAnimation.skyChanges'), duration: '0:45', imageUrl: 'https://picsum.photos/300/169?random=bg1', imagePath: 'assets/videos/sky-changes.png' },
+        { id: '2', title: t('content.aiVideos.backgroundAnimation.weatherEffects'), duration: '0:30', isPremium: true, imageUrl: 'https://picsum.photos/300/169?random=bg2', imagePath: 'assets/videos/weather-effects.png' },
+        { id: '3', title: t('content.aiVideos.backgroundAnimation.lightTransitions'), duration: '1:00', imageUrl: 'https://picsum.photos/300/169?random=bg3', imagePath: 'assets/videos/light-transitions.png' },
       ],
     },
   ];
@@ -112,7 +131,7 @@ export default function AIVideosScreen() {
       onPress={() => handleVideoPress(item.id, categoryId)}
       activeOpacity={0.8}
     >
-      <Image source={{ uri: item.imageUrl }} style={styles.videoImage} />
+      <Image source={getImageSource(item)} style={styles.videoImage} />
       <View style={styles.playButton}>
         <Text style={styles.playIcon}>▶</Text>
       </View>

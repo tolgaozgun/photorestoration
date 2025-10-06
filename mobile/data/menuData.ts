@@ -113,7 +113,7 @@ export const HARDCODED_MENU_DATA: MenuData = {
       title: 'Colorize Photo',
       description: 'Add color to black & white photos',
       icon: '🎨',
-      action_type: 'screen', 
+      action_type: 'screen',
       action_value: 'ModeSelection',
       section_id: 'photo-enhancement',
       sort_order: 2,
@@ -361,7 +361,7 @@ export const getItemsForSection = (sectionId: string): MenuItem[] => {
 
 // Utility function to get supported formats for a menu item
 export const getSupportedFormatsForItem = (item: MenuItem): string[] => {
-  return item.metadata?.supported_formats || [];
+  return (item.metadata?.supported_formats as string[]) || [];
 };
 
 // Utility function to validate file format for a menu item
