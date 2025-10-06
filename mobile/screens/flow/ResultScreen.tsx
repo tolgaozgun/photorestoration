@@ -5,12 +5,12 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Alert,
   Animated,
   Dimensions,
   Platform,
 } from 'react-native';
+import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -160,7 +160,11 @@ export default function ResultScreen({ navigation, route }: Props) {
             <Image
               source={{ uri: enhancedUri }}
               style={styles.fullImage}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
+              priority="high"
+              placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+              transition={300}
             />
 
             {/* Before Image (clipped) */}
@@ -176,7 +180,10 @@ export default function ResultScreen({ navigation, route }: Props) {
                   styles.fullImage,
                   { width: screenWidth }
                 ]}
-                resizeMode="contain"
+                contentFit="contain"
+                cachePolicy="memory-disk"
+                priority="high"
+                placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
               />
             </View>
 
@@ -206,7 +213,11 @@ export default function ResultScreen({ navigation, route }: Props) {
           <Image
             source={{ uri: enhancedUri }}
             style={styles.fullImage}
-            resizeMode="contain"
+            contentFit="contain"
+            cachePolicy="memory-disk"
+            priority="high"
+            placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+            transition={300}
           />
         )}
 

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  Image,
   Dimensions,
   Text,
   SafeAreaView,
@@ -15,6 +14,7 @@ import {
   PermissionsAndroid,
   Platform,
 } from 'react-native';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useNavigation } from '@react-navigation/native';
@@ -230,7 +230,14 @@ export default function EnhanceScreen() {
                   onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
                   activeOpacity={0.8}
                 >
-                  <Image source={{ uri: photo.uri }} style={styles.photoImage} />
+                  <Image
+                    source={{ uri: photo.uri }}
+                    style={styles.photoImage}
+                    contentFit="cover"
+                    cachePolicy="memory-disk"
+                    transition={200}
+                    placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+                  />
                 </TouchableOpacity>
               ))}
             </View>

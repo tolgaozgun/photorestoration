@@ -6,11 +6,11 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Image,
-  ScrollView,
+  FlatList,
   ActivityIndicator,
   StatusBar,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
@@ -114,6 +114,10 @@ export default function HistoryScreen() {
         <Image
           source={{ uri: currentJob.originalUri }}
           style={styles.itemImage}
+          contentFit="cover"
+          transition={200}
+          cachePolicy="memory-disk"
+          placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
         />
         <View style={styles.itemContent}>
           <View style={styles.itemHeader}>
@@ -129,9 +133,8 @@ export default function HistoryScreen() {
     );
   };
 
-  const renderHistoryItem = (item: Enhancement) => (
+  const renderHistoryItem = ({ item }: { item: Enhancement }) => (
     <TouchableOpacity
-      key={item.id}
       style={styles.historyItem}
       onPress={() => handleHistoryItemPress(item)}
       activeOpacity={0.8}
@@ -139,6 +142,11 @@ export default function HistoryScreen() {
       <Image
         source={{ uri: `${API_BASE_URL}${item.thumbnail_url}` }}
         style={styles.itemImage}
+        contentFit="cover"
+        transition={200}
+        cachePolicy="memory-disk"
+        placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+        priority="high"
       />
       <View style={styles.itemContent}>
         <View style={styles.itemHeader}>
@@ -167,41 +175,54 @@ export default function HistoryScreen() {
       </View>
 
       {/* Main Content */}
-      <ScrollView
+      <FlatList
         style={styles.content}
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-      >
-        {/* Processing Queue Section */}
-        {currentJob && currentJob.status === 'processing' && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Processing</Text>
-            {renderProcessingItem()}
-          </View>
-        )}
+        data={enhancements}
+        renderItem={renderHistoryItem}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={10}
+        maxToRenderPerBatch={5}
+        windowSize={5}
+        removeClippedSubviews={true}
+        getItemLayout={(data, index) => ({
+          length: 96,
+          offset: 96 * index,
+          index,
+        })}
+        ListHeaderComponent={() => (
+          <>
+            {/* Processing Queue Section */}
+            {currentJob && currentJob.status === 'processing' && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Processing</Text>
+                {renderProcessingItem()}
+              </View>
+            )}
 
-        {/* History Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent History</Text>
-          {isLoading ? (
+            {/* History Section Title */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Recent History</Text>
+            </View>
+          </>
+        )}
+        ListEmptyComponent={() => (
+          isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#FF3B30" />
               <Text style={styles.loadingText}>Loading history...</Text>
             </View>
-          ) : enhancements.length === 0 ? (
+          ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyIcon}>📷</Text>
               <Text style={styles.emptyText}>No history yet</Text>
               <Text style={styles.emptySubtitle}>Your processed images will appear here</Text>
             </View>
-          ) : (
-            enhancements.map(renderHistoryItem)
-          )}
-        </View>
-
-        {/* Bottom spacing for tab bar */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+          )
+        )}
+        ListFooterComponent={() => <View style={styles.bottomSpacing} />}
+      />
     </SafeAreaView>
   );
 }
