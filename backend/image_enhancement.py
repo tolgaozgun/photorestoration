@@ -79,6 +79,23 @@ class ImageEnhancer:
                         enhanced_data = part.inline_data.data
                         logger.info(f"Found enhanced image data: {len(enhanced_data)} bytes")
                         logger.debug(f"Enhanced data first 100 bytes: {enhanced_data[:100]}")
+
+                        # Check if data is base64-encoded (starts with valid base64 chars instead of PNG header)
+                        if isinstance(enhanced_data, (str, bytes)):
+                            # Convert to string if bytes
+                            data_str = enhanced_data.decode('utf-8') if isinstance(enhanced_data, bytes) else enhanced_data
+
+                            # Check if it looks like base64 (doesn't start with PNG binary header)
+                            if not (isinstance(enhanced_data, bytes) and enhanced_data[:4] == b'\x89PNG'):
+                                logger.info("Detected base64-encoded image data, decoding...")
+                                try:
+                                    enhanced_data = base64.b64decode(data_str)
+                                    logger.info(f"Successfully decoded base64 data: {len(enhanced_data)} bytes")
+                                    logger.debug(f"Decoded data first 20 bytes: {enhanced_data[:20]}")
+                                except Exception as decode_error:
+                                    logger.error(f"Failed to decode base64 data: {decode_error}")
+                                    raise Exception(f"Failed to decode base64 image data: {decode_error}")
+
                         break
             else:
                 logger.warning("No candidates or content in response")
@@ -93,6 +110,7 @@ class ImageEnhancer:
                 logger.info(f"Enhanced image validation successful - format: {test_img.format}, mode: {test_img.mode}, size: {test_img.size}")
             except Exception as img_error:
                 logger.error(f"Enhanced image validation failed: {img_error}")
+                logger.error(f"Data type: {type(enhanced_data)}, Length: {len(enhanced_data)}, First 100 bytes: {enhanced_data[:100]}")
                 raise Exception(f"Enhanced image data is corrupted: {img_error}")
 
             logger.info("Image enhancement completed successfully")
