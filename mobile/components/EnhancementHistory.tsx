@@ -67,9 +67,10 @@ export default function EnhancementHistory() {
   };
 
   const handleEnhancementPress = (enhancement: Enhancement) => {
+    // Backend should return full URLs
     navigation.navigate('Result', {
-      originalUri: `${API_BASE_URL}${enhancement.original_url}`,
-      enhancedUri: `${API_BASE_URL}${enhancement.enhanced_url}`,
+      originalUri: enhancement.original_url,
+      enhancedUri: enhancement.enhanced_url,
       enhancementId: enhancement.id,
       watermark: enhancement.watermark,
       mode: enhancement.mode,
@@ -77,14 +78,14 @@ export default function EnhancementHistory() {
     });
   };
 
-  
+
   const renderEnhancement = ({ item }: { item: Enhancement }) => (
     <TouchableOpacity
       style={styles.enhancementItem}
       onPress={() => handleEnhancementPress(item)}
     >
       <Image
-        source={{ uri: `${API_BASE_URL}${item.thumbnail_url}` }}
+        source={{ uri: item.thumbnail_url }}
         style={styles.thumbnail}
       />
       <View style={styles.enhancementInfo}>
