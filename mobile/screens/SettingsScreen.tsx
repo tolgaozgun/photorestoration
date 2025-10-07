@@ -197,10 +197,7 @@ export default function SettingsScreen() {
     </TouchableOpacity>
   );
 
-  const handleBackPress = () => {
-    navigation.goBack();
-  };
-
+  
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="light-content" />
@@ -208,11 +205,9 @@ export default function SettingsScreen() {
       {/* Screen Title */}
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-            <Text style={styles.backIcon}>←</Text>
-          </TouchableOpacity>
           <View style={styles.titleTextContainer}>
             <Text style={styles.screenTitle}>Settings</Text>
+            <Text style={styles.screenSubtitle}>Preferences & account</Text>
           </View>
         </View>
       </View>
@@ -454,18 +449,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  backIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
   },
   titleTextContainer: {
     flex: 1,
