@@ -1,4 +1,5 @@
 import io
+import os
 import uuid
 import logging
 from PIL import Image
@@ -124,23 +125,35 @@ class StorageService:
 
         return keys
 
-    def get_full_url(self, key: str) -> str:
-        """Generate full S3 URL for a given key"""
+    def get_full_url(self, key: str, use_presigned: bool = True) -> str:
+        """Generate full S3 URL for a given key
+
+        Args:
+            key: The S3 object key
+            use_presigned: If True, generate presigned URL. If False, use API proxy URL
+        """
         if not key:
             return None
 
-        # Construct the base URL based on MinIO configuration
+        if use_presigned:
+            # Generate a presigned URL that's valid for 1 hour
+            try:
+                url = self.client.presigned_get_object(
+                    bucket_name=self.bucket,
+                    object_name=key,
+                    expires=3600  # 1 hour expiry
+                )
+                logger.debug(f"Generated presigned URL: {url} for key: {key}")
+                return url
+            except Exception as e:
+                logger.error(f"Failed to generate presigned URL for {key}: {e}")
+                logger.info(f"Falling back to API proxy URL for {key}")
+
+        # Fallback to API proxy URL (this always works if backend is accessible)
+        api_base_url = os.getenv("API_BASE_URL", "http://localhost:8000")
         if settings.MINIO_SECURE:
-            protocol = "https"
-        else:
-            protocol = "http"
+            api_base_url = api_base_url.replace("http://", "https://")
 
-        # Remove port from endpoint if it's the default for the protocol
-        endpoint = settings.MINIO_ENDPOINT
-        if (protocol == "http" and endpoint.endswith(":80")) or (protocol == "https" and endpoint.endswith(":443")):
-            endpoint = endpoint.rsplit(":", 1)[0]
-
-        # Construct full URL
-        full_url = f"{protocol}://{endpoint}/{settings.MINIO_BUCKET}/{key}"
-        logger.debug(f"Generated full URL: {full_url} for key: {key}")
-        return full_url
+        proxy_url = f"{api_base_url}/api/image/{key}"
+        logger.debug(f"Generated API proxy URL: {proxy_url} for key: {key}")
+        return proxy_url

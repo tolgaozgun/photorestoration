@@ -6,7 +6,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Animated,
   Dimensions,
   ActivityIndicator,
@@ -214,7 +213,7 @@ export default function AITrainingScreen({ navigation, route }: Props) {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <Animated.View 
         style={[
@@ -396,7 +395,7 @@ export default function AITrainingScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </Animated.View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -5,17 +5,38 @@ import {
   TouchableOpacity,
   Text,
   StatusBar,
-  Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../contexts/UserContext';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../theme';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function UserTopBar() {
   const { user, refreshUser } = useUser();
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const [lastRefresh, setLastRefresh] = React.useState(0);
+
+  // Auto-refresh when screen comes into focus, but with aggressive rate limiting
+  useFocusEffect(
+    React.useCallback(() => {
+      const now = Date.now();
+      // Only refresh if it's been more than 2 minutes since last refresh
+      if (now - lastRefresh > 2 * 60 * 1000) {
+        refreshUser();
+        setLastRefresh(now);
+      }
+
+      // Set up periodic refresh every 5 minutes when screen is focused
+      const interval = setInterval(() => {
+        refreshUser();
+        setLastRefresh(Date.now());
+      }, 5 * 60 * 1000); // 5 minutes
+
+      return () => clearInterval(interval);
+    }, [refreshUser, lastRefresh])
+  );
 
   const getPlanDisplay = () => {
     if (!user) return 'Loading...';
@@ -24,7 +45,7 @@ export default function UserTopBar() {
       const now = new Date();
       const expires = new Date(user.subscriptionExpires);
       if (expires > now) {
-        return `⭐ ${user.subscriptionType.toUpperCase()}`;
+        return user.subscriptionType.toUpperCase();
       }
     }
 
@@ -41,26 +62,26 @@ export default function UserTopBar() {
   };
 
   const getPlanColor = () => {
-    if (!user) return colors.text.secondary;
+    if (!user) return '#8E8E93';
 
     if (user.subscriptionType && user.subscriptionExpires) {
       const now = new Date();
       const expires = new Date(user.subscriptionExpires);
       if (expires > now) {
-        return colors.accent.gold;
+        return '#FFD700'; // Gold for premium
       }
     }
 
     if (user.credits > 0) {
-      return colors.accent.blue;
+      return '#007AFF'; // Blue for credits
     }
 
     // For free users with remaining daily usage, use green
     if (user.remainingToday > 0) {
-      return colors.interactive.success;
+      return '#34C759'; // Green for remaining usage
     }
 
-    return colors.text.secondary;
+    return '#8E8E93'; // Gray for free tier
   };
 
   const handlePlanPress = () => {
@@ -69,35 +90,41 @@ export default function UserTopBar() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      {/* Status bar is handled by SafeAreaView in parent */}
 
-      <View style={styles.content}>
-        <TouchableOpacity
-          style={styles.planContainer}
-          onPress={handlePlanPress}
-          activeOpacity={0.8}
-        >
-          <Text
-            style={[
-              styles.planText,
-              { color: getPlanColor() }
-            ]}
-            numberOfLines={1}
-          >
-            {getPlanDisplay()}
-          </Text>
-          <Text style={styles.planLabel}>
-            {user?.subscriptionType ? 'SUBSCRIPTION' : 'CREDITS'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={refreshUser}
-          activeOpacity={0.6}
-        >
-          <Text style={styles.refreshIcon}>🔄</Text>
-        </TouchableOpacity>
+      <View style={styles.titleSection}>
+        <View style={styles.titleContainer}>
+          <View style={styles.titleTextContainer}>
+            <View style={styles.planRow}>
+              <Text style={styles.planText}>
+                {user && user.subscriptionType && user.subscriptionExpires ? (
+                  <Ionicons name="star" size={14} color={getPlanColor()} />
+                ) : user && user.credits > 0 ? (
+                  <Ionicons name="card" size={14} color={getPlanColor()} />
+                ) : user && user.remainingToday > 0 ? (
+                  <Ionicons name="time" size={14} color={getPlanColor()} />
+                ) : (
+                  <Ionicons name="person" size={14} color={getPlanColor()} />
+                )}
+                {' '}
+                <Text
+                  style={[
+                    styles.planText,
+                    { color: getPlanColor() }
+                  ]}
+                >
+                  {getPlanDisplay()}
+                </Text>
+              </Text>
+              <TouchableOpacity
+                style={styles.buyMoreButton}
+                onPress={() => navigation.navigate('Purchase')}
+              >
+                <Text style={styles.buyMoreText}>Buy More</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -105,50 +132,44 @@ export default function UserTopBar() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#000000',
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    zIndex: 1000,
+    borderBottomColor: '#1C1C1E',
   },
-  content: {
+  titleSection: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 24,
-    paddingBottom: 8,
-    minHeight: Platform.OS === 'ios' ? 88 : 64,
   },
-  planContainer: {
+  titleTextContainer: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginRight: 8,
+  },
+  planRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   planText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: colors.text.primary,
-    marginBottom: 2,
-  },
-  planLabel: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: colors.text.secondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  refreshButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.background.secondary,
-    justifyContent: 'center',
+    fontWeight: '600',
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  refreshIcon: {
-    fontSize: 16,
+  buyMoreButton: {
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginLeft: 12,
+  },
+  buyMoreText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });

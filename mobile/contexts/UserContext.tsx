@@ -15,6 +15,7 @@ interface UserData {
 interface UserContextType {
   user: UserData | null;
   refreshUser: () => Promise<void>;
+  forceRefreshUser: () => Promise<void>;
   updateCredits: (credits: number) => void;
 }
 
@@ -22,6 +23,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserData | null>(null);
+  const [lastFetch, setLastFetch] = useState(0);
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -31,6 +34,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userId = await SecureStore.getItemAsync('userId');
       if (!userId) return;
+
+      // Check if we should fetch new data (cache for 30 seconds)
+      const now = Date.now();
+      if (now - lastFetch < 30 * 1000 || isFetching) {
+        return; // Use cached data
+      }
+
+      setIsFetching(true);
+      setLastFetch(now);
 
       // Fetch user data including current credits and subscription info
       const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.restore}`, {
@@ -70,10 +82,18 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       console.error('Error loading user:', error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
   const refreshUser = async () => {
+    await loadUser();
+  };
+
+  // Force refresh bypassing cache
+  const forceRefreshUser = async () => {
+    setLastFetch(0); // Reset cache
     await loadUser();
   };
 
@@ -87,7 +107,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <UserContext.Provider value={{ user, refreshUser, updateCredits }}>
+    <UserContext.Provider value={{ user, refreshUser, forceRefreshUser, updateCredits }}>
       {children}
     </UserContext.Provider>
   );

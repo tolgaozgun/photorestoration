@@ -11,9 +11,8 @@ import {
   Image,
   Text,
   ScrollView,
-  SafeAreaView,
-  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -309,8 +308,7 @@ export default function AIFiltersScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.container}>
 
       {/* Screen Title */}
       <View style={styles.titleSection}>
@@ -320,7 +318,7 @@ export default function AIFiltersScreen() {
             <Text style={styles.screenSubtitle}>{t('tabs.aiFilters.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
+            <Ionicons name="settings" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
@@ -392,7 +390,7 @@ export default function AIFiltersScreen() {
           {renderFilterGrid()}
         </ScrollView>
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -432,10 +430,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
   },
   
   // Main Content Styles

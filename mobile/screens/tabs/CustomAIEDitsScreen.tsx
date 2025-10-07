@@ -8,9 +8,8 @@ import {
   ScrollView,
   Image,
   Text,
-  SafeAreaView,
-  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -39,12 +38,12 @@ export default function CustomAIEDitsScreen() {
 
   // Edit examples using translations
   const editExamples = [
-    { id: 'remove-bg', title: t('content.customAI.removeBackground'), icon: '✂️' },
-    { id: 'change-lighting', title: t('content.customAI.changeLighting'), icon: '💡' },
-    { id: 'fix-skin', title: t('content.customAI.fixSkin'), icon: '✨' },
-    { id: 'add-effects', title: t('content.customAI.addEffects'), icon: '🎨' },
-    { id: 'change-hair', title: t('content.customAI.changeHairColor'), icon: '💇' },
-    { id: 'enhance-eyes', title: t('content.customAI.enhanceEyes'), icon: '👁️' },
+    { id: 'remove-bg', title: t('content.customAI.removeBackground'), icon: 'cut-outline' },
+    { id: 'change-lighting', title: t('content.customAI.changeLighting'), icon: 'bulb-outline' },
+    { id: 'fix-skin', title: t('content.customAI.fixSkin'), icon: 'sparkles-outline' },
+    { id: 'add-effects', title: t('content.customAI.addEffects'), icon: 'color-palette-outline' },
+    { id: 'change-hair', title: t('content.customAI.changeHairColor'), icon: 'cut-outline' },
+    { id: 'enhance-eyes', title: t('content.customAI.enhanceEyes'), icon: 'eye-outline' },
   ];
 
   const handleSettingsPress = () => {
@@ -104,14 +103,13 @@ export default function CustomAIEDitsScreen() {
       onPress={() => handleExamplePress(example.id)}
       activeOpacity={0.8}
     >
-      <Text style={styles.exampleIcon}>{example.icon}</Text>
+      <Ionicons name={example.icon} size={16} color="#FFFFFF" style={styles.exampleIcon} />
       <Text style={styles.exampleText}>{example.title}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.container}>
 
       {/* Screen Title */}
       <View style={styles.titleSection}>
@@ -121,7 +119,7 @@ export default function CustomAIEDitsScreen() {
             <Text style={styles.screenSubtitle}>{t('tabs.customAI.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
+            <Ionicons name="settings" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
@@ -164,7 +162,7 @@ export default function CustomAIEDitsScreen() {
         {/* Bottom spacing for tab bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -204,10 +202,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
   },
   
   // Content Styles
@@ -297,7 +291,6 @@ const styles = StyleSheet.create({
     margin: 4,
   },
   exampleIcon: {
-    fontSize: 16,
     marginRight: 6,
   },
   exampleText: {
