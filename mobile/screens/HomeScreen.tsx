@@ -3,13 +3,12 @@ import { useState } from 'react';
 import {
   View,
   StyleSheet,
-  SafeAreaView,
-  StatusBar,
   ScrollView,
   TouchableOpacity,
   Text,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 
 // Import all 5 tab screens
 import EnhanceScreen from './tabs/EnhanceScreen';
@@ -23,11 +22,11 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<'enhance' | 'ai-photos' | 'ai-filters' | 'ai-videos' | 'custom-ai'>('enhance');
 
   const tabs = [
-    { id: 'enhance', label: t('navigation.tabs.enhance'), icon: '✨' },
-    { id: 'ai-photos', label: t('navigation.tabs.aiPhotos'), icon: '👤' },
-    { id: 'ai-filters', label: t('navigation.tabs.aiFilters'), icon: '🎨' },
-    { id: 'ai-videos', label: t('navigation.tabs.aiVideos'), icon: '🎬' },
-    { id: 'custom-ai', label: t('navigation.tabs.customAI'), icon: '✏️' },
+    { id: 'enhance', label: t('navigation.tabs.enhance'), icon: 'sparkles', iconOutline: 'sparkles-outline' },
+    { id: 'ai-photos', label: t('navigation.tabs.aiPhotos'), icon: 'person', iconOutline: 'person-outline' },
+    { id: 'ai-filters', label: t('navigation.tabs.aiFilters'), icon: 'color-palette', iconOutline: 'color-palette-outline' },
+    { id: 'ai-videos', label: t('navigation.tabs.aiVideos'), icon: 'videocam', iconOutline: 'videocam-outline' },
+    { id: 'custom-ai', label: t('navigation.tabs.customAI'), icon: 'create', iconOutline: 'create-outline' },
   ];
 
   const renderContent = () => {
@@ -48,9 +47,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="light-content" />
-
+    <View style={styles.container}>
       {/* Top Navigation */}
       <View style={styles.topNav}>
         <ScrollView
@@ -68,7 +65,11 @@ export default function HomeScreen() {
               onPress={() => setActiveTab(tab.id as any)}
               activeOpacity={0.7}
             >
-              <Text style={styles.topNavIcon}>{tab.icon}</Text>
+              <Ionicons
+                name={activeTab === tab.id ? tab.icon : tab.iconOutline}
+                size={18}
+                color={activeTab === tab.id ? '#000000' : '#8E8E93'}
+              />
               <Text style={[
                 styles.topNavLabel,
                 activeTab === tab.id && styles.topNavLabelActive
@@ -84,7 +85,7 @@ export default function HomeScreen() {
       <View style={styles.content}>
         {renderContent()}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -115,10 +116,7 @@ const styles = StyleSheet.create({
   topNavItemActive: {
     backgroundColor: '#FFFFFF',
   },
-  topNavIcon: {
-    fontSize: 18,
-  },
-  topNavLabel: {
+    topNavLabel: {
     fontSize: 14,
     fontWeight: '600',
     color: '#8E8E93',

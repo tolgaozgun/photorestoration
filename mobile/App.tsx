@@ -42,6 +42,7 @@ import SelfieUploadScreen from './screens/flow/SelfieUploadScreen';
 import AITrainingScreen from './screens/flow/AITrainingScreen';
 import StyleSelectionScreen from './screens/flow/StyleSelectionScreen';
 import AIGenerationResultScreen from './screens/flow/AIGenerationResultScreen';
+import FreeTrialScreen from './screens/FreeTrialScreen';
 
 // Contexts
 import { UserProvider } from './contexts/UserContext';
@@ -55,6 +56,7 @@ import { generateUUID } from './utils/uuid';
 import { Text } from './components/Text';
 import { colors } from './theme';
 import MainLayout from './components/MainLayout';
+import { Ionicons } from '@expo/vector-icons';
 
 // Universal screens
 import UniversalProcessingScreen from './screens/UniversalProcessingScreen';
@@ -148,6 +150,12 @@ export type RootStackParamList = {
   EnhanceHome: undefined;
   CustomAIEDitsHome: undefined;
   CustomAIEditInput: { imageUri: string; };
+  FreeTrial: {
+    tierId: string;
+    trialDays: number;
+    price: string;
+    period: string;
+  };
 };
 
 export type MainTabParamList = {
@@ -190,8 +198,12 @@ function MainTabNavigator() {
         )}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>🏠</Text>
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -204,8 +216,12 @@ function MainTabNavigator() {
         )}
         options={{
           tabBarLabel: 'History',
-          tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>📚</Text>
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "time" : "time-outline"}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -218,8 +234,12 @@ function MainTabNavigator() {
         )}
         options={{
           tabBarLabel: 'Settings',
-          tabBarIcon: ({ focused }) => (
-            <Text style={focused ? {...styles.tabIcon, ...styles.tabIconFocused} : styles.tabIcon}>⚙️</Text>
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "settings" : "settings-outline"}
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -425,6 +445,19 @@ export default function App() {
                       }}
                     />
 
+                    {/* Free Trial Screen */}
+                    <Stack.Screen
+                      name="FreeTrial"
+                      component={(props) => (
+                        <MainLayout>
+                          <FreeTrialScreen {...props} />
+                        </MainLayout>
+                      )}
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+
                     {/* Settings Screen */}
                     <Stack.Screen
                       name="Settings"
@@ -532,14 +565,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#333333',
     paddingBottom: 20,
-  },
-  tabIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  tabIconFocused: {
-    fontSize: 24,
-    marginBottom: 4,
   },
   tabLabel: {
     fontSize: 12,
