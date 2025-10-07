@@ -143,13 +143,17 @@
     "back": "Geri",
     "home": "Geri Yükle",
     "recents": "Son",
+    "history": "Geçmiş",
     "settings": "Ayarlar",
     "tabs": {
       "enhance": "İyileştir",
       "aiPhotos": "AI Fotoğrafları",
       "aiFilters": "AI Filtreleri",
       "aiVideos": "AI Videoları",
-      "customAI": "Özel AI"
+      "customAI": "Özel AI",
+      "home": "Ana Sayfa",
+      "history": "Geçmiş",
+      "settings": "Ayarlar"
     }
   },
   "settings": {
@@ -577,5 +581,34 @@
     "noCredits": "Kullanılabilir Kredi Yok",
     "usesCredit": "1 kredi kullanır",
     "continueToResults": "Sonuçlara Devam Et"
+  },
+  "userTopBar": {
+    "getPlan": "PLAN AL",
+    "getCredits": "KREDİ AL"
+  },
+  "historyScreen": {
+    "title": "Geçmiş",
+    "subtitle": "İşlenmiş görselleriniz",
+    "processing": "İşleniyor",
+    "loading": "Geçmiş yükleniyor...",
+    "emptyTitle": "Henüz geçmiş yok",
+    "emptySubtitle": "İşlenmiş görselleriniz burada görünecek",
+    "startedJustNow": "Şimdi başladı",
+    "done": "✓ Tamamlandı",
+    "timeAgo": {
+      "justNow": "Şimdi",
+      "minutes": "{{count}} dk önce",
+      "hours": "{{count}} sa önce",
+      "days": "{{count}} gün önce"
+    },
+    "types": {
+      "enhance": "✨ İyileştir",
+      "filter": "🎨 Filtre",
+      "customEdit": "✏️ Özel Düzenleme",
+      "video": "🎬 Video",
+      "colorize": "🎨 Renklendir",
+      "deScratch": "🔧 Çizik Kaldır",
+      "enlighten": "💡 Aydınlat"
+    }
   }
 }

@@ -122,7 +122,7 @@ export default function UserTopBar() {
               style={styles.getPlanButton}
               onPress={() => navigation.navigate('Purchase')}
             >
-              <Text style={styles.buttonText}>GET PLAN</Text>
+              <Text style={styles.buttonText}>{t('userTopBar.getPlan')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -142,7 +142,7 @@ export default function UserTopBar() {
               style={styles.getCreditsButton}
               onPress={() => navigation.navigate('Purchase')}
             >
-              <Text style={styles.buttonText}>GET CREDITS</Text>
+              <Text style={styles.buttonText}>{t('userTopBar.getCredits')}</Text>
             </TouchableOpacity>
           </View>
         </View>

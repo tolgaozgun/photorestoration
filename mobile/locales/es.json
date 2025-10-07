@@ -143,13 +143,17 @@
     "back": "Atrás",
     "home": "Restaurar",
     "recents": "Recientes",
+    "history": "Historial",
     "settings": "Configuración",
     "tabs": {
       "enhance": "Mejorar",
       "aiPhotos": "Fotos AI",
       "aiFilters": "Filtros AI",
       "aiVideos": "Videos AI",
-      "customAI": "AI Personalizado"
+      "customAI": "AI Personalizado",
+      "home": "Inicio",
+      "history": "Historial",
+      "settings": "Configuración"
     }
   },
   "settings": {
@@ -578,5 +582,34 @@
     "noCredits": "Sin Créditos Disponibles",
     "usesCredit": "Usa 1 crédito",
     "continueToResults": "Continuar a Resultados"
+  },
+  "userTopBar": {
+    "getPlan": "OBTENER PLAN",
+    "getCredits": "OBTENER CRÉDITOS"
+  },
+  "historyScreen": {
+    "title": "Historial",
+    "subtitle": "Tus imágenes procesadas",
+    "processing": "Procesando",
+    "loading": "Cargando historial...",
+    "emptyTitle": "Aún no hay historial",
+    "emptySubtitle": "Tus imágenes procesadas aparecerán aquí",
+    "startedJustNow": "Comenzó justo ahora",
+    "done": "✓ Hecho",
+    "timeAgo": {
+      "justNow": "Ahora mismo",
+      "minutes": "hace {{count}} min",
+      "hours": "hace {{count}} h",
+      "days": "hace {{count}} días"
+    },
+    "types": {
+      "enhance": "✨ Mejorar",
+      "filter": "🎨 Filtro",
+      "customEdit": "✏️ Edición personalizada",
+      "video": "🎬 Video",
+      "colorize": "🎨 Colorear",
+      "deScratch": "🔧 Eliminar rayaduras",
+      "enlighten": "💡 Iluminar"
+    }
   }
 }

@@ -143,13 +143,17 @@
     "back": "返回",
     "home": "恢复",
     "recents": "最近",
+    "history": "历史",
     "settings": "设置",
     "tabs": {
       "enhance": "增强",
       "aiPhotos": "AI照片",
       "aiFilters": "AI滤镜",
       "aiVideos": "AI视频",
-      "customAI": "自定义AI"
+      "customAI": "自定义AI",
+      "home": "首页",
+      "history": "历史",
+      "settings": "设置"
     }
   },
   "settings": {
@@ -577,5 +581,34 @@
     "noCredits": "没有可用积分",
     "usesCredit": "使用1个积分",
     "continueToResults": "继续查看结果"
+  },
+  "userTopBar": {
+    "getPlan": "获取计划",
+    "getCredits": "获取积分"
+  },
+  "historyScreen": {
+    "title": "历史",
+    "subtitle": "您处理过的图片",
+    "processing": "处理中",
+    "loading": "正在加载历史...",
+    "emptyTitle": "暂无历史",
+    "emptySubtitle": "您处理过的图片将显示在这里",
+    "startedJustNow": "刚刚开始",
+    "done": "✓ 完成",
+    "timeAgo": {
+      "justNow": "刚刚",
+      "minutes": "{{count}}分钟前",
+      "hours": "{{count}}小时前",
+      "days": "{{count}}天前"
+    },
+    "types": {
+      "enhance": "✨ 增强",
+      "filter": "🎨 滤镜",
+      "customEdit": "✏️ 自定义编辑",
+      "video": "🎬 视频",
+      "colorize": "🎨 上色",
+      "deScratch": "🔧 去划痕",
+      "enlighten": "💡 调光"
+    }
   }
 }

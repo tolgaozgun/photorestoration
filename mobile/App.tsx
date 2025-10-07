@@ -197,7 +197,11 @@ function MainTabNavigator() {
           </TabScreenWrapper>
         )}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color, fontSize: 12 }}>
+              {t('navigation.tabs.home')}
+            </Text>
+          ),
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
@@ -215,7 +219,11 @@ function MainTabNavigator() {
           </TabScreenWrapper>
         )}
         options={{
-          tabBarLabel: 'History',
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color, fontSize: 12 }}>
+              {t('navigation.tabs.history')}
+            </Text>
+          ),
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? "time" : "time-outline"}
@@ -233,7 +241,11 @@ function MainTabNavigator() {
           </TabScreenWrapper>
         )}
         options={{
-          tabBarLabel: 'Settings',
+          tabBarLabel: ({ color }) => (
+            <Text style={{ color, fontSize: 12 }}>
+              {t('navigation.tabs.settings')}
+            </Text>
+          ),
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? "settings" : "settings-outline"}

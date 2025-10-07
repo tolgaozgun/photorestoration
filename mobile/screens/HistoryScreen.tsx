@@ -123,16 +123,16 @@ export default function HistoryScreen() {
   };
 
   const getTypeLabel = (type: string) => {
-    const labels = {
-      'enhance': '✨ Enhance',
-      'filter': '🎨 Filter',
-      'custom-edit': '✏️ Custom Edit',
-      'video': '🎬 Video',
-      'colorize': '🎨 Colorize',
-      'de-scratch': '🔧 De-scratch',
-      'enlighten': '💡 Enlighten',
+    const labelKeys: Record<string, string> = {
+      'enhance': 'historyScreen.types.enhance',
+      'filter': 'historyScreen.types.filter',
+      'custom-edit': 'historyScreen.types.customEdit',
+      'video': 'historyScreen.types.video',
+      'colorize': 'historyScreen.types.colorize',
+      'de-scratch': 'historyScreen.types.deScratch',
+      'enlighten': 'historyScreen.types.enlighten',
     };
-    return labels[type] || type;
+    return labelKeys[type] ? t(labelKeys[type]) : type;
   };
 
   const formatTime = (date: string) => {
@@ -143,10 +143,10 @@ export default function HistoryScreen() {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
-    return 'Just now';
+    if (days > 0) return t('historyScreen.timeAgo.days', { count: days });
+    if (hours > 0) return t('historyScreen.timeAgo.hours', { count: hours });
+    if (minutes > 0) return t('historyScreen.timeAgo.minutes', { count: minutes });
+    return t('historyScreen.timeAgo.justNow');
   };
 
   const handleHistoryItemPress = (item: Enhancement) => {
@@ -194,10 +194,10 @@ export default function HistoryScreen() {
             <Text style={styles.itemType}>{getTypeLabel(currentJob.type)}</Text>
             <View style={styles.processingBadge}>
               <ActivityIndicator size="small" color="#FFFFFF" />
-              <Text style={styles.processingText}>Processing</Text>
+              <Text style={styles.processingText}>{t('historyScreen.processing')}</Text>
             </View>
           </View>
-          <Text style={styles.itemTime}>Started just now</Text>
+          <Text style={styles.itemTime}>{t('historyScreen.startedJustNow')}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -237,7 +237,7 @@ export default function HistoryScreen() {
           <View style={styles.itemHeader}>
             <Text style={styles.itemType}>{getTypeLabel(item.mode)}</Text>
             <View style={styles.completedBadge}>
-              <Text style={styles.completedText}>✓ Done</Text>
+              <Text style={styles.completedText}>{t('historyScreen.done')}</Text>
             </View>
           </View>
           <Text style={styles.itemTime}>{formatTime(item.created_at)}</Text>
@@ -252,8 +252,8 @@ export default function HistoryScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>History</Text>
-            <Text style={styles.screenSubtitle}>Your processed images</Text>
+            <Text style={styles.screenTitle}>{t('historyScreen.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('historyScreen.subtitle')}</Text>
           </View>
         </View>
       </View>
@@ -280,7 +280,7 @@ export default function HistoryScreen() {
             {/* Processing Queue Section */}
             {currentJob && currentJob.status === 'processing' && (
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Processing</Text>
+                <Text style={styles.sectionTitle}>{t('historyScreen.processing')}</Text>
                 {renderProcessingItem()}
               </View>
             )}
@@ -291,13 +291,13 @@ export default function HistoryScreen() {
           isLoading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#FF3B30" />
-              <Text style={styles.loadingText}>Loading history...</Text>
+              <Text style={styles.loadingText}>{t('historyScreen.loading')}</Text>
             </View>
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyIcon}>📷</Text>
-              <Text style={styles.emptyText}>No history yet</Text>
-              <Text style={styles.emptySubtitle}>Your processed images will appear here</Text>
+              <Text style={styles.emptyText}>{t('historyScreen.emptyTitle')}</Text>
+              <Text style={styles.emptySubtitle}>{t('historyScreen.emptySubtitle')}</Text>
             </View>
           )
         )}

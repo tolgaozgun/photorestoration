@@ -143,13 +143,17 @@
     "back": "Zurück",
     "home": "Wiederherstellen",
     "recents": "Letzte",
+    "history": "Verlauf",
     "settings": "Einstellungen",
     "tabs": {
       "enhance": "Verbessern",
       "aiPhotos": "KI-Fotos",
       "aiFilters": "KI-Filter",
       "aiVideos": "KI-Videos",
-      "customAI": "Benutzerdefinierte KI"
+      "customAI": "Benutzerdefinierte KI",
+      "home": "Startseite",
+      "history": "Verlauf",
+      "settings": "Einstellungen"
     }
   },
   "settings": {
@@ -577,5 +581,34 @@
     "noCredits": "Keine Guthaben Verfügbar",
     "usesCredit": "Verwendet 1 Guthaben",
     "continueToResults": "Weiter zu Ergebnissen"
+  },
+  "userTopBar": {
+    "getPlan": "PLAN KAUFEN",
+    "getCredits": "GUTHABEN KAUFEN"
+  },
+  "historyScreen": {
+    "title": "Verlauf",
+    "subtitle": "Ihre verarbeiteten Bilder",
+    "processing": "Verarbeitung",
+    "loading": "Verlauf wird geladen...",
+    "emptyTitle": "Noch kein Verlauf",
+    "emptySubtitle": "Ihre verarbeiteten Bilder erscheinen hier",
+    "startedJustNow": "Gerade begonnen",
+    "done": "✓ Fertig",
+    "timeAgo": {
+      "justNow": "Gerade jetzt",
+      "minutes": "vor {{count}} Min",
+      "hours": "vor {{count}} Std",
+      "days": "vor {{count}} Tagen"
+    },
+    "types": {
+      "enhance": "✨ Verbessern",
+      "filter": "🎨 Filter",
+      "customEdit": "✏️ Benutzerdefiniert",
+      "video": "🎬 Video",
+      "colorize": "🎨 Färben",
+      "deScratch": "🔧 Kratzer entfernen",
+      "enlighten": "💡 Aufhellen"
+    }
   }
 }

@@ -148,14 +148,7 @@ export default function SettingsScreen() {
 
   const getCurrentLanguageName = () => {
     const currentLang = i18nInstance.language;
-    const languages = {
-      en: 'English',
-      tr: 'Türkçe',
-      de: 'Deutsch',
-      es: 'Español',
-      zh: '中文',
-    };
-    return languages[currentLang as keyof typeof languages] || 'English';
+    return t(`settings.languageNames.${currentLang}`, t('settings.languageNames.en'));
   };
 
 
@@ -211,8 +204,8 @@ export default function SettingsScreen() {
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>Settings</Text>
-            <Text style={styles.screenSubtitle}>Preferences & account</Text>
+            <Text style={styles.screenTitle}>{t('settings.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('settings.subtitle')}</Text>
           </View>
         </View>
       </View>
@@ -232,18 +225,18 @@ export default function SettingsScreen() {
             { opacity: fadeAnim },
           ]}
         >
-          <Text style={styles.sectionTitle}>Social</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.social')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon={<Ionicons name="share-social-outline" size={22} color="#8E8E93" />}
-              title="Share App"
+              title={t('settings.social.shareApp')}
               onPress={handleShareApp}
               showArrow={false}
               rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
               icon={<Ionicons name="logo-instagram" size={22} color="#8E8E93" />}
-              title="Instagram"
+              title={t('settings.social.instagram')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_instagram' });
                 Linking.openURL('https://instagram.com');
@@ -253,7 +246,7 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="logo-facebook" size={22} color="#8E8E93" />}
-              title="Facebook"
+              title={t('settings.social.facebook')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_facebook' });
                 Linking.openURL('https://facebook.com');
@@ -263,7 +256,7 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="logo-tiktok" size={22} color="#8E8E93" />}
-              title="TikTok"
+              title={t('settings.social.tiktok')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_tiktok' });
                 Linking.openURL('https://tiktok.com');
@@ -284,11 +277,11 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>Help</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.help')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon={<Ionicons name="help-circle-outline" size={22} color="#8E8E93" />}
-              title="Help Center"
+              title={t('settings.help.helpCenter')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_help_center' });
                 Linking.openURL('https://help.photorestoration.app');
@@ -298,14 +291,14 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="mail-outline" size={22} color="#8E8E93" />}
-              title="Contact Support"
+              title={t('settings.help.contactSupport')}
               onPress={contactSupport}
               showArrow={false}
               rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
               icon={<Ionicons name="document-text-outline" size={22} color="#8E8E93" />}
-              title="Subscription Info"
+              title={t('settings.help.subscriptionInfo')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'subscription_info' });
                 navigation.navigate('Purchase');
@@ -313,7 +306,7 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="bulb-outline" size={22} color="#8E8E93" />}
-              title="Suggest A Feature"
+              title={t('settings.help.suggestFeature')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'suggest_feature' });
                 Linking.openURL('mailto:support@photorestoration.app?subject=Feature Suggestion');
@@ -321,7 +314,7 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="card-outline" size={22} color="#8E8E93" />}
-              title="Manage Subscription"
+              title={t('settings.help.manageSubscription')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'manage_subscription' });
                 const url = Platform.OS === 'ios'
@@ -332,8 +325,8 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="help-outline" size={22} color="#8E8E93" />}
-              title="How do I use it?"
-              subtitle="See the app tutorial again"
+              title={t('settings.help.howDoIUseIt')}
+              subtitle={t('settings.help.seeAppTutorialAgain')}
               onPress={handleRelaunchOnboarding}
             />
           </View>
@@ -349,12 +342,12 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>General</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.general')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon={<Ionicons name="person-outline" size={22} color="#8E8E93" />}
-              title={linkedEmail ? "Manage Devices" : "Sign In"}
-              subtitle={linkedEmail ? `Signed in as ${linkedEmail}` : "Sign in to sync across devices"}
+              title={linkedEmail ? t('settings.general.manageDevices') : t('settings.general.signIn')}
+              subtitle={linkedEmail ? t('settings.general.signedInAs', { email: linkedEmail }) : t('settings.general.signInToSync')}
               onPress={() => {
                 trackEvent('settings_action', { type: linkedEmail ? 'manage_devices' : 'sign_in' });
                 navigation.navigate('EmailSync');
@@ -362,18 +355,27 @@ export default function SettingsScreen() {
             />
             <SettingItem
               icon={<Ionicons name="lock-closed-outline" size={22} color="#8E8E93" />}
-              title="Photos Permissions"
+              title={t('settings.general.photosPermissions')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'photos_permissions' });
-                Alert.alert('Photos Permissions', 'Manage photo access permissions in your device settings.');
+                Alert.alert(t('settings.alerts.photosPermissions.title'), t('settings.alerts.photosPermissions.message'));
               }}
             />
             <SettingItem
               icon={<Ionicons name="settings-outline" size={22} color="#8E8E93" />}
-              title="Enhancement Preferences"
+              title={t('settings.general.enhancementPreferences')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'enhancement_preferences' });
-                Alert.alert('Enhancement Preferences', 'Customize your photo enhancement settings.');
+                Alert.alert(t('settings.alerts.enhancementPreferences.title'), t('settings.alerts.enhancementPreferences.message'));
+              }}
+            />
+            <SettingItem
+              icon={<Ionicons name="globe-outline" size={22} color="#8E8E93" />}
+              title={t('settings.language')}
+              subtitle={getCurrentLanguageName()}
+              onPress={() => {
+                trackEvent('settings_action', { type: 'open_language_selector' });
+                setShowLanguageModal(true);
               }}
             />
           </View>
@@ -389,34 +391,34 @@ export default function SettingsScreen() {
             },
           ]}
         >
-          <Text style={styles.sectionTitle}>Legal</Text>
+          <Text style={styles.sectionTitle}>{t('settings.sections.legal')}</Text>
           <View style={styles.sectionContent}>
             <SettingItem
               icon={<Ionicons name="document-text-outline" size={22} color="#8E8E93" />}
-              title="Terms of Service"
+              title={t('settings.legal.termsOfService')}
               onPress={openTerms}
               showArrow={false}
               rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
               icon={<Ionicons name="shield-checkmark-outline" size={22} color="#8E8E93" />}
-              title="Privacy Policy"
+              title={t('settings.legal.privacyPolicy')}
               onPress={openPrivacy}
             />
             <SettingItem
               icon={<Ionicons name="lock-closed-outline" size={22} color="#8E8E93" />}
-              title="Privacy Preferences"
+              title={t('settings.legal.privacyPreferences')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'privacy_preferences' });
-                Alert.alert('Privacy Preferences', 'Manage your privacy settings and data preferences.');
+                Alert.alert(t('settings.alerts.privacyPreferences.title'), t('settings.alerts.privacyPreferences.message'));
               }}
             />
             <SettingItem
               icon={<Ionicons name="library-outline" size={22} color="#8E8E93" />}
-              title="Open Source Libraries"
+              title={t('settings.legal.openSourceLibraries')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_source_libraries' });
-                Alert.alert('Open Source Libraries', 'View acknowledgments for open source libraries used in this app.');
+                Alert.alert(t('settings.alerts.openSourceLibraries.title'), t('settings.alerts.openSourceLibraries.message'));
               }}
             />
           </View>

@@ -143,13 +143,17 @@
     "back": "Back",
     "home": "Restore",
     "recents": "Recent",
+    "history": "History",
     "settings": "Settings",
     "tabs": {
       "enhance": "Enhance",
       "aiPhotos": "AI Photos",
       "aiFilters": "AI Filters",
       "aiVideos": "AI Videos",
-      "customAI": "Custom AI"
+      "customAI": "Custom AI",
+      "home": "Home",
+      "history": "History",
+      "settings": "Settings"
     }
   },
   "settings": {
@@ -172,13 +176,13 @@
     "legal": "Legal",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
+    "language": "Language",
     "support": "Support",
     "contactSupport": "Contact Support",
     "contactSupportSubtitle": "Get help with the app",
     "rateApp": "Rate App",
     "rateAppSubtitle": "Share your feedback",
-    "language": "Language",
-    "selectLanguage": "Select Language",
+      "selectLanguage": "Select Language",
     "version": "Version 1.0.0",
     "copyright": "© 2024 Photo Restoration AI",
     "restorePurchasesAlertTitle": "Restore Purchases",
@@ -228,7 +232,61 @@
     "relaunchOnboardingTitle": "Relaunch Onboarding",
     "relaunchOnboardingMessage": "This will reset the onboarding process and show you the app introduction again. Continue?",
     "continue": "Continue",
-    "shareAppMessage": "Check out this amazing photo restoration app!"
+    "shareAppMessage": "Check out this amazing photo restoration app!",
+    "subtitle": "Preferences & account",
+    "sections": {
+      "social": "Social",
+      "help": "Help",
+      "general": "General",
+      "legal": "Legal"
+    },
+    "social": {
+      "shareApp": "Share App",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "help": {
+      "helpCenter": "Help Center",
+      "contactSupport": "Contact Support",
+      "subscriptionInfo": "Subscription Info",
+      "suggestFeature": "Suggest A Feature",
+      "manageSubscription": "Manage Subscription",
+      "howDoIUseIt": "How do I use it?",
+      "seeAppTutorialAgain": "See the app tutorial again"
+    },
+    "general": {
+      "signIn": "Sign In",
+      "manageDevices": "Manage Devices",
+      "signedInAs": "Signed in as {{email}}",
+      "signInToSync": "Sign in to sync across devices",
+      "photosPermissions": "Photos Permissions",
+      "enhancementPreferences": "Enhancement Preferences"
+    },
+    "legal": {
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "privacyPreferences": "Privacy Preferences",
+      "openSourceLibraries": "Open Source Libraries"
+    },
+    "alerts": {
+      "photosPermissions": {
+        "title": "Photos Permissions",
+        "message": "Manage photo access permissions in your device settings."
+      },
+      "enhancementPreferences": {
+        "title": "Enhancement Preferences",
+        "message": "Customize your photo enhancement settings."
+      },
+      "privacyPreferences": {
+        "title": "Privacy Preferences",
+        "message": "Manage your privacy settings and data preferences."
+      },
+      "openSourceLibraries": {
+        "title": "Open Source Libraries",
+        "message": "View acknowledgments for open source libraries used in this app."
+      }
+    }
   },
   "tabs": {
     "enhance": {
@@ -578,5 +636,34 @@
     "noCredits": "No Credits Available",
     "usesCredit": "Uses 1 credit",
     "continueToResults": "Continue to Results"
+  },
+  "userTopBar": {
+    "getPlan": "GET PLAN",
+    "getCredits": "GET CREDITS"
+  },
+  "historyScreen": {
+    "title": "History",
+    "subtitle": "Your processed images",
+    "processing": "Processing",
+    "loading": "Loading history...",
+    "emptyTitle": "No history yet",
+    "emptySubtitle": "Your processed images will appear here",
+    "startedJustNow": "Started just now",
+    "done": "✓ Done",
+    "timeAgo": {
+      "justNow": "Just now",
+      "minutes": "{{count}}m ago",
+      "hours": "{{count}}h ago",
+      "days": "{{count}}d ago"
+    },
+    "types": {
+      "enhance": "✨ Enhance",
+      "filter": "🎨 Filter",
+      "customEdit": "✏️ Custom Edit",
+      "video": "🎬 Video",
+      "colorize": "🎨 Colorize",
+      "deScratch": "🔧 De-scratch",
+      "enlighten": "💡 Enlighten"
+    }
   }
 }
