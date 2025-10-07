@@ -1,6 +1,7 @@
 import io
 import uuid
 import logging
+from datetime import datetime, timedelta
 from PIL import Image
 from minio import Minio
 from minio.error import S3Error
@@ -144,3 +145,26 @@ class StorageService:
         full_url = f"{protocol}://{endpoint}/{settings.MINIO_BUCKET}/{key}"
         logger.debug(f"Generated full URL: {full_url} for key: {key}")
         return full_url
+
+    def get_presigned_url(self, key: str, expires_in: int = 3600) -> str:
+        """Generate a presigned URL for S3/MinIO object access"""
+        if not key:
+            return None
+
+        try:
+            # Generate presigned URL with default 1 hour expiration
+            presigned_url = self.client.presigned_get_object(
+                bucket_name=self.bucket,
+                object_name=key,
+                expires=timedelta(seconds=expires_in)
+            )
+
+            logger.info(f"Generated presigned URL for key {key}: expires in {expires_in}s")
+            logger.debug(f"Presigned URL: {presigned_url}")
+
+            return presigned_url
+
+        except Exception as e:
+            logger.error(f"Failed to generate presigned URL for key {key}: {e}")
+            # Fallback to regular URL if presigned URL generation fails
+            return self.get_full_url(key)

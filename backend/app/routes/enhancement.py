@@ -92,9 +92,9 @@ async def enhance_image(
             
             return EnhancementResponse(
                 enhancement_id=enhancement.id,
-                enhanced_url=storage_service.get_full_url(image_keys['enhanced_url']),
-                thumbnail_url=storage_service.get_full_url(image_keys.get('thumbnail_url')) if image_keys.get('thumbnail_url') else None,
-                preview_url=storage_service.get_full_url(image_keys.get('preview_url')) if image_keys.get('preview_url') else None,
+                enhanced_url=storage_service.get_presigned_url(image_keys['enhanced_url']),
+                thumbnail_url=storage_service.get_presigned_url(image_keys.get('thumbnail_url')) if image_keys.get('thumbnail_url') else None,
+                preview_url=storage_service.get_presigned_url(image_keys.get('preview_url')) if image_keys.get('preview_url') else None,
                 blurhash=blurhash,
                 watermark=watermark,
                 processing_time=processing_time,
@@ -130,10 +130,10 @@ async def get_user_enhancements(
             {
                 "id": enhancement.id,
                 "user_id": enhancement.user_id,
-                "original_url": storage_service.get_full_url(enhancement.original_url),
-                "enhanced_url": storage_service.get_full_url(enhancement.enhanced_url),
-                "thumbnail_url": storage_service.get_full_url(enhancement.thumbnail_url) if enhancement.thumbnail_url else None,
-                "preview_url": storage_service.get_full_url(enhancement.preview_url) if enhancement.preview_url else None,
+                "original_url": storage_service.get_presigned_url(enhancement.original_url),
+                "enhanced_url": storage_service.get_presigned_url(enhancement.enhanced_url),
+                "thumbnail_url": storage_service.get_presigned_url(enhancement.thumbnail_url) if enhancement.thumbnail_url else None,
+                "preview_url": storage_service.get_presigned_url(enhancement.preview_url) if enhancement.preview_url else None,
                 "blurhash": enhancement.blurhash,
                 "resolution": enhancement.resolution,
                 "mode": enhancement.mode,

@@ -94,7 +94,7 @@ async def apply_custom_edit(
 
             return EnhancementResponse(
                 enhancement_id=enhancement.id,
-                enhanced_url=storage_service.get_full_url(enhanced_key),
+                enhanced_url=storage_service.get_presigned_url(enhanced_key),
                 watermark=watermark,
                 processing_time=processing_time,
                 remaining_credits=credits_info["total_credits"],
