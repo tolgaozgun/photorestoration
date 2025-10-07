@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   analytics: '/api/analytics',
   image: '/api/image',
   enhancements: '/api/enhancements',
+  userEnhancements: '/api/enhancements', // GET /api/enhancements/{user_id}
 
   // New AI features
   filter: '/api/filter',

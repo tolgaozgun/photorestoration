@@ -54,6 +54,7 @@ import { generateUUID } from './utils/uuid';
 // import { CustomTabBar } from './components/Navigation';
 import { Text } from './components/Text';
 import { colors } from './theme';
+import MainLayout from './components/MainLayout';
 
 // Universal screens
 import UniversalProcessingScreen from './screens/UniversalProcessingScreen';
@@ -161,6 +162,11 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 
 
+// Wrapper component for tab screens with top bar
+function TabScreenWrapper({ children }: { children: React.ReactNode }) {
+  return <MainLayout>{children}</MainLayout>;
+}
+
 // Main Tab Navigator with 3 tabs: Home, History, Settings
 function MainTabNavigator() {
   const { t } = useTranslation();
@@ -177,7 +183,11 @@ function MainTabNavigator() {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={() => (
+          <TabScreenWrapper>
+            <HomeScreen />
+          </TabScreenWrapper>
+        )}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ focused }) => (
@@ -187,7 +197,11 @@ function MainTabNavigator() {
       />
       <Tab.Screen
         name="History"
-        component={HistoryScreen}
+        component={() => (
+          <TabScreenWrapper>
+            <HistoryScreen />
+          </TabScreenWrapper>
+        )}
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ focused }) => (
@@ -197,7 +211,11 @@ function MainTabNavigator() {
       />
       <Tab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={() => (
+          <TabScreenWrapper>
+            <SettingsScreen />
+          </TabScreenWrapper>
+        )}
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: ({ focused }) => (
@@ -351,28 +369,44 @@ export default function App() {
                     {/* AI Generation Flow */}
                     <Stack.Screen
                       name="SelfieUpload"
-                      component={SelfieUploadScreen}
+                      component={(props) => (
+                        <MainLayout>
+                          <SelfieUploadScreen {...props} />
+                        </MainLayout>
+                      )}
                       options={{
                         headerShown: false,
                       }}
                     />
                     <Stack.Screen
                       name="AITraining"
-                      component={AITrainingScreen}
+                      component={(props) => (
+                        <MainLayout>
+                          <AITrainingScreen {...props} />
+                        </MainLayout>
+                      )}
                       options={{
                         headerShown: false,
                       }}
                     />
                     <Stack.Screen
                       name="StyleSelection"
-                      component={StyleSelectionScreen}
+                      component={(props) => (
+                        <MainLayout>
+                          <StyleSelectionScreen {...props} />
+                        </MainLayout>
+                      )}
                       options={{
                         headerShown: false,
                       }}
                     />
                     <Stack.Screen
                       name="AIGenerationResult"
-                      component={AIGenerationResultScreen}
+                      component={(props) => (
+                        <MainLayout>
+                          <AIGenerationResultScreen {...props} />
+                        </MainLayout>
+                      )}
                       options={{
                         headerShown: false,
                       }}
@@ -381,7 +415,11 @@ export default function App() {
                     {/* Purchase Screen */}
                     <Stack.Screen
                       name="Purchase"
-                      component={PurchaseScreen}
+                      component={(props) => (
+                        <MainLayout>
+                          <PurchaseScreen {...props} />
+                        </MainLayout>
+                      )}
                       options={{
                         headerShown: false,
                       }}
@@ -390,7 +428,11 @@ export default function App() {
                     {/* Settings Screen */}
                     <Stack.Screen
                       name="Settings"
-                      component={SettingsScreen}
+                      component={(props) => (
+                        <MainLayout showTopBar={false}>
+                          <SettingsScreen {...props} />
+                        </MainLayout>
+                      )}
                       options={{
                         headerShown: false,
                       }}

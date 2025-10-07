@@ -32,17 +32,41 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userId = await SecureStore.getItemAsync('userId');
       if (!userId) return;
 
+      // Fetch user data including current credits and subscription info
       const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.restore}`, {
         user_id: userId,
         receipts: []
       });
+
+      // If we have a user, fetch their current enhancement history to get real-time usage
+      let remainingToday = 0;
+      try {
+        const enhancementsResponse = await axios.get(`${API_BASE_URL}/api/enhancements/${userId}`);
+        const enhancements = enhancementsResponse.data || [];
+
+        // Calculate remaining daily credits (if user has daily limits)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const todayEnhancements = enhancements.filter((enhancement: any) => {
+          const enhancementDate = new Date(enhancement.created_at);
+          return enhancementDate >= today;
+        });
+
+        // Assuming daily limit of 5 free enhancements for non-subscribers
+        const dailyLimit = response.data.subscription_type ? 999 : 5;
+        remainingToday = Math.max(0, dailyLimit - todayEnhancements.length);
+      } catch (error) {
+        console.log('Could not fetch enhancements, using default remainingToday');
+        remainingToday = response.data.subscription_type ? 999 : 5;
+      }
 
       setUser({
         userId,
         credits: response.data.credits,
         subscriptionType: response.data.subscription_type,
         subscriptionExpires: response.data.subscription_expires ? new Date(response.data.subscription_expires) : null,
-        remainingToday: 0,
+        remainingToday: remainingToday,
       });
     } catch (error) {
       console.error('Error loading user:', error);

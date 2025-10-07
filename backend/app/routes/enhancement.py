@@ -116,15 +116,45 @@ async def enhance_image(
         logger.error(f"Error processing enhance request: {e}", exc_info=True)
         raise HTTPException(status_code=422, detail=f"Invalid request data: {e}")
 
+@router.get("/enhancements/{user_id}")
+async def get_user_enhancements(
+    user_id: str,
+    db: Session = Depends(get_db)
+):
+    """Get all enhancements for a specific user"""
+    try:
+        enhancements = db.query(Enhancement).filter(Enhancement.user_id == user_id).order_by(Enhancement.created_at.desc()).all()
+
+        return [
+            {
+                "id": enhancement.id,
+                "user_id": enhancement.user_id,
+                "original_url": enhancement.original_url,
+                "enhanced_url": enhancement.enhanced_url,
+                "thumbnail_url": enhancement.thumbnail_url,
+                "preview_url": enhancement.preview_url,
+                "blurhash": enhancement.blurhash,
+                "resolution": enhancement.resolution,
+                "mode": enhancement.mode,
+                "created_at": enhancement.created_at,
+                "processing_time": enhancement.processing_time,
+                "watermark": enhancement.watermark
+            }
+            for enhancement in enhancements
+        ]
+    except Exception as e:
+        logger.error(f"Error fetching enhancements for user {user_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching enhancements: {str(e)}")
+
 @router.get("/image/{key:path}")
 async def get_image(key: str, thumbnail: bool = False):
     from minio.error import S3Error
-    
+
     storage_service = StorageService()
-    
+
     try:
         image_data = storage_service.get_image(key)
-        
+
         if thumbnail:
             enhancement_service = EnhancementService()
             thumbnail_data = enhancement_service.generate_thumbnail(image_data)

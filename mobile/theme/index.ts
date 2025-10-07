@@ -14,8 +14,13 @@ export const colors = {
   accent: {
     primary: '#FF3B30',      // Primary Red
     secondary: '#FF6B6B',    // Secondary Red
+    blue: '#007AFF',         // Blue for credits
+    gold: '#FFD700',         // Gold for premium
   },
   
+  // Border Color
+  border: '#333333',        // Border color
+
   // Text Colors
   text: {
     primary: '#FFFFFF',      // Pure White
