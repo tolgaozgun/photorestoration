@@ -16,6 +16,7 @@ import {
   Share,
   StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
@@ -167,7 +168,7 @@ export default function SettingsScreen() {
     rightElement,
     disabled = false
   }: {
-    icon: string;
+    icon: string | React.ReactNode;
     title: string;
     subtitle?: string;
     onPress?: () => void;
@@ -185,7 +186,11 @@ export default function SettingsScreen() {
       disabled={disabled || !onPress}
     >
       <View style={styles.settingItemLeft}>
-        <Text style={styles.settingIcon}>{icon}</Text>
+        {typeof icon === 'string' ? (
+          <Text style={styles.settingIcon}>{icon}</Text>
+        ) : (
+          <View style={styles.settingIconContainer}>{icon}</View>
+        )}
         <View style={styles.settingTextContainer}>
           <Text style={styles.settingTitle}>{title}</Text>
           {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
@@ -230,41 +235,41 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Social</Text>
           <View style={styles.sectionContent}>
             <SettingItem
-              icon="📤"
+              icon={<Ionicons name="share-social-outline" size={22} color="#8E8E93" />}
               title="Share App"
               onPress={handleShareApp}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
-              icon="📷"
+              icon={<Ionicons name="logo-instagram" size={22} color="#8E8E93" />}
               title="Instagram"
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_instagram' });
                 Linking.openURL('https://instagram.com');
               }}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
-              icon="📘"
+              icon={<Ionicons name="logo-facebook" size={22} color="#8E8E93" />}
               title="Facebook"
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_facebook' });
                 Linking.openURL('https://facebook.com');
               }}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
-              icon="🎵"
+              icon={<Ionicons name="logo-tiktok" size={22} color="#8E8E93" />}
               title="TikTok"
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_tiktok' });
                 Linking.openURL('https://tiktok.com');
               }}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
           </View>
         </Animated.View>
@@ -282,24 +287,24 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Help</Text>
           <View style={styles.sectionContent}>
             <SettingItem
-              icon="❓"
+              icon={<Ionicons name="help-circle-outline" size={22} color="#8E8E93" />}
               title="Help Center"
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_help_center' });
                 Linking.openURL('https://help.photorestoration.app');
               }}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
-              icon="💬"
+              icon={<Ionicons name="mail-outline" size={22} color="#8E8E93" />}
               title="Contact Support"
               onPress={contactSupport}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
-              icon="📄"
+              icon={<Ionicons name="document-text-outline" size={22} color="#8E8E93" />}
               title="Subscription Info"
               onPress={() => {
                 trackEvent('settings_action', { type: 'subscription_info' });
@@ -307,7 +312,7 @@ export default function SettingsScreen() {
               }}
             />
             <SettingItem
-              icon="💡"
+              icon={<Ionicons name="bulb-outline" size={22} color="#8E8E93" />}
               title="Suggest A Feature"
               onPress={() => {
                 trackEvent('settings_action', { type: 'suggest_feature' });
@@ -315,7 +320,7 @@ export default function SettingsScreen() {
               }}
             />
             <SettingItem
-              icon="💳"
+              icon={<Ionicons name="card-outline" size={22} color="#8E8E93" />}
               title="Manage Subscription"
               onPress={() => {
                 trackEvent('settings_action', { type: 'manage_subscription' });
@@ -326,7 +331,7 @@ export default function SettingsScreen() {
               }}
             />
             <SettingItem
-              icon="🎯"
+              icon={<Ionicons name="help-outline" size={22} color="#8E8E93" />}
               title="How do I use it?"
               subtitle="See the app tutorial again"
               onPress={handleRelaunchOnboarding}
@@ -347,7 +352,7 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>General</Text>
           <View style={styles.sectionContent}>
             <SettingItem
-              icon="👤"
+              icon={<Ionicons name="person-outline" size={22} color="#8E8E93" />}
               title={linkedEmail ? "Manage Devices" : "Sign In"}
               subtitle={linkedEmail ? `Signed in as ${linkedEmail}` : "Sign in to sync across devices"}
               onPress={() => {
@@ -356,7 +361,7 @@ export default function SettingsScreen() {
               }}
             />
             <SettingItem
-              icon="🔒"
+              icon={<Ionicons name="lock-closed-outline" size={22} color="#8E8E93" />}
               title="Photos Permissions"
               onPress={() => {
                 trackEvent('settings_action', { type: 'photos_permissions' });
@@ -364,7 +369,7 @@ export default function SettingsScreen() {
               }}
             />
             <SettingItem
-              icon="⚙️"
+              icon={<Ionicons name="settings-outline" size={22} color="#8E8E93" />}
               title="Enhancement Preferences"
               onPress={() => {
                 trackEvent('settings_action', { type: 'enhancement_preferences' });
@@ -387,19 +392,19 @@ export default function SettingsScreen() {
           <Text style={styles.sectionTitle}>Legal</Text>
           <View style={styles.sectionContent}>
             <SettingItem
-              icon="📋"
+              icon={<Ionicons name="document-text-outline" size={22} color="#8E8E93" />}
               title="Terms of Service"
               onPress={openTerms}
               showArrow={false}
-              rightElement={<Text style={styles.externalIcon}>↗</Text>}
+              rightElement={<Ionicons name="open-outline" size={18} color="#8E8E93" />}
             />
             <SettingItem
-              icon="🔒"
+              icon={<Ionicons name="shield-checkmark-outline" size={22} color="#8E8E93" />}
               title="Privacy Policy"
               onPress={openPrivacy}
             />
             <SettingItem
-              icon="🛡️"
+              icon={<Ionicons name="lock-closed-outline" size={22} color="#8E8E93" />}
               title="Privacy Preferences"
               onPress={() => {
                 trackEvent('settings_action', { type: 'privacy_preferences' });
@@ -407,7 +412,7 @@ export default function SettingsScreen() {
               }}
             />
             <SettingItem
-              icon="📚"
+              icon={<Ionicons name="library-outline" size={22} color="#8E8E93" />}
               title="Open Source Libraries"
               onPress={() => {
                 trackEvent('settings_action', { type: 'open_source_libraries' });
@@ -499,7 +504,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 24,
+    padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#3A3A3C',
   },
@@ -512,6 +517,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginRight: 24,
   },
+  settingIconContainer: {
+    width: 24,
+    height: 24,
+    marginRight: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   settingTextContainer: {
     flex: 1,
   },
@@ -519,11 +531,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: 2,
+    lineHeight: 22,
   },
   settingSubtitle: {
     fontSize: 14,
     color: '#8E8E93',
+    lineHeight: 18,
   },
   settingArrow: {
     fontSize: 24,
@@ -531,10 +545,6 @@ const styles = StyleSheet.create({
   },
   settingItemDisabled: {
     opacity: 0.5,
-  },
-  externalIcon: {
-    fontSize: 16,
-    color: '#8E8E93',
   },
   appInfo: {
     alignItems: 'center',
