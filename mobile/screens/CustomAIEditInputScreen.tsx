@@ -11,6 +11,7 @@ import {
   Text,
   SafeAreaView,
   Platform,
+  StatusBar,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -192,6 +193,7 @@ export default function CustomAIEditInputScreen({ route }: CustomAIEditInputScre
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
 
       {/* Screen Title */}
       <View style={styles.titleSection}>

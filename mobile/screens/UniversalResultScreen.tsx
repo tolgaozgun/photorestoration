@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import * as Haptics from 'expo-haptics';
-import ImageWithLoading from '../components/ImageWithLoading';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as MediaLibrary from 'expo-media-library';
@@ -69,20 +68,6 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
     processingTime,
   } = route.params;
 
-  // Debug logging for UniversalResultScreen
-  React.useEffect(() => {
-    console.log('🖼️ [UniversalResultScreen] Screen params:', {
-      originalUri,
-      enhancedUri,
-      previewUri,
-      blurhash,
-      enhancementId,
-      watermark,
-      mode,
-      processingTime
-    });
-  }, [originalUri, enhancedUri, previewUri, blurhash, enhancementId, watermark, mode, processingTime]);
-
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
   const [showBefore, setShowBefore] = useState(false);
@@ -91,16 +76,6 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
 
   // Determine which URI to display
   const displayUri = showFullHD ? enhancedUri : (previewUri || enhancedUri);
-
-  // Log display URI changes
-  React.useEffect(() => {
-    console.log('🔄 [UniversalResultScreen] Display URI changed:', {
-      showFullHD,
-      displayUri,
-      enhancedUri,
-      previewUri
-    });
-  }, [showFullHD, displayUri, enhancedUri, previewUri]);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -219,7 +194,7 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
         {showBefore ? (
           <View style={styles.comparisonContainer}>
             {/* After Image (background) */}
-            <ImageWithLoading
+            <Image
               source={{ uri: displayUri }}
               style={styles.fullImage}
               contentFit="contain"
@@ -236,7 +211,7 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
                 { width: `${comparisonPosition}%` }
               ]}
             >
-              <ImageWithLoading
+              <Image
                 source={{ uri: originalUri }}
                 style={[
                   styles.fullImage,
@@ -271,7 +246,7 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
             </View>
           </View>
         ) : (
-          <ImageWithLoading
+          <Image
             source={{ uri: displayUri }}
             style={styles.fullImage}
             contentFit="contain"

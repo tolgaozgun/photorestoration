@@ -3,6 +3,8 @@ import { useState } from 'react';
 import {
   View,
   StyleSheet,
+  SafeAreaView,
+  StatusBar,
   ScrollView,
   TouchableOpacity,
   Text,
@@ -46,7 +48,9 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
       {/* Top Navigation */}
       <View style={styles.topNav}>
         <ScrollView
@@ -80,7 +84,7 @@ export default function HomeScreen() {
       <View style={styles.content}>
         {renderContent()}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

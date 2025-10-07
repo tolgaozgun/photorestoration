@@ -12,6 +12,7 @@ import {
   Dimensions,
   SafeAreaView,
   Animated,
+  StatusBar,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -233,6 +234,7 @@ export default function FilterPreviewScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
 
       <LinearGradient
         colors={['#000000', '#1a1a1a']}

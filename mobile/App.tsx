@@ -42,7 +42,6 @@ import SelfieUploadScreen from './screens/flow/SelfieUploadScreen';
 import AITrainingScreen from './screens/flow/AITrainingScreen';
 import StyleSelectionScreen from './screens/flow/StyleSelectionScreen';
 import AIGenerationResultScreen from './screens/flow/AIGenerationResultScreen';
-import FreeTrialScreen from './screens/FreeTrialScreen';
 
 // Contexts
 import { UserProvider } from './contexts/UserContext';
@@ -149,12 +148,6 @@ export type RootStackParamList = {
   EnhanceHome: undefined;
   CustomAIEDitsHome: undefined;
   CustomAIEditInput: { imageUri: string; };
-  FreeTrial: {
-    tierId: string;
-    trialDays: number;
-    price: string;
-    period: string;
-  };
 };
 
 export type MainTabParamList = {
@@ -425,19 +418,6 @@ export default function App() {
                       component={(props) => (
                         <MainLayout>
                           <PurchaseScreen {...props} />
-                        </MainLayout>
-                      )}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
-
-                    {/* Free Trial Screen */}
-                    <Stack.Screen
-                      name="FreeTrial"
-                      component={(props) => (
-                        <MainLayout>
-                          <FreeTrialScreen {...props} />
                         </MainLayout>
                       )}
                       options={{

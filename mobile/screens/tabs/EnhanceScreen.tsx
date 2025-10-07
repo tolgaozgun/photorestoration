@@ -8,12 +8,13 @@ import {
   ScrollView,
   Dimensions,
   Text,
+  SafeAreaView,
+  StatusBar,
   ActivityIndicator,
   PermissionsAndroid,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import ImageWithLoading from '../../components/ImageWithLoading';
+import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useNavigation } from '@react-navigation/native';
@@ -159,9 +160,13 @@ export default function EnhanceScreen() {
     }
   };
 
-  
+  const handleSettingsPress = () => {
+    navigation.navigate('Settings');
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
 
       {/* Screen Title */}
       <View style={styles.titleSection}>
@@ -170,6 +175,9 @@ export default function EnhanceScreen() {
             <Text style={styles.screenTitle}>{t('tabs.enhance.title')}</Text>
             <Text style={styles.screenSubtitle}>{t('tabs.enhance.subtitle')}</Text>
           </View>
+          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -182,7 +190,7 @@ export default function EnhanceScreen() {
           activeOpacity={0.8}
         >
           <View style={styles.uploadArea}>
-            <Ionicons name="camera" size={48} color="#FFFFFF" style={styles.cameraIcon} />
+            <Text style={styles.cameraIcon}>📷</Text>
             <Text style={styles.uploadTitle}>{t('tabs.enhance.selectPhotoToEnhance')}</Text>
             <Text style={styles.uploadSubtitle}>{t('tabs.enhance.tapToChooseFromGalleryOrCamera')}</Text>
           </View>
@@ -193,7 +201,7 @@ export default function EnhanceScreen() {
           <Text style={styles.recentTitle}>{t('tabs.enhance.recentPhotos')}</Text>
           {photosError ? (
             <View style={styles.errorContainer}>
-              <Ionicons name="phone-portrait" size={48} color="#FF6B6B" style={styles.errorIcon} />
+              <Text style={styles.errorIcon}>📱</Text>
               <Text style={styles.errorText}>{photosError}</Text>
               <TouchableOpacity
                 style={styles.retryButton}
@@ -209,7 +217,7 @@ export default function EnhanceScreen() {
             </View>
           ) : recentPhotos.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Ionicons name="camera" size={48} color="#FFFFFF" style={styles.emptyIcon} />
+              <Text style={styles.emptyIcon}>📷</Text>
               <Text style={styles.emptyText}>{t('tabs.enhance.noRecentPhotosFound')}</Text>
               <Text style={styles.emptySubtitle}>{t('tabs.enhance.takeSomePhotosToSeeThemHere')}</Text>
             </View>
@@ -222,7 +230,7 @@ export default function EnhanceScreen() {
                   onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
                   activeOpacity={0.8}
                 >
-                  <ImageWithLoading
+                  <Image
                     source={{ uri: photo.uri }}
                     style={styles.photoImage}
                     contentFit="cover"
@@ -239,7 +247,7 @@ export default function EnhanceScreen() {
         {/* Bottom spacing for tab bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -283,6 +291,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#8E8E93',
   },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
+  },
   
   // Upload Section Styles
   uploadSection: {
@@ -302,6 +321,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   cameraIcon: {
+    fontSize: 48,
     marginBottom: 12,
   },
   uploadTitle: {
@@ -366,6 +386,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorIcon: {
+    fontSize: 48,
     marginBottom: 12,
   },
   errorText: {
@@ -398,6 +419,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyIcon: {
+    fontSize: 48,
     marginBottom: 12,
   },
   emptyText: {

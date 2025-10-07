@@ -7,8 +7,9 @@ import {
   ScrollView,
   Image,
   Text,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../App';
@@ -168,7 +169,9 @@ export default function AIPhotosScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
       {/* Screen Title */}
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
@@ -177,7 +180,7 @@ export default function AIPhotosScreen() {
             <Text style={styles.screenSubtitle}>{t('tabs.aiPhotos.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-            <Ionicons name="settings" size={24} color="#FFFFFF" />
+            <Text style={styles.settingsIcon}>⚙️</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -189,7 +192,7 @@ export default function AIPhotosScreen() {
         {/* Bottom spacing for tab bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -239,6 +242,10 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  settingsIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   
   // Album Section Styles

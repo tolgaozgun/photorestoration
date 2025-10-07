@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  SafeAreaView,
   Animated,
   Dimensions,
   Alert,
@@ -223,7 +224,7 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
   const progress = (uploadedPhotos.length / MIN_PHOTOS) * 100;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <Animated.View 
         style={[
@@ -349,7 +350,7 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 }
 

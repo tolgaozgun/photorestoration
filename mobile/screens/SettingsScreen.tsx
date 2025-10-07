@@ -10,9 +10,11 @@ import {
   Animated,
   Platform,
   Linking,
+  SafeAreaView,
   TextStyle,
   Dimensions,
   Share,
+  StatusBar,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
@@ -202,7 +204,8 @@ export default function SettingsScreen() {
 
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
 
       {/* Screen Title */}
       <View style={styles.titleSection}>
@@ -432,7 +435,7 @@ export default function SettingsScreen() {
           onClose={() => setShowLanguageModal(false)}
           onLanguageChange={handleLanguageChange}
         />
-      </View>
+      </SafeAreaView>
   );
 }
 

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  SafeAreaView,
   Animated,
   Dimensions,
   Share,
@@ -288,7 +289,7 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
   const selectedImageData = generatedImages.find(img => img.id === selectedImage);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <Animated.View 
         style={[
@@ -458,7 +459,7 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </Animated.View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

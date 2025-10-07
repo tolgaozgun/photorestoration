@@ -5,10 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
   Text,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import ImageWithLoading from '../../components/ImageWithLoading';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -130,9 +131,9 @@ export default function AIVideosScreen() {
       onPress={() => handleVideoPress(item.id, categoryId)}
       activeOpacity={0.8}
     >
-      <ImageWithLoading source={getImageSource(item)} style={styles.videoImage} />
+      <Image source={getImageSource(item)} style={styles.videoImage} />
       <View style={styles.playButton}>
-        <Ionicons name="play" size={16} color="#000000" style={styles.playIcon} />
+        <Text style={styles.playIcon}>▶</Text>
       </View>
       <View style={styles.videoOverlay}>
         <View style={styles.videoInfo}>
@@ -171,7 +172,8 @@ export default function AIVideosScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
 
       {/* Screen Title */}
       <View style={styles.titleSection}>
@@ -181,7 +183,7 @@ export default function AIVideosScreen() {
             <Text style={styles.screenSubtitle}>{t('tabs.aiVideos.subtitle')}</Text>
           </View>
           <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-            <Ionicons name="settings" size={24} color="#FFFFFF" />
+            <Text style={styles.settingsIcon}>⚙️</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -193,7 +195,7 @@ export default function AIVideosScreen() {
         {/* Bottom spacing for tab bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -233,6 +235,10 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  settingsIcon: {
+    fontSize: 24,
+    color: '#FFFFFF',
   },
   
   // Content Styles
@@ -308,6 +314,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playIcon: {
+    fontSize: 16,
+    color: '#000000',
     marginLeft: 2,
   },
   videoInfo: {

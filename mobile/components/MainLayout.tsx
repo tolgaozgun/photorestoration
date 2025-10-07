@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import UserTopBar from './UserTopBar';
 import { colors } from '../theme';
 
@@ -10,15 +10,12 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children, showTopBar = true }: MainLayoutProps) {
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="light-content" />
-
+    <View style={styles.container}>
       {showTopBar && <UserTopBar />}
-
       <View style={[styles.content, !showTopBar && styles.contentWithoutTopBar]}>
         {children}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -29,10 +26,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    // Account for the top bar height (approximately 64-88px depending on platform)
   },
   contentWithoutTopBar: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    marginTop: 0,
   },
 });

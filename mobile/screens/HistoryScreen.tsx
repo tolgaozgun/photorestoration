@@ -4,11 +4,13 @@ import {
   View,
   Text,
   StyleSheet,
+  SafeAreaView,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
-import ImageWithLoading from '../components/ImageWithLoading';
+import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
@@ -22,19 +24,17 @@ type HistoryScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface Enhancement {
   id: string;
-  user_id: string;
   original_url: string;
   enhanced_url: string;
-  thumbnail_url: string | null;
-  preview_url: string | null;
-  blurhash: string | null;
+  thumbnail_url: string;
+  preview_url?: string;
+  blurhash?: string;
   resolution: string;
   mode: string;
   created_at: string;
   processing_time: number;
   watermark: boolean;
 }
-
 
 export default function HistoryScreen() {
   const { t } = useTranslation();
@@ -43,80 +43,23 @@ export default function HistoryScreen() {
   const [enhancements, setEnhancements] = useState<Enhancement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Debug logging for API configuration
-  React.useEffect(() => {
-    console.log('🔧 [HistoryScreen] API Configuration:', {
-      API_BASE_URL,
-      userId: 'will be fetched during fetchHistory',
-      endpoint: `${API_BASE_URL}${API_ENDPOINTS.userEnhancements}/{user_id}`
-    });
-  }, []);
-
-  // Main useEffect to fetch history
   useEffect(() => {
-    console.log('🚀 [HistoryScreen] Component mounted, calling fetchHistory');
     fetchHistory();
   }, []);
 
   const fetchHistory = async () => {
     setIsLoading(true);
     try {
-      console.log('🔍 [HistoryScreen] Starting fetchHistory...');
-
-      // Add timeout for SecureStore operation
-      const userIdPromise = SecureStore.getItemAsync('userId');
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('SecureStore timeout')), 3000);
-      });
-
-      const userId = await Promise.race([userIdPromise, timeoutPromise]) as string;
-
-      console.log('🔍 [HistoryScreen] Fetching history:', {
-        userId,
-        hasUserId: !!userId,
-        endpoint: userId ? `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}` : 'No user ID'
-      });
-
+      const userId = await SecureStore.getItemAsync('userId');
       if (!userId) {
-        console.warn('⚠️ [HistoryScreen] No user ID found, skipping fetch');
         setIsLoading(false);
         return;
       }
 
-      const endpoint = `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}`;
-      console.log('🌐 [HistoryScreen] Making request to:', endpoint);
-
-      // Add timeout for axios request
-      const axiosPromise = axios.get(endpoint);
-      const axiosTimeout = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('API request timeout')), 10000);
-      });
-
-      const response = await Promise.race([axiosPromise, axiosTimeout]) as any;
-
-      console.log('✅ [HistoryScreen] API Response:', {
-        status: response.status,
-        statusText: response.statusText,
-        dataType: typeof response.data,
-        isArray: Array.isArray(response.data),
-        dataLength: Array.isArray(response.data) ? response.data.length : 'N/A',
-        firstItem: Array.isArray(response.data) && response.data.length > 0 ? response.data[0] : 'No items',
-        fullData: response.data
-      });
-
-      setEnhancements(response.data);
-    } catch (error: any) {
-      console.error('❌ [HistoryScreen] Error fetching history:', {
-        message: error?.message,
-        code: error?.code,
-        response: error?.response?.data,
-        status: error?.response?.status,
-        config: error?.config?.url,
-        stack: error?.stack
-      });
-
-      // Set empty array to prevent infinite loading
-      setEnhancements([]);
+      const response = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}`);
+      setEnhancements(response.data.enhancements);
+    } catch (error) {
+      console.error('Error fetching history:', error);
     } finally {
       setIsLoading(false);
     }
@@ -150,19 +93,10 @@ export default function HistoryScreen() {
   };
 
   const handleHistoryItemPress = (item: Enhancement) => {
-    // Backend should return full URLs
-    console.log('🔗 [HistoryScreen] Navigation to UniversalResult:', {
-      originalUri: item.original_url,
-      enhancedUri: item.enhanced_url,
-      previewUri: item.preview_url,
-      item: item.id,
-      mode: item.mode
-    });
-
     navigation.navigate('UniversalResult', {
-      originalUri: item.original_url,
-      enhancedUri: item.enhanced_url,
-      previewUri: item.preview_url,
+      originalUri: `${API_BASE_URL}${item.original_url}`,
+      enhancedUri: `${API_BASE_URL}${item.enhanced_url}`,
+      previewUri: item.preview_url ? `${API_BASE_URL}${item.preview_url}` : undefined,
       blurhash: item.blurhash,
       enhancementId: item.id,
       watermark: item.watermark,
@@ -181,7 +115,7 @@ export default function HistoryScreen() {
         style={styles.processingItem}
         activeOpacity={0.9}
       >
-        <ImageWithLoading
+        <Image
           source={{ uri: currentJob.originalUri }}
           style={styles.itemImage}
           contentFit="cover"
@@ -203,51 +137,37 @@ export default function HistoryScreen() {
     );
   };
 
-  const renderHistoryItem = ({ item }: { item: Enhancement }) => {
-    // Backend should return full URLs, but handle relative URLs as fallback
-    const imageUrl = item.thumbnail_url || item.enhanced_url;
-
-    // Debug logging for HistoryScreen images
-    console.log('📚 [HistoryScreen] Rendering history item:', {
-      id: item.id,
-      thumbnail_url: item.thumbnail_url,
-      enhanced_url: item.enhanced_url,
-      finalUrl: imageUrl,
-      isFullUrl: imageUrl.startsWith('http'),
-      blurhash: item.blurhash,
-      mode: item.mode
-    });
-
-    return (
-      <TouchableOpacity
-        style={styles.historyItem}
-        onPress={() => handleHistoryItemPress(item)}
-        activeOpacity={0.8}
-      >
-        <ImageWithLoading
-          source={{ uri: imageUrl }}
-          style={styles.itemImage}
-          contentFit="cover"
-          transition={200}
-          cachePolicy="memory-disk"
-          placeholder={item.blurhash ? { blurhash: item.blurhash } : { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
-          priority="high"
-        />
-        <View style={styles.itemContent}>
-          <View style={styles.itemHeader}>
-            <Text style={styles.itemType}>{getTypeLabel(item.mode)}</Text>
-            <View style={styles.completedBadge}>
-              <Text style={styles.completedText}>✓ Done</Text>
-            </View>
+  const renderHistoryItem = ({ item }: { item: Enhancement }) => (
+    <TouchableOpacity
+      style={styles.historyItem}
+      onPress={() => handleHistoryItemPress(item)}
+      activeOpacity={0.8}
+    >
+      <Image
+        source={{ uri: `${API_BASE_URL}${item.thumbnail_url}` }}
+        style={styles.itemImage}
+        contentFit="cover"
+        transition={200}
+        cachePolicy="memory-disk"
+        placeholder={item.blurhash ? { blurhash: item.blurhash } : { blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+        priority="high"
+      />
+      <View style={styles.itemContent}>
+        <View style={styles.itemHeader}>
+          <Text style={styles.itemType}>{getTypeLabel(item.mode)}</Text>
+          <View style={styles.completedBadge}>
+            <Text style={styles.completedText}>✓ Done</Text>
           </View>
-          <Text style={styles.itemTime}>{formatTime(item.created_at)}</Text>
         </View>
-      </TouchableOpacity>
-    );
-  };
+        <Text style={styles.itemTime}>{formatTime(item.created_at)}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StatusBar barStyle="light-content" />
+
       {/* Screen Title */}
       <View style={styles.titleSection}>
         <View style={styles.titleContainer}>
@@ -307,7 +227,7 @@ export default function HistoryScreen() {
         )}
         ListFooterComponent={() => <View style={styles.bottomSpacing} />}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

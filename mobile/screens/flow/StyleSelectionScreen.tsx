@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  SafeAreaView,
   Animated,
   Dimensions,
   Alert,
@@ -358,7 +359,7 @@ export default function StyleSelectionScreen({ navigation, route }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <Animated.View 
         style={[
@@ -431,7 +432,7 @@ export default function StyleSelectionScreen({ navigation, route }: Props) {
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 }
 
