@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   getPlanButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#FF6B35',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,

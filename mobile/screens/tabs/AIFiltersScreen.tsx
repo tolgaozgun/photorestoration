@@ -53,10 +53,7 @@ export default function AIFiltersScreen() {
     { id: 'doll', title: t('content.aiFilters.doll'), imageUrl: 'https://picsum.photos/200/200?random=doll' },
   ];
 
-  const handleSettingsPress = () => {
-    navigation.navigate('Settings');
-  };
-  const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
+    const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('3d-photos');
   const [loading] = useState(false);
   const [debugTouch, setDebugTouch] = useState(false);
@@ -319,9 +316,6 @@ export default function AIFiltersScreen() {
             <Text style={styles.screenTitle}>{t('tabs.aiFilters.title')}</Text>
             <Text style={styles.screenSubtitle}>{t('tabs.aiFilters.subtitle')}</Text>
           </View>
-          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -425,17 +419,6 @@ const styles = StyleSheet.create({
   screenSubtitle: {
     fontSize: 16,
     color: '#8E8E93',
-  },
-  settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
   },
   
   // Main Content Styles

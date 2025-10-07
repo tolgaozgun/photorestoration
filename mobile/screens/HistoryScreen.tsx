@@ -285,10 +285,6 @@ export default function HistoryScreen() {
               </View>
             )}
 
-            {/* History Section Title */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Recent History</Text>
-            </View>
           </>
         )}
         ListEmptyComponent={() => (

@@ -47,10 +47,7 @@ export default function CustomAIEDitsScreen() {
     { id: 'enhance-eyes', title: t('content.customAI.enhanceEyes'), icon: '👁️' },
   ];
 
-  const handleSettingsPress = () => {
-    navigation.navigate('Settings');
-  };
-  const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
+    const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
   const [loading] = useState(false);
 
   useEffect(() => {
@@ -120,9 +117,6 @@ export default function CustomAIEDitsScreen() {
             <Text style={styles.screenTitle}>{t('tabs.customAI.title')}</Text>
             <Text style={styles.screenSubtitle}>{t('tabs.customAI.subtitle')}</Text>
           </View>
-          <TouchableOpacity style={styles.settingsButton} onPress={handleSettingsPress}>
-            <Text style={styles.settingsIcon}>⚙️</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -197,17 +191,6 @@ const styles = StyleSheet.create({
   screenSubtitle: {
     fontSize: 16,
     color: '#8E8E93',
-  },
-  settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 24,
-    color: '#FFFFFF',
   },
   
   // Content Styles
