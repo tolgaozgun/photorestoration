@@ -123,3 +123,24 @@ class StorageService:
             logger.info(f"Uploaded full: {full_key} ({len(enhanced_sizes['full'])} bytes)")
 
         return keys
+
+    def get_full_url(self, key: str) -> str:
+        """Generate full S3 URL for a given key"""
+        if not key:
+            return None
+
+        # Construct the base URL based on MinIO configuration
+        if settings.MINIO_SECURE:
+            protocol = "https"
+        else:
+            protocol = "http"
+
+        # Remove port from endpoint if it's the default for the protocol
+        endpoint = settings.MINIO_ENDPOINT
+        if (protocol == "http" and endpoint.endswith(":80")) or (protocol == "https" and endpoint.endswith(":443")):
+            endpoint = endpoint.rsplit(":", 1)[0]
+
+        # Construct full URL
+        full_url = f"{protocol}://{endpoint}/{settings.MINIO_BUCKET}/{key}"
+        logger.debug(f"Generated full URL: {full_url} for key: {key}")
+        return full_url
