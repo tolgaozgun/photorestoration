@@ -231,7 +231,61 @@
     "relaunchOnboardingTitle": "重新启动引导",
     "relaunchOnboardingMessage": "这将重置引导过程并再次向您显示应用介绍。继续？",
     "continue": "继续",
-    "shareAppMessage": "看看这个令人惊叹的照片修复应用！"
+    "shareAppMessage": "看看这个令人惊叹的照片修复应用！",
+    "subtitle": "首选项和账户",
+    "sections": {
+      "social": "社交",
+      "help": "帮助",
+      "general": "通用",
+      "legal": "法律"
+    },
+    "social": {
+      "shareApp": "分享应用",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "help": {
+      "helpCenter": "帮助中心",
+      "contactSupport": "联系支持",
+      "subscriptionInfo": "订阅信息",
+      "suggestFeature": "建议功能",
+      "manageSubscription": "管理订阅",
+      "howDoIUseIt": "如何使用？",
+      "seeAppTutorialAgain": "再次查看应用教程"
+    },
+    "general": {
+      "signIn": "登录",
+      "manageDevices": "管理设备",
+      "signedInAs": "以 {{email}} 身份登录",
+      "signInToSync": "登录以跨设备同步",
+      "photosPermissions": "照片权限",
+      "enhancementPreferences": "增强首选项"
+    },
+    "legal": {
+      "termsOfService": "服务条款",
+      "privacyPolicy": "隐私政策",
+      "privacyPreferences": "隐私首选项",
+      "openSourceLibraries": "开源库"
+    },
+    "alerts": {
+      "photosPermissions": {
+        "title": "照片权限",
+        "message": "在设备设置中管理照片访问权限。"
+      },
+      "enhancementPreferences": {
+        "title": "增强首选项",
+        "message": "自定义您的照片增强设置。"
+      },
+      "privacyPreferences": {
+        "title": "隐私首选项",
+        "message": "管理您的隐私设置和数据首选项。"
+      },
+      "openSourceLibraries": {
+        "title": "开源库",
+        "message": "查看此应用中使用的开源库的致谢。"
+      }
+    }
   },
   "tabs": {
     "enhance": {

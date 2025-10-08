@@ -231,7 +231,61 @@
     "relaunchOnboardingTitle": "Einführung Neu Starten",
     "relaunchOnboardingMessage": "Dies wird den Einführungsprozess zurücksetzen und Ihnen die App-Einführung erneut zeigen. Fortfahren?",
     "continue": "Fortfahren",
-    "shareAppMessage": "Schauen Sie sich diese erstaunliche Fotowiederherstellungs-App an!"
+    "shareAppMessage": "Schauen Sie sich diese erstaunliche Fotowiederherstellungs-App an!",
+    "subtitle": "Einstellungen & Konto",
+    "sections": {
+      "social": "Sozial",
+      "help": "Hilfe",
+      "general": "Allgemein",
+      "legal": "Rechtliches"
+    },
+    "social": {
+      "shareApp": "App Teilen",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "help": {
+      "helpCenter": "Hilfe-Center",
+      "contactSupport": "Support Kontaktieren",
+      "subscriptionInfo": "Abonnement-Informationen",
+      "suggestFeature": "Funktion Vorschlagen",
+      "manageSubscription": "Abonnement Verwalten",
+      "howDoIUseIt": "Wie benutze ich es?",
+      "seeAppTutorialAgain": "Siehen Sie sich das App-Tutorial erneut an"
+    },
+    "general": {
+      "signIn": "Anmelden",
+      "manageDevices": "Geräte Verwalten",
+      "signedInAs": "Angemeldet als {{email}}",
+      "signInToSync": "Anmelden, um geräteübergreifend zu synchronisieren",
+      "photosPermissions": "Foto-Berechtigungen",
+      "enhancementPreferences": "Verbesserungseinstellungen"
+    },
+    "legal": {
+      "termsOfService": "Nutzungsbedingungen",
+      "privacyPolicy": "Datenschutz-Bestimmungen",
+      "privacyPreferences": "Datenschutzeinstellungen",
+      "openSourceLibraries": "Open-Source-Bibliotheken"
+    },
+    "alerts": {
+      "photosPermissions": {
+        "title": "Foto-Berechtigungen",
+        "message": "Verwalten Sie die Fotozugriffsberechtigungen in Ihren Geräteeinstellungen."
+      },
+      "enhancementPreferences": {
+        "title": "Verbesserungseinstellungen",
+        "message": "Passen Sie Ihre Foto-Verbesserungseinstellungen an."
+      },
+      "privacyPreferences": {
+        "title": "Datenschutzeinstellungen",
+        "message": "Verwalten Sie Ihre Datenschutzeinstellungen und Datenpräferenzen."
+      },
+      "openSourceLibraries": {
+        "title": "Open-Source-Bibliotheken",
+        "message": "Danksagungen für die in dieser App verwendeten Open-Source-Bibliotheken anzeigen."
+      }
+    }
   },
   "tabs": {
     "enhance": {

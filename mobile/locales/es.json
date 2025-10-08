@@ -232,7 +232,61 @@
     "relaunchOnboardingTitle": "Relanzar Introducción",
     "relaunchOnboardingMessage": "Esto reiniciará el proceso de introducción y te mostrará la introducción de la aplicación de nuevo. ¿Continuar?",
     "continue": "Continuar",
-    "shareAppMessage": "¡Mira esta increíble aplicación de restauración de fotos!"
+    "shareAppMessage": "¡Mira esta increíble aplicación de restauración de fotos!",
+    "subtitle": "Preferencias y cuenta",
+    "sections": {
+      "social": "Social",
+      "help": "Ayuda",
+      "general": "General",
+      "legal": "Legal"
+    },
+    "social": {
+      "shareApp": "Compartir App",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "help": {
+      "helpCenter": "Centro de Ayuda",
+      "contactSupport": "Contactar Soporte",
+      "subscriptionInfo": "Información de Suscripción",
+      "suggestFeature": "Sugerir Característica",
+      "manageSubscription": "Gestionar Suscripción",
+      "howDoIUseIt": "¿Cómo lo uso?",
+      "seeAppTutorialAgain": "Ver el tutorial de la app nuevamente"
+    },
+    "general": {
+      "signIn": "Iniciar Sesión",
+      "manageDevices": "Gestionar Dispositivos",
+      "signedInAs": "Sesión iniciada como {{email}}",
+      "signInToSync": "Iniciar sesión para sincronizar entre dispositivos",
+      "photosPermissions": "Permisos de Fotos",
+      "enhancementPreferences": "Preferencias de Mejora"
+    },
+    "legal": {
+      "termsOfService": "Términos de Servicio",
+      "privacyPolicy": "Política de Privacidad",
+      "privacyPreferences": "Preferencias de Privacidad",
+      "openSourceLibraries": "Bibliotecas de Código Abierto"
+    },
+    "alerts": {
+      "photosPermissions": {
+        "title": "Permisos de Fotos",
+        "message": "Gestiona los permisos de acceso a fotos en la configuración de tu dispositivo."
+      },
+      "enhancementPreferences": {
+        "title": "Preferencias de Mejora",
+        "message": "Personaliza tu configuración de mejora de fotos."
+      },
+      "privacyPreferences": {
+        "title": "Preferencias de Privacidad",
+        "message": "Gestiona tu configuración de privacidad y preferencias de datos."
+      },
+      "openSourceLibraries": {
+        "title": "Bibliotecas de Código Abierto",
+        "message": "Ver reconocimientos de bibliotecas de código abierto usadas en esta app."
+      }
+    }
   },
   "tabs": {
     "enhance": {

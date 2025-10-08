@@ -231,7 +231,61 @@
     "relaunchOnboardingTitle": "Tanıtımı Yeniden Başlat",
     "relaunchOnboardingMessage": "Bu, tanıtım sürecini sıfırlayacak ve size uygulama tanıtımını tekrar gösterecektir. Devam et?",
     "continue": "Devam Et",
-    "shareAppMessage": "Bu harika fotoğraf restore uygulamasını inceleyin!"
+    "shareAppMessage": "Bu harika fotoğraf restore uygulamasını inceleyin!",
+    "subtitle": "Tercihler ve hesap",
+    "sections": {
+      "social": "Sosyal",
+      "help": "Yardım",
+      "general": "Genel",
+      "legal": "Yasal"
+    },
+    "social": {
+      "shareApp": "Uygulamayı Paylaş",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok"
+    },
+    "help": {
+      "helpCenter": "Yardım Merkezi",
+      "contactSupport": "Destek İletişim",
+      "subscriptionInfo": "Abonelik Bilgileri",
+      "suggestFeature": "Özellik Öner",
+      "manageSubscription": "Aboneliği Yönet",
+      "howDoIUseIt": "Nasıl kullanırım?",
+      "seeAppTutorialAgain": "Uygulama eğitimini tekrar göster"
+    },
+    "general": {
+      "signIn": "Giriş Yap",
+      "manageDevices": "Cihazları Yönet",
+      "signedInAs": "{{email}} olarak giriş yapıldı",
+      "signInToSync": "Cihazlar arasında senkronize etmek için giriş yap",
+      "photosPermissions": "Fotoğraf İzinleri",
+      "enhancementPreferences": "İyileştirme Tercihleri"
+    },
+    "legal": {
+      "termsOfService": "Hizmet Şartları",
+      "privacyPolicy": "Gizlilik Politikası",
+      "privacyPreferences": "Gizlilik Tercihleri",
+      "openSourceLibraries": "Açık Kaynak Kütüphaneleri"
+    },
+    "alerts": {
+      "photosPermissions": {
+        "title": "Fotoğraf İzinleri",
+        "message": "Cihaz ayarlarından fotoğraf erişim izinlerini yönetin."
+      },
+      "enhancementPreferences": {
+        "title": "İyileştirme Tercihleri",
+        "message": "Fotoğraf iyileştirme ayarlarınızı özelleştirin."
+      },
+      "privacyPreferences": {
+        "title": "Gizlilik Tercihleri",
+        "message": "Gizlilik ayarlarınızı ve veri tercihlerinizi yönetin."
+      },
+      "openSourceLibraries": {
+        "title": "Açık Kaynak Kütüphaneleri",
+        "message": "Bu uygulamada kullanılan açık kaynak kütüphanelerinin tanınmalarını görüntüleyin."
+      }
+    }
   },
   "tabs": {
     "enhance": {
