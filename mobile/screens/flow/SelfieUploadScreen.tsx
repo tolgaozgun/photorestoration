@@ -19,6 +19,7 @@ import { RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -45,6 +46,9 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
   const [isUploading, setIsUploading] = useState(false);
   const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean | null>(null);
 
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('SelfieUploadScreen');
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
@@ -53,6 +57,8 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
   const MAX_PHOTOS = 12;
 
   useEffect(() => {
+    console.log('🚀 [SelfieUploadScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'selfie_upload', featureId });
     requestPermissions();
     
@@ -69,7 +75,7 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [logNavigationState]);
 
   const requestPermissions = async () => {
     const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -167,6 +173,8 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
       featureId 
     });
 
+    console.log('🔗 [SelfieUploadScreen] Navigation to AITraining:', { featureId, photoCount: uploadedPhotos.length });
+    logNavigationState();
     navigation.navigate('AITraining', {
       featureId,
       featureTitle,
@@ -234,7 +242,11 @@ export default function SelfieUploadScreen({ navigation, route }: Props) {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            console.log('🔙 [SelfieUploadScreen] Back button pressed');
+            logNavigationState();
+            navigation.goBack();
+          }}
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>

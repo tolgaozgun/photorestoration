@@ -21,6 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -56,6 +57,9 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
   };
   const { trackEvent } = useAnalytics();
 
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('AIGenerationResultScreen');
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -69,6 +73,8 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
 
   // Mock generation process
   useEffect(() => {
+    console.log('🚀 [AIGenerationResultScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'ai_generation_result', featureId, styleId: selectedStyle });
     
     // Start animations
@@ -87,7 +93,7 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
     ]).start();
 
     startGenerationProcess();
-  }, []);
+  }, [logNavigationState]);
 
   const startGenerationProcess = () => {
     // Simulate generation process
@@ -299,7 +305,11 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            console.log('🔙 [AIGenerationResultScreen] Back button pressed - this is where canGoBack issue occurs');
+            logNavigationState();
+            navigation.goBack();
+          }}
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
@@ -446,7 +456,11 @@ export default function AIGenerationResultScreen({ navigation, route }: Props) {
 
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => navigation.navigate('Home')}
+            onPress={() => {
+              console.log('🏠 [AIGenerationResultScreen] Navigation to Home (resetting flow)');
+              logNavigationState();
+              navigation.navigate('Home');
+            }}
           >
             <LinearGradient
               colors={['#FF6B6B', '#FF8E53']}

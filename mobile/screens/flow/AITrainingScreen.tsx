@@ -16,6 +16,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 Dimensions.get('window');
 
@@ -45,6 +46,9 @@ export default function AITrainingScreen({ navigation, route }: Props) {
     photoUris: string[];
   };
   const { trackEvent } = useAnalytics();
+
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('AITrainingScreen');
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -89,6 +93,7 @@ export default function AITrainingScreen({ navigation, route }: Props) {
   ];
 
   useEffect(() => {
+    logNavigationState();
     trackEvent('screen_view', { screen: 'ai_training', featureId, photoCount: photoUris.length });
     
     // Start animations
@@ -185,6 +190,8 @@ export default function AITrainingScreen({ navigation, route }: Props) {
 
     // Auto-navigate to style selection after a delay
     setTimeout(() => {
+      console.log('🔗 [AITrainingScreen] Auto-navigation to StyleSelection');
+      logNavigationState();
       navigation.navigate('StyleSelection', {
         featureId,
         featureTitle,
@@ -227,6 +234,8 @@ export default function AITrainingScreen({ navigation, route }: Props) {
         <TouchableOpacity 
           style={styles.cancelButton}
           onPress={() => {
+            console.log('🔙 [AITrainingScreen] Training cancelled, going back');
+            logNavigationState();
             trackEvent('training_cancelled', { featureId, progress });
             navigation.goBack();
           }}
@@ -376,6 +385,8 @@ export default function AITrainingScreen({ navigation, route }: Props) {
           <TouchableOpacity
             style={styles.continueButton}
             onPress={() => {
+              console.log('🔗 [AITrainingScreen] Manual navigation to StyleSelection');
+              logNavigationState();
               navigation.navigate('StyleSelection', {
                 featureId,
                 featureTitle,

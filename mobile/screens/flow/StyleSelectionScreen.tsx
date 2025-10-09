@@ -17,6 +17,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -52,6 +53,9 @@ export default function StyleSelectionScreen({ navigation, route }: Props) {
   const { trackEvent } = useAnalytics();
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [selectedExample, setSelectedExample] = useState<string | null>(null);
+
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('StyleSelectionScreen');
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -217,6 +221,8 @@ export default function StyleSelectionScreen({ navigation, route }: Props) {
   const styleOptions = getStyleOptions();
 
   useEffect(() => {
+    console.log('🚀 [StyleSelectionScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'style_selection', featureId });
     
     // Entry animation
@@ -232,7 +238,7 @@ export default function StyleSelectionScreen({ navigation, route }: Props) {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [logNavigationState]);
 
   const handleStyleSelect = (styleId: string) => {
     setSelectedStyle(styleId);
@@ -254,6 +260,8 @@ export default function StyleSelectionScreen({ navigation, route }: Props) {
       processingTime: selectedOption.processingTime 
     });
 
+    console.log('🔗 [StyleSelectionScreen] Navigation to AIGenerationResult:', { selectedStyle, styleTitle: selectedOption.title });
+    logNavigationState();
     navigation.navigate('AIGenerationResult', {
       featureId,
       featureTitle,
