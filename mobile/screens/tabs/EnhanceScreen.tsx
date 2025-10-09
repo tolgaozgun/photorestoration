@@ -43,6 +43,7 @@ type EnhanceScreenNavigationProp = StackNavigationProp<EnhanceStackParamList> & 
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardSize = (screenWidth - 32 - 16) / 3; // 3 columns with margins
@@ -57,11 +58,16 @@ export default function EnhanceScreen() {
   const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
   const [photosError, setPhotosError] = useState<string | null>(null);
 
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('EnhanceScreen');
+
   useEffect(() => {
+    console.log('🚀 [EnhanceScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'enhance' });
     refreshUser();
     requestPermissions();
-  }, []);
+  }, [logNavigationState]);
 
   useEffect(() => {
     if (hasGalleryPermission) {
@@ -149,6 +155,8 @@ export default function EnhanceScreen() {
       }
 
       if (!result.canceled) {
+        console.log(`🔗 [EnhanceScreen] Navigation to ModeSelection from ${source}:`, { imageUri: result.assets[0].uri });
+        logNavigationState();
         trackEvent('action', { type: `image_selected_${source}` });
         // Navigate directly to processing screen
         navigation.navigate('ModeSelection', { imageUri: result.assets[0].uri });
@@ -219,7 +227,11 @@ export default function EnhanceScreen() {
                 <TouchableOpacity
                   key={photo.id}
                   style={styles.photoCard}
-                  onPress={() => navigation.navigate('ModeSelection', { imageUri: photo.uri })}
+                  onPress={() => {
+                    console.log('🔗 [EnhanceScreen] Navigation to ModeSelection from recent photos:', { imageUri: photo.uri });
+                    logNavigationState();
+                    navigation.navigate('ModeSelection', { imageUri: photo.uri });
+                  }}
                   activeOpacity={0.8}
                 >
                   <ImageWithLoading

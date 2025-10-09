@@ -16,6 +16,7 @@ import { MainTabParamList, RootStackParamList } from '../App';
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 interface VideoItem {
   id: string;
@@ -42,6 +43,9 @@ export default function AIVideosScreen() {
   const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('AIVideosScreen');
 
   // Utility function to get image source
   const getImageSource = (item: VideoItem) => {
@@ -110,11 +114,15 @@ export default function AIVideosScreen() {
   ];
 
   useEffect(() => {
+    console.log('🚀 [AIVideosScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'ai_videos' });
     refreshUser();
-  }, []);
+  }, [logNavigationState]);
 
   const handleVideoPress = (videoId: string, categoryId: string) => {
+    console.log('🔗 [AIVideosScreen] Navigation to VideoGallery:', { videoId, categoryId });
+    logNavigationState();
     trackEvent('action', { type: 'video_tap', video: videoId, category: categoryId });
     navigation.navigate('VideoGallery');
   };

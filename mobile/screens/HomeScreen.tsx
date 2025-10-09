@@ -62,7 +62,10 @@ export default function HomeScreen() {
                 styles.topNavItem,
                 activeTab === tab.id && styles.topNavItemActive
               ]}
-              onPress={() => setActiveTab(tab.id as any)}
+              onPress={() => {
+                    console.log('🔄 [HomeScreen] Tab switched:', { from: activeTab, to: tab.id });
+                    setActiveTab(tab.id as any);
+                  }}
               activeOpacity={0.7}
             >
               <Ionicons

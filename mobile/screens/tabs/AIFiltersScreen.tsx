@@ -22,6 +22,7 @@ import { MainTabParamList, RootStackParamList } from '../App';
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 type AIFiltersScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'AIFilters'> & 
   StackNavigationProp<RootStackParamList>;
@@ -36,6 +37,9 @@ export default function AIFiltersScreen() {
   const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('AIFiltersScreen');
 
   // Filter data using translations
   const filterVariations = [
@@ -206,6 +210,7 @@ export default function AIFiltersScreen() {
   ).current;
 
   useEffect(() => {
+    console.log('🚀 [AIFiltersScreen] Component mounted');
     console.log('🎬 AIFiltersScreen mounted');
     console.log('Screen dimensions:', { screenWidth, screenHeight });
     console.log('Section heights:', {
@@ -215,10 +220,11 @@ export default function AIFiltersScreen() {
       'Max as % of screen': (bottomSectionMaxHeight / screenHeight * 100).toFixed(1) + '%'
     });
 
+    logNavigationState();
     trackEvent('screen_view', { screen: 'ai_filters' });
     refreshUser();
     requestPermissions();
-  }, []);
+  }, [logNavigationState]);
 
   const requestPermissions = async () => {
     const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -241,6 +247,8 @@ export default function AIFiltersScreen() {
       });
 
       if (!result.canceled) {
+        console.log('🔗 [AIFiltersScreen] Navigation to FilterPreview:', { selectedFilter });
+        logNavigationState();
         trackEvent('action', { type: 'image_selected_gallery', filter: selectedFilter });
         // Navigate to filter preview screen
         navigation.navigate('FilterPreview', {

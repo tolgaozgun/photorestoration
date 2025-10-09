@@ -15,6 +15,7 @@ import { MainTabParamList } from '../App';
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 interface AlbumItem {
   id: string;
@@ -38,6 +39,9 @@ export default function AIPhotosScreen() {
   const { t } = useTranslation();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('AIPhotosScreen');
 
   // Album data using translations
   const albumCategories = [
@@ -99,13 +103,17 @@ export default function AIPhotosScreen() {
   ];
 
   useEffect(() => {
+    console.log('🚀 [AIPhotosScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'ai_photos' });
     refreshUser();
-  }, []);
+  }, [logNavigationState]);
 
   const handleAlbumPress = (albumId: string) => {
+    console.log('🔗 [AIPhotosScreen] Navigation to SelfieUpload:', { albumId });
+    logNavigationState();
     trackEvent('action', { type: 'album_tap', album: albumId });
-    
+
     const album = albumCategories.find(a => a.id === albumId);
     if (album) {
       navigation.navigate('SelfieUpload', {

@@ -15,7 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { MainTabParamList } from '../App';
+import { MainTabParamList, RootStackParamList } from '../App';
 
 // Define nested stack params
 interface CustomAIEDitsStackParamList {
@@ -27,6 +27,7 @@ type CustomAIEDitsNavigationProp = StackNavigationProp<CustomAIEDitsStackParamLi
 import { useUser } from '../../contexts/UserContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 import { useTranslation } from 'react-i18next';
+import { useNavigationDebugger } from '../../hooks/useNavigationDebugger';
 
 type CustomAIEDitsScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'CustomAIEDits'> &
   StackNavigationProp<RootStackParamList>;
@@ -36,6 +37,9 @@ export default function CustomAIEDitsScreen() {
   const { t } = useTranslation();
   const { refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
+
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('CustomAIEDitsScreen');
 
   // Edit examples using translations
   const editExamples = [
@@ -51,10 +55,12 @@ export default function CustomAIEDitsScreen() {
   const [loading] = useState(false);
 
   useEffect(() => {
+    console.log('🚀 [CustomAIEDitsScreen] Component mounted');
+    logNavigationState();
     trackEvent('screen_view', { screen: 'custom_ai_edits' });
     refreshUser();
     requestPermissions();
-  }, []);
+  }, [logNavigationState]);
 
   const requestPermissions = async () => {
     const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -77,6 +83,8 @@ export default function CustomAIEDitsScreen() {
       });
 
       if (!result.canceled) {
+        console.log('🔗 [CustomAIEDitsScreen] Navigation to CustomAIEditInput');
+        logNavigationState();
         trackEvent('action', { type: 'image_selected_gallery' });
         // Navigate to edit input screen
         navigation.navigate('CustomAIEditInput', {
