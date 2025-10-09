@@ -21,6 +21,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useAnalytics } from '../contexts/AnalyticsContext';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigationDebugger } from '../hooks/useNavigationDebugger';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -69,9 +70,12 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
     processingTime,
   } = route.params;
 
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('UniversalResultScreen');
+
   // Debug logging for UniversalResultScreen
   React.useEffect(() => {
-    console.log('🖼️ [UniversalResultScreen] Screen params:', {
+    console.log('🖼️ [UniversalResultScreen] Screen mounted with params:', {
       originalUri,
       enhancedUri,
       previewUri,
@@ -81,7 +85,8 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
       mode,
       processingTime
     });
-  }, [originalUri, enhancedUri, previewUri, blurhash, enhancementId, watermark, mode, processingTime]);
+    logNavigationState();
+  }, [originalUri, enhancedUri, previewUri, blurhash, enhancementId, watermark, mode, processingTime, logNavigationState]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [savedSuccessfully, setSavedSuccessfully] = useState(false);
@@ -207,8 +212,13 @@ export default function UniversalResultScreen({ route }: UniversalResultScreenPr
   };
 
   const handleBack = () => {
+    console.log('🔙 [UniversalResultScreen] handleBack called');
+    logNavigationState();
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.goBack();
+
+    console.log('✅ [UniversalResultScreen] goBack command sent successfully');
   };
 
   return (

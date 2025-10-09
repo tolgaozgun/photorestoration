@@ -212,7 +212,7 @@ class CategoryAssetGeneratorGUI:
             self.log_status(f"Error initializing Gemini client: {e}", "error")
 
     def generate_category_data(self) -> List[Dict[str, Any]]:
-        """Generate category data from CategoryDetailScreen."""
+        """Generate category data from mobile app categories."""
         return [
             {
                 "id": "future-baby",

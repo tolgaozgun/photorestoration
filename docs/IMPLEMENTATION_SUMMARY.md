@@ -149,8 +149,6 @@ The app now has:
 ### **New Screens** (`/screens/`)
 - `HomeScreenNew.tsx` - Content discovery home
 - `ModeSelectionScreenNew.tsx` - Enhancement mode selection
-- `AIGenerationScreen.tsx` - AI generation workflows
-- `VideoGenerationScreen.tsx` - Video creation tools
 
 ### **Design System** (`/theme/`)
 - `index.ts` - Complete theme system with colors, typography, spacing

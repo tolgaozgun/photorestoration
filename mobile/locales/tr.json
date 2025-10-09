@@ -183,7 +183,7 @@
     "rateAppSubtitle": "Geri bildiriminizi paylaşın",
     "language": "Dil",
     "version": "Sürüm 1.0.0",
-    "copyright": "© 2024 Fotoğraf Restorasyon AI",
+    "copyright": "© 2025 Fotoğraf Restorasyon AI",
     "restorePurchasesAlertTitle": "Satın Alımları Geri Yükle",
     "restorePurchasesAlertMessage": "Bu, bu Apple kimliği veya Google Hesabı ile yapılan önceki satın alımları geri yükleyecektir.",
     "cancel": "İptal",
@@ -231,6 +231,7 @@
     "relaunchOnboardingTitle": "Tanıtımı Yeniden Başlat",
     "relaunchOnboardingMessage": "Bu, tanıtım sürecini sıfırlayacak ve size uygulama tanıtımını tekrar gösterecektir. Devam et?",
     "continue": "Devam Et",
+    "openSettings": "Ayarları Aç",
     "shareAppMessage": "Bu harika fotoğraf restore uygulamasını inceleyin!",
     "subtitle": "Tercihler ve hesap",
     "sections": {
@@ -284,7 +285,11 @@
       "openSourceLibraries": {
         "title": "Açık Kaynak Kütüphaneleri",
         "message": "Bu uygulamada kullanılan açık kaynak kütüphanelerinin tanınmalarını görüntüleyin."
-      }
+      },
+      "photosPermissionsAlreadyGranted": "Zaten fotoğraf izinleri vermişsiniz. Cihaz ayarlarından yönetebilirsiniz.",
+      "photosPermissionsGranted": "Fotoğraf izinleri başarıyla verildi!",
+      "photosPermissionsDenied": "Fotoğraf izinleri reddedildi. Cihaz ayarlarından etkinleştirebilirsiniz.",
+      "photosPermissionsError": "Fotoğraf izinleri kontrol edilirken bir hata oluştu. Lütfen tekrar deneyin."
     }
   },
   "tabs": {

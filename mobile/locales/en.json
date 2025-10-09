@@ -184,7 +184,7 @@
     "rateAppSubtitle": "Share your feedback",
       "selectLanguage": "Select Language",
     "version": "Version 1.0.0",
-    "copyright": "© 2024 Photo Restoration AI",
+    "copyright": "© 2025 Photo Restoration AI",
     "restorePurchasesAlertTitle": "Restore Purchases",
     "restorePurchasesAlertMessage": "This will restore any previous purchases made with this Apple ID or Google Account.",
     "cancel": "Cancel",
@@ -232,6 +232,7 @@
     "relaunchOnboardingTitle": "Relaunch Onboarding",
     "relaunchOnboardingMessage": "This will reset the onboarding process and show you the app introduction again. Continue?",
     "continue": "Continue",
+    "openSettings": "Open Settings",
     "shareAppMessage": "Check out this amazing photo restoration app!",
     "subtitle": "Preferences & account",
     "sections": {
@@ -285,7 +286,11 @@
       "openSourceLibraries": {
         "title": "Open Source Libraries",
         "message": "View acknowledgments for open source libraries used in this app."
-      }
+      },
+      "photosPermissionsAlreadyGranted": "You've already granted photo permissions. You can manage them in your device settings.",
+      "photosPermissionsGranted": "Photo permissions have been granted successfully!",
+      "photosPermissionsDenied": "Photo permissions were denied. You can enable them in device settings.",
+      "photosPermissionsError": "An error occurred while checking photo permissions. Please try again."
     }
   },
   "tabs": {
@@ -665,5 +670,51 @@
       "deScratch": "🔧 De-scratch",
       "enlighten": "💡 Enlighten"
     }
+  },
+  "enhancementPreferences": {
+    "title": "Enhancement Preferences",
+    "subtitle": "Customize your photo enhancement experience",
+    "quality": {
+      "title": "Quality Settings",
+      "fast": {
+        "title": "Fast Processing",
+        "description": "Quick results with good quality (~30s)"
+      },
+      "good": {
+        "title": "Standard Quality",
+        "description": "Balanced speed and quality (~60s)"
+      },
+      "best": {
+        "title": "Best Quality",
+        "description": "Highest detail and accuracy (~90s)"
+      }
+    },
+    "processing": {
+      "title": "Processing Options",
+      "autoEnhance": {
+        "title": "Auto-Enhance",
+        "description": "Automatically apply best enhancement settings"
+      },
+      "saveOriginal": {
+        "title": "Save Original",
+        "description": "Keep original photos alongside enhanced versions"
+      }
+    },
+    "advanced": {
+      "title": "Advanced Settings",
+      "faceDetection": {
+        "title": "Face Detection",
+        "description": "Automatically detect and enhance faces in photos"
+      },
+      "noiseReduction": {
+        "title": "Noise Reduction",
+        "description": "Reduce digital noise and grain in photos"
+      }
+    },
+    "saveAlert": {
+      "title": "Preferences Saved",
+      "message": "Your enhancement preferences have been saved successfully!"
+    },
+    "saveButton": "Save Preferences"
   }
 }

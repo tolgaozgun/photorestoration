@@ -184,7 +184,7 @@
     "language": "Idioma",
     "selectLanguage": "Seleccionar Idioma",
     "version": "Versión 1.0.0",
-    "copyright": "© 2024 Photo Restoration AI",
+    "copyright": "© 2025 Photo Restoration AI",
     "restorePurchasesAlertTitle": "Restaurar Compras",
     "restorePurchasesAlertMessage": "Esto restaurará cualquier compra anterior realizada con este Apple ID o Cuenta de Google.",
     "cancel": "Cancelar",
@@ -232,6 +232,7 @@
     "relaunchOnboardingTitle": "Relanzar Introducción",
     "relaunchOnboardingMessage": "Esto reiniciará el proceso de introducción y te mostrará la introducción de la aplicación de nuevo. ¿Continuar?",
     "continue": "Continuar",
+    "openSettings": "Abrir Configuración",
     "shareAppMessage": "¡Mira esta increíble aplicación de restauración de fotos!",
     "subtitle": "Preferencias y cuenta",
     "sections": {
@@ -285,7 +286,11 @@
       "openSourceLibraries": {
         "title": "Bibliotecas de Código Abierto",
         "message": "Ver reconocimientos de bibliotecas de código abierto usadas en esta app."
-      }
+      },
+      "photosPermissionsAlreadyGranted": "Ya has otorgado permisos de fotos. Puedes gestionarlos en la configuración de tu dispositivo.",
+      "photosPermissionsGranted": "¡Los permisos de fotos han sido otorgados exitosamente!",
+      "photosPermissionsDenied": "Los permisos de fotos fueron denegados. Puedes habilitarlos en la configuración del dispositivo.",
+      "photosPermissionsError": "Ocurrió un error al verificar los permisos de fotos. Por favor, intenta de nuevo."
     }
   },
   "tabs": {

@@ -1,0 +1,29 @@
+{
+  "aiPhotos": {
+    "futureBaby": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/futureBaby.png",
+    "digitalTwin": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/digitalTwin.png",
+    "professionalHeadshots": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/professionalHeadshots.png",
+    "vintagePortraits": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/vintagePortraits.png",
+    "fantasyCharacters": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/fantasyCharacters.png"
+  },
+  "aiVideos": {
+    "animateOldPhotos": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/animateOldPhotos.png",
+    "cinemagraphs": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/cinemagraphs.png",
+    "portraitAnimation": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/portraitAnimation.png",
+    "backgroundAnimation": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/backgroundAnimation.png"
+  },
+  "aiFilters": {
+    "3dPhotos": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/3dPhotos.png",
+    "muscles": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/muscles.png",
+    "flash": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/flash.png",
+    "fairyToon": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/fairyToon.png",
+    "nineties": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/nineties.png",
+    "chibi": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/chibi.png",
+    "pixel": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/pixel.png",
+    "animalToon": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/animalToon.png",
+    "animated": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/animated.png",
+    "caricature": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/caricature.png",
+    "miniToys": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/miniToys.png",
+    "doll": "/Users/tolgaozgun/Projects/photorestoration/mobile/menu_images/doll.png"
+  }
+}

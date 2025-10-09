@@ -18,7 +18,6 @@ import HomeScreen from './screens/HomeScreen';
 import HistoryScreen from './screens/HistoryScreen';
 
 // Essential legacy screens (keeping only what's necessary)
-// import ProfileScreen from './screens/ProfileScreen';
 import MenuScreen from './screens/MenuScreen';
 import PurchaseScreen from './screens/PurchaseScreen';
 import VideoGalleryScreen from './screens/VideoGalleryScreen';
@@ -62,6 +61,7 @@ import { Ionicons } from '@expo/vector-icons';
 import UniversalProcessingScreen from './screens/UniversalProcessingScreen';
 import UniversalResultScreen from './screens/UniversalResultScreen';
 import FilterPreviewScreen from './screens/flow/FilterPreviewScreen';
+import EnhancementPreferencesScreen from './screens/EnhancementPreferencesScreen';
 
 // Types for navigation
 export type RootStackParamList = {
@@ -127,7 +127,7 @@ export type RootStackParamList = {
     featureDescription: string;
     photoUris: string[];
   };
-  AIGenerationResult: { 
+  AIGenerationResult: {
     featureId: string;
     featureTitle: string;
     photoUris: string[];
@@ -135,12 +135,12 @@ export type RootStackParamList = {
     styleTitle: string;
     processingTime: number;
   };
-  Profile: undefined;
   Purchase: undefined;
   Settings: undefined;
   Menu: undefined;
   VideoGallery: undefined;
   EmailSync: undefined;
+  EnhancementPreferences: undefined;
   VerificationCode: { 
     email: string;
     deviceId: string;
@@ -191,11 +191,6 @@ function MainTabNavigator() {
     >
       <Tab.Screen
         name="Home"
-        component={() => (
-          <TabScreenWrapper>
-            <HomeScreen />
-          </TabScreenWrapper>
-        )}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color, fontSize: 12 }}>
@@ -210,14 +205,15 @@ function MainTabNavigator() {
             />
           ),
         }}
-      />
-      <Tab.Screen
-        name="History"
-        component={() => (
+      >
+        {() => (
           <TabScreenWrapper>
-            <HistoryScreen />
+            <HomeScreen />
           </TabScreenWrapper>
         )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="History"
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color, fontSize: 12 }}>
@@ -232,14 +228,15 @@ function MainTabNavigator() {
             />
           ),
         }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={() => (
+      >
+        {() => (
           <TabScreenWrapper>
-            <SettingsScreen />
+            <HistoryScreen />
           </TabScreenWrapper>
         )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Settings"
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color, fontSize: 12 }}>
@@ -254,7 +251,13 @@ function MainTabNavigator() {
             />
           ),
         }}
-      />
+      >
+        {() => (
+          <TabScreenWrapper>
+            <SettingsScreen />
+          </TabScreenWrapper>
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
@@ -401,87 +404,94 @@ export default function App() {
                     {/* AI Generation Flow */}
                     <Stack.Screen
                       name="SelfieUpload"
-                      component={(props) => (
+                      options={{
+                        headerShown: false,
+                      }}
+                    >
+                      {(props) => (
                         <MainLayout>
                           <SelfieUploadScreen {...props} />
                         </MainLayout>
                       )}
+                    </Stack.Screen>
+                    <Stack.Screen
+                      name="AITraining"
                       options={{
                         headerShown: false,
                       }}
-                    />
-                    <Stack.Screen
-                      name="AITraining"
-                      component={(props) => (
+                    >
+                      {(props) => (
                         <MainLayout>
                           <AITrainingScreen {...props} />
                         </MainLayout>
                       )}
+                    </Stack.Screen>
+                    <Stack.Screen
+                      name="StyleSelection"
                       options={{
                         headerShown: false,
                       }}
-                    />
-                    <Stack.Screen
-                      name="StyleSelection"
-                      component={(props) => (
+                    >
+                      {(props) => (
                         <MainLayout>
                           <StyleSelectionScreen {...props} />
                         </MainLayout>
                       )}
+                    </Stack.Screen>
+                    <Stack.Screen
+                      name="AIGenerationResult"
                       options={{
                         headerShown: false,
                       }}
-                    />
-                    <Stack.Screen
-                      name="AIGenerationResult"
-                      component={(props) => (
+                    >
+                      {(props) => (
                         <MainLayout>
                           <AIGenerationResultScreen {...props} />
                         </MainLayout>
                       )}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                    </Stack.Screen>
 
                     {/* Purchase Screen */}
                     <Stack.Screen
                       name="Purchase"
-                      component={(props) => (
+                      options={{
+                        headerShown: false,
+                      }}
+                    >
+                      {(props) => (
                         <MainLayout>
                           <PurchaseScreen {...props} />
                         </MainLayout>
                       )}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                    </Stack.Screen>
 
                     {/* Free Trial Screen */}
                     <Stack.Screen
                       name="FreeTrial"
-                      component={(props) => (
+                      options={{
+                        headerShown: false,
+                      }}
+                    >
+                      {(props) => (
                         <MainLayout>
                           <FreeTrialScreen {...props} />
                         </MainLayout>
                       )}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                    </Stack.Screen>
 
                     {/* Settings Screen */}
                     <Stack.Screen
                       name="Settings"
-                      component={(props) => (
+                      options={{
+                        headerShown: false,
+                      }}
+                    >
+                      {(props) => (
                         <MainLayout showTopBar={false}>
                           <SettingsScreen {...props} />
                         </MainLayout>
                       )}
-                      options={{
-                        headerShown: false,
-                      }}
-                    />
+                    </Stack.Screen>
 
                     {/* Menu Screen */}
                     <Stack.Screen 
@@ -509,6 +519,20 @@ export default function App() {
                         headerShown: false,
                       }}
                     />
+
+                    {/* Enhancement Preferences Screen */}
+                    <Stack.Screen
+                      name="EnhancementPreferences"
+                      options={{
+                        headerShown: false,
+                      }}
+                    >
+                      {(props) => (
+                        <MainLayout>
+                          <EnhancementPreferencesScreen {...props} />
+                        </MainLayout>
+                      )}
+                    </Stack.Screen>
 
                     {/* Verification Code Screen */}
                     <Stack.Screen

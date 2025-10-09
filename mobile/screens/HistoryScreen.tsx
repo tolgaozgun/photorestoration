@@ -8,6 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import ImageWithLoading from '../components/ImageWithLoading';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -17,6 +18,7 @@ import { useProcessing } from '../contexts/ProcessingContext';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
+import { useNavigationDebugger } from '../hooks/useNavigationDebugger';
 
 type HistoryScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -43,26 +45,18 @@ export default function HistoryScreen() {
   const [enhancements, setEnhancements] = useState<Enhancement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Debug logging for API configuration
-  React.useEffect(() => {
-    console.log('🔧 [HistoryScreen] API Configuration:', {
-      API_BASE_URL,
-      userId: 'will be fetched during fetchHistory',
-      endpoint: `${API_BASE_URL}${API_ENDPOINTS.userEnhancements}/{user_id}`
-    });
-  }, []);
+  // Use navigation debugging hook
+  const { logNavigationState, isFocused } = useNavigationDebugger('HistoryScreen');
 
   // Main useEffect to fetch history
   useEffect(() => {
-    console.log('🚀 [HistoryScreen] Component mounted, calling fetchHistory');
+    logNavigationState();
     fetchHistory();
-  }, []);
+  }, [logNavigationState]);
 
   const fetchHistory = async () => {
     setIsLoading(true);
     try {
-      console.log('🔍 [HistoryScreen] Starting fetchHistory...');
-
       // Add timeout for SecureStore operation
       const userIdPromise = SecureStore.getItemAsync('userId');
       const timeoutPromise = new Promise((_, reject) => {
@@ -71,20 +65,12 @@ export default function HistoryScreen() {
 
       const userId = await Promise.race([userIdPromise, timeoutPromise]) as string;
 
-      console.log('🔍 [HistoryScreen] Fetching history:', {
-        userId,
-        hasUserId: !!userId,
-        endpoint: userId ? `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}` : 'No user ID'
-      });
-
       if (!userId) {
-        console.warn('⚠️ [HistoryScreen] No user ID found, skipping fetch');
         setIsLoading(false);
         return;
       }
 
       const endpoint = `${API_BASE_URL}${API_ENDPOINTS.enhancements}/${userId}`;
-      console.log('🌐 [HistoryScreen] Making request to:', endpoint);
 
       // Add timeout for axios request
       const axiosPromise = axios.get(endpoint);
@@ -94,27 +80,8 @@ export default function HistoryScreen() {
 
       const response = await Promise.race([axiosPromise, axiosTimeout]) as any;
 
-      console.log('✅ [HistoryScreen] API Response:', {
-        status: response.status,
-        statusText: response.statusText,
-        dataType: typeof response.data,
-        isArray: Array.isArray(response.data),
-        dataLength: Array.isArray(response.data) ? response.data.length : 'N/A',
-        firstItem: Array.isArray(response.data) && response.data.length > 0 ? response.data[0] : 'No items',
-        fullData: response.data
-      });
-
       setEnhancements(response.data);
     } catch (error: any) {
-      console.error('❌ [HistoryScreen] Error fetching history:', {
-        message: error?.message,
-        code: error?.code,
-        response: error?.response?.data,
-        status: error?.response?.status,
-        config: error?.config?.url,
-        stack: error?.stack
-      });
-
       // Set empty array to prevent infinite loading
       setEnhancements([]);
     } finally {
@@ -150,14 +117,7 @@ export default function HistoryScreen() {
   };
 
   const handleHistoryItemPress = (item: Enhancement) => {
-    // Backend should return full URLs
-    console.log('🔗 [HistoryScreen] Navigation to UniversalResult:', {
-      originalUri: item.original_url,
-      enhancedUri: item.enhanced_url,
-      previewUri: item.preview_url,
-      item: item.id,
-      mode: item.mode
-    });
+    logNavigationState();
 
     navigation.navigate('UniversalResult', {
       originalUri: item.original_url,
@@ -206,17 +166,6 @@ export default function HistoryScreen() {
   const renderHistoryItem = ({ item }: { item: Enhancement }) => {
     // Backend should return full URLs, but handle relative URLs as fallback
     const imageUrl = item.thumbnail_url || item.enhanced_url;
-
-    // Debug logging for HistoryScreen images
-    console.log('📚 [HistoryScreen] Rendering history item:', {
-      id: item.id,
-      thumbnail_url: item.thumbnail_url,
-      enhanced_url: item.enhanced_url,
-      finalUrl: imageUrl,
-      isFullUrl: imageUrl.startsWith('http'),
-      blurhash: item.blurhash,
-      mode: item.mode
-    });
 
     return (
       <TouchableOpacity
@@ -295,7 +244,7 @@ export default function HistoryScreen() {
             </View>
           ) : (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>📷</Text>
+              <Ionicons name="images-outline" size={64} color="#8E8E93" style={styles.emptyIcon} />
               <Text style={styles.emptyText}>{t('historyScreen.emptyTitle')}</Text>
               <Text style={styles.emptySubtitle}>{t('historyScreen.emptySubtitle')}</Text>
             </View>
@@ -443,7 +392,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyIcon: {
-    fontSize: 64,
     marginBottom: 16,
   },
   emptyText: {

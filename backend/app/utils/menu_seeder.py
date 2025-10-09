@@ -250,7 +250,7 @@ def seed_menu_data_if_needed():
                         }
                     },
                     
-                    # Create Screen Items (from AIGenerationScreen and creative features)
+                    # Create Screen Items (from creative features)
                     {
                         "title": "AI Generation",
                         "description": "Generate images from text prompts",

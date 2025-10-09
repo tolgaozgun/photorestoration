@@ -183,7 +183,7 @@
     "rateAppSubtitle": "Teilen Sie Ihr Feedback",
     "language": "Sprache",
     "version": "Version 1.0.0",
-    "copyright": "© 2024 Photo Restoration AI",
+    "copyright": "© 2025 Photo Restoration AI",
     "restorePurchasesAlertTitle": "Käufe Wiederherstellen",
     "restorePurchasesAlertMessage": "Dadurch werden alle früheren Käufe wiederhergestellt, die mit dieser Apple ID oder diesem Google-Konto getätigt wurden.",
     "cancel": "Abbrechen",
@@ -231,6 +231,7 @@
     "relaunchOnboardingTitle": "Einführung Neu Starten",
     "relaunchOnboardingMessage": "Dies wird den Einführungsprozess zurücksetzen und Ihnen die App-Einführung erneut zeigen. Fortfahren?",
     "continue": "Fortfahren",
+    "openSettings": "Einstellungen Öffnen",
     "shareAppMessage": "Schauen Sie sich diese erstaunliche Fotowiederherstellungs-App an!",
     "subtitle": "Einstellungen & Konto",
     "sections": {
@@ -284,7 +285,11 @@
       "openSourceLibraries": {
         "title": "Open-Source-Bibliotheken",
         "message": "Danksagungen für die in dieser App verwendeten Open-Source-Bibliotheken anzeigen."
-      }
+      },
+      "photosPermissionsAlreadyGranted": "Sie haben bereits Foto-Berechtigungen erteilt. Sie können diese in den Geräteeinstellungen verwalten.",
+      "photosPermissionsGranted": "Foto-Berechtigungen wurden erfolgreich erteilt!",
+      "photosPermissionsDenied": "Foto-Berechtigungen wurden verweigert. Sie können diese in den Geräteeinstellungen aktivieren.",
+      "photosPermissionsError": "Ein Fehler ist beim Überprüfen der Foto-Berechtigungen aufgetreten. Bitte versuchen Sie es erneut."
     }
   },
   "tabs": {

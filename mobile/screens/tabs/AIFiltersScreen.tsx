@@ -28,9 +28,9 @@ type AIFiltersScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, '
   StackNavigationProp<RootStackParamList>;
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-// Calculate heights to minimize empty space
-const bottomSectionMinHeight = screenHeight * 0.45; // Start higher up on screen (45% of screen height)
-const bottomSectionMaxHeight = screenHeight * 0.8; // Maximum 80% of screen height
+// Calculate heights for better bottom drawer behavior
+const bottomSectionMinHeight = screenHeight * 0.25; // Start at 25% of screen height
+const bottomSectionMaxHeight = screenHeight * 0.75; // Maximum 75% of screen height
 
 export default function AIFiltersScreen() {
   const navigation = useNavigation<AIFiltersScreenNavigationProp>();
@@ -69,21 +69,13 @@ export default function AIFiltersScreen() {
 
   // Track the animated value
   useEffect(() => {
-    console.log('📊 Setting up animated value listener');
-    console.log('Initial height values:');
-    console.log('- bottomSectionMinHeight:', bottomSectionMinHeight);
-    console.log('- bottomSectionMaxHeight:', bottomSectionMaxHeight);
-    console.log('- screenHeight:', screenHeight);
-
     const listener = bottomSheetHeight.addListener(({ value }) => {
-      console.log('📈 Animated value changed to:', value);
       currentHeightRef.current = value;
 
       // Update expanded state based on actual height
       const threshold = (bottomSectionMinHeight + bottomSectionMaxHeight) / 2;
       const shouldBeExpanded = value > threshold;
       if (shouldBeExpanded !== isBottomSheetExpanded) {
-        console.log('🔄 Updating expanded state to:', shouldBeExpanded);
         setIsBottomSheetExpanded(shouldBeExpanded);
       }
     });
@@ -93,10 +85,8 @@ export default function AIFiltersScreen() {
     bottomSheetHeight.setValue(initialHeight);
     currentHeightRef.current = initialHeight;
     setIsBottomSheetExpanded(false);
-    console.log('🎯 Set initial height to:', initialHeight);
 
     return () => {
-      console.log('🧹 Removing animated value listener');
       bottomSheetHeight.removeListener(listener);
     };
   }, []);
@@ -104,29 +94,16 @@ export default function AIFiltersScreen() {
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => {
-        console.log('🟡 onStartShouldSetPanResponder called');
-        console.log('Event:', evt.nativeEvent);
-        console.log('GestureState:', gestureState);
         return true;
       },
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         const shouldRespond = Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && Math.abs(gestureState.dy) > 5;
-        console.log('🔵 onMoveShouldSetPanResponder called');
-        console.log('dx:', gestureState.dx, 'dy:', gestureState.dy);
-        console.log('Should respond:', shouldRespond);
         return shouldRespond;
       },
       onPanResponderGrant: (evt, gestureState) => {
-        console.log('🟢 onPanResponderGrant - Gesture granted');
-        console.log('Current height:', currentHeightRef.current);
-        console.log('Is expanded:', isBottomSheetExpanded);
         setDebugTouch(true);
       },
       onPanResponderMove: (evt, gestureState) => {
-        console.log('🔄 onPanResponderMove');
-        console.log('dx:', gestureState.dx, 'dy:', gestureState.dy);
-        console.log('Current height before:', currentHeightRef.current);
-
         // Start from the initial height when gesture began, not current animated value
         // gestureState.dy is cumulative from start of gesture
         // Negative dy = dragging up = expand (increase height)
@@ -135,28 +112,12 @@ export default function AIFiltersScreen() {
         const newHeight = baseHeight - gestureState.dy;
         const clampedHeight = Math.max(bottomSectionMinHeight, Math.min(bottomSectionMaxHeight, newHeight));
 
-        console.log('Base height:', baseHeight);
-        console.log('New height calculated:', newHeight);
-        console.log('Clamped height:', clampedHeight);
-        console.log('Min height:', bottomSectionMinHeight);
-        console.log('Max height:', bottomSectionMaxHeight);
-
         bottomSheetHeight.setValue(clampedHeight);
       },
       onPanResponderRelease: (evt, gestureState) => {
-        console.log('🔴 onPanResponderRelease');
-        console.log('Final gesture state:', gestureState);
-        console.log('Velocity Y:', gestureState.vy);
-        console.log('Current height:', currentHeightRef.current);
-
         const velocityThreshold = 300; // Lower threshold for better responsiveness
         const positionThreshold = (bottomSectionMinHeight + bottomSectionMaxHeight) / 2;
         const currentHeight = currentHeightRef.current;
-
-        console.log('Velocity threshold:', velocityThreshold);
-        console.log('Position threshold:', positionThreshold);
-        console.log('Total dy:', gestureState.dy);
-        console.log('Was expanded when started:', isBottomSheetExpanded);
 
         // Decision logic:
         // 1. Strong upward velocity = expand
@@ -167,21 +128,15 @@ export default function AIFiltersScreen() {
         if (Math.abs(gestureState.vy) > velocityThreshold) {
           // Use velocity for decision
           shouldExpand = gestureState.vy < 0; // Negative velocity = upward = expand
-          console.log('Decision by velocity: shouldExpand =', shouldExpand);
         } else if (Math.abs(gestureState.dy) > 50) {
           // Use gesture distance for decision
           shouldExpand = gestureState.dy < 0; // Negative dy = dragged up = expand
-          console.log('Decision by gesture distance: shouldExpand =', shouldExpand);
         } else {
           // Use current position for decision
           shouldExpand = currentHeight > positionThreshold;
-          console.log('Decision by position: shouldExpand =', shouldExpand);
         }
 
-        console.log('Final decision - Should expand:', shouldExpand);
-
         if (shouldExpand) {
-          console.log('🚀 Expanding to:', bottomSectionMaxHeight);
           // Expand
           Animated.spring(bottomSheetHeight, {
             toValue: bottomSectionMaxHeight,
@@ -191,7 +146,6 @@ export default function AIFiltersScreen() {
           }).start();
           setIsBottomSheetExpanded(true);
         } else {
-          console.log('⬇️ Collapsing to:', bottomSectionMinHeight);
           // Collapse
           Animated.spring(bottomSheetHeight, {
             toValue: bottomSectionMinHeight,
@@ -204,22 +158,12 @@ export default function AIFiltersScreen() {
         setDebugTouch(false);
       },
       onPanResponderTerminate: (evt, gestureState) => {
-        console.log('❌ onPanResponderTerminate - Gesture terminated');
+        // Gesture terminated
       },
     })
   ).current;
 
   useEffect(() => {
-    console.log('🚀 [AIFiltersScreen] Component mounted');
-    console.log('🎬 AIFiltersScreen mounted');
-    console.log('Screen dimensions:', { screenWidth, screenHeight });
-    console.log('Section heights:', {
-      bottomSectionMinHeight,
-      bottomSectionMaxHeight,
-      'Min as % of screen': (bottomSectionMinHeight / screenHeight * 100).toFixed(1) + '%',
-      'Max as % of screen': (bottomSectionMaxHeight / screenHeight * 100).toFixed(1) + '%'
-    });
-
     logNavigationState();
     trackEvent('screen_view', { screen: 'ai_filters' });
     refreshUser();
@@ -247,7 +191,6 @@ export default function AIFiltersScreen() {
       });
 
       if (!result.canceled) {
-        console.log('🔗 [AIFiltersScreen] Navigation to FilterPreview:', { selectedFilter });
         logNavigationState();
         trackEvent('action', { type: 'image_selected_gallery', filter: selectedFilter });
         // Navigate to filter preview screen
@@ -257,7 +200,6 @@ export default function AIFiltersScreen() {
         });
       }
     } catch (error) {
-      console.error('Error picking image:', error);
       Alert.alert(t('common.error'), t('tabs.aiFilters.failedToPickImage'));
     }
   };
@@ -268,22 +210,14 @@ export default function AIFiltersScreen() {
   };
 
   const toggleBottomSheet = () => {
-    console.log('🔄 toggleBottomSheet called');
-    console.log('Current state - isBottomSheetExpanded:', isBottomSheetExpanded);
-    console.log('Current height:', currentHeightRef.current);
-
     const targetHeight = isBottomSheetExpanded ? bottomSectionMinHeight : bottomSectionMaxHeight;
-    console.log('Target height:', targetHeight);
 
     Animated.spring(bottomSheetHeight, {
       toValue: targetHeight,
       useNativeDriver: false,
-    }).start(() => {
-      console.log('✅ Animation completed to:', targetHeight);
-    });
+    }).start();
 
     setIsBottomSheetExpanded(!isBottomSheetExpanded);
-    console.log('New state will be:', !isBottomSheetExpanded);
   };
 
   const renderFilterGrid = () => {
@@ -366,15 +300,12 @@ export default function AIFiltersScreen() {
               debugTouch && { backgroundColor: 'rgba(255, 0, 0, 0.3)' }
             ]}
             onPress={() => {
-              console.log('🔘 Pull handle touched (tap)');
               toggleBottomSheet();
             }}
             onPressIn={() => {
-              console.log('👇 Pull handle press in');
               setDebugTouch(true);
             }}
             onPressOut={() => {
-              console.log('👆 Pull handle press out');
               setDebugTouch(false);
             }}
             activeOpacity={0.7}
@@ -387,11 +318,22 @@ export default function AIFiltersScreen() {
         </View>
 
         {/* Filter Grid */}
-        <ScrollView 
+        <ScrollView
           style={styles.filterScroll}
           showsVerticalScrollIndicator={false}
         >
           {renderFilterGrid()}
+
+          {/* Select Photo Button at bottom of drawer */}
+          <View style={styles.drawerButtonContainer}>
+            <TouchableOpacity
+              style={styles.drawerSelectPhotoButton}
+              onPress={pickImageFromGallery}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.drawerSelectPhotoText}>{t('tabs.aiFilters.selectPhoto')}</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </Animated.View>
     </SafeAreaView>
@@ -543,5 +485,25 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+
+  // Drawer Button Styles
+  drawerButtonContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+    paddingTop: 16,
+  },
+  drawerSelectPhotoButton: {
+    width: screenWidth - 32, // Full width minus padding
+    height: 52,
+    backgroundColor: '#007AFF',
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  drawerSelectPhotoText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
 });

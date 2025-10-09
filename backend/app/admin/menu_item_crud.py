@@ -847,7 +847,7 @@ class MenuItemCRUDView(BaseView):
             const actionValue = document.getElementById('actionValue');
             
             const placeholders = {
-                'screen': 'e.g., HomeScreen, ProfileScreen',
+                'screen': 'e.g., HomeScreen, SettingsScreen',
                 'url': 'e.g., https://example.com',
                 'action': 'e.g., open_settings, refresh_data',
                 'section': 'e.g., main_menu, settings_menu'

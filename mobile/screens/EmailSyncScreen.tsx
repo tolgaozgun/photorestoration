@@ -13,7 +13,9 @@ import {
   Platform,
   TextStyle,
   StatusBar,
+  BackHandler,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
@@ -23,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import * as Device from 'expo-device';
 import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 import { useAnalytics } from '../contexts/AnalyticsContext';
+import { useNavigationDebugger } from '../hooks/useNavigationDebugger';
 
 type EmailSyncScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EmailSync'>;
 
@@ -36,9 +39,14 @@ export default function EmailSyncScreen() {
   const [linkedDevices, setLinkedDevices] = useState<any[]>([]);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
+  // Use navigation debugging hook
+  const { logNavigationState } = useNavigationDebugger('EmailSyncScreen');
+
   useEffect(() => {
+    console.log('🚀 [EmailSyncScreen] Component mounted');
+    logNavigationState();
     checkSyncStatus();
-  }, []);
+  }, [logNavigationState]);
 
   const checkSyncStatus = async () => {
     try {
@@ -180,6 +188,8 @@ export default function EmailSyncScreen() {
   };
 
   const handleBackPress = () => {
+    console.log('🔙 [EmailSyncScreen] handleBackPress called');
+    logNavigationState();
     navigation.goBack();
   };
 
@@ -204,15 +214,15 @@ export default function EmailSyncScreen() {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <View style={styles.titleTextContainer}>
-            <Text style={styles.screenTitle}>Email Sync</Text>
-            <Text style={styles.screenSubtitle}>Manage your connected devices</Text>
+            <Text style={styles.screenTitle}>{t('emailSync.title')}</Text>
+            <Text style={styles.screenSubtitle}>{t('emailSync.subtitle')}</Text>
           </View>
         </View>
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         <View style={styles.infoCard}>
-          <Text style={styles.infoIcon}>ℹ️</Text>
+          <Ionicons name="information-circle-outline" size={24} color="#8E8E93" style={styles.infoIcon} />
           <Text style={styles.infoText}>
             {t('emailSync.infoText')}
           </Text>
@@ -355,19 +365,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   scrollContent: {
-    padding: 16,
+    paddingBottom: 100,
   },
   infoCard: {
     backgroundColor: '#1C1C1E',
     borderRadius: 16,
-    padding: 24,
+    padding: 20,
     flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 32,
     borderWidth: 1,
     borderColor: '#3A3A3C',
   },
   infoIcon: {
-    fontSize: 24,
     marginRight: 16,
   },
   infoText: {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,12 +15,14 @@ import {
   Dimensions,
   Share,
   StatusBar,
+  BackHandler,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
+import * as ImagePicker from 'expo-image-picker';
 import { useUser } from '../contexts/UserContext';
 import { useAnalytics } from '../contexts/AnalyticsContext';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 
@@ -34,18 +36,40 @@ type SettingsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Set
 
 export default function SettingsScreen() {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
+  const route = useRoute();
+  const isFocused = useIsFocused();
   const { t, i18n: i18nInstance } = useTranslation();
   const { user, refreshUser } = useUser();
   const { trackEvent } = useAnalytics();
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [linkedEmail, setLinkedEmail] = useState<string | null>(null);
-  
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
+  // Navigation state debugging
+  const logNavigationState = useCallback(() => {
+    try {
+      const state = navigation.getState();
+      console.log('🧭 [SettingsScreen] Navigation State:', {
+        isFocused,
+        currentRoute: route.name,
+        stackSize: state.routes.length,
+        index: state.index,
+        routeNames: state.routes.map(r => r.name),
+        canGoBack: state.index > 0,
+        parent: navigation.getParent()?.getState()
+      });
+    } catch (error) {
+      console.error('❌ [SettingsScreen] Error getting navigation state:', error);
+    }
+  }, [navigation, route.name, isFocused]);
+
   useEffect(() => {
+    console.log('🚀 [SettingsScreen] Component mounted');
     loadLinkedEmail();
+    logNavigationState();
 
     // Entry animations
     Animated.parallel([
@@ -61,7 +85,31 @@ export default function SettingsScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [logNavigationState]);
+
+  // Back button handler for debugging
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      console.log('🔙 [SettingsScreen] Hardware back button pressed');
+      logNavigationState();
+      return false; // Don't prevent default behavior
+    });
+
+    // Navigation listener for debugging
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      console.log('🚪 [SettingsScreen] Navigation beforeRemove event:', {
+        action: e.data.action,
+        type: e.data.action.type,
+        source: e.data.action.payload?.source,
+        target: e.data.action.payload?.name
+      });
+    });
+
+    return () => {
+      backHandler.remove();
+      unsubscribe();
+    };
+  }, [navigation, logNavigationState]);
 
   const loadLinkedEmail = async () => {
     try {
@@ -110,6 +158,53 @@ export default function SettingsScreen() {
       setShowLanguageModal(false);
     } catch (error) {
       console.error('Error changing language:', error);
+    }
+  };
+
+  const checkAndRequestPhotoPermissions = async () => {
+    try {
+      const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      if (status === 'granted') {
+        Alert.alert(
+          t('settings.alerts.photosPermissions.title'),
+          t('settings.alerts.photosPermissionsAlreadyGranted')
+        );
+        return;
+      }
+
+      const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (newStatus === 'granted') {
+        Alert.alert(
+          t('settings.alerts.photosPermissions.title'),
+          t('settings.alerts.photosPermissionsGranted')
+        );
+      } else {
+        Alert.alert(
+          t('settings.alerts.photosPermissions.title'),
+          t('settings.alerts.photosPermissionsDenied'),
+          [
+            { text: t('settings.cancel'), style: 'cancel' },
+            {
+              text: t('settings.openSettings'),
+              onPress: () => {
+                if (Platform.OS === 'ios') {
+                  Linking.openURL('app-settings:');
+                } else {
+                  Linking.openURL('https://settings');
+                }
+              }
+            }
+          ]
+        );
+      }
+    } catch (error) {
+      console.error('Error checking photo permissions:', error);
+      Alert.alert(
+        t('settings.alerts.photosPermissions.title'),
+        t('settings.alerts.photosPermissionsError')
+      );
     }
   };
 
@@ -358,7 +453,7 @@ export default function SettingsScreen() {
               title={t('settings.general.photosPermissions')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'photos_permissions' });
-                Alert.alert(t('settings.alerts.photosPermissions.title'), t('settings.alerts.photosPermissions.message'));
+                checkAndRequestPhotoPermissions();
               }}
             />
             <SettingItem
@@ -366,7 +461,7 @@ export default function SettingsScreen() {
               title={t('settings.general.enhancementPreferences')}
               onPress={() => {
                 trackEvent('settings_action', { type: 'enhancement_preferences' });
-                Alert.alert(t('settings.alerts.enhancementPreferences.title'), t('settings.alerts.enhancementPreferences.message'));
+                navigation.navigate('EnhancementPreferences');
               }}
             />
             <SettingItem
